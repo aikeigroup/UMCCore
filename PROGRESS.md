@@ -96,7 +96,7 @@
 | Status | Item | Catatan |
 |---|---|---|
 | ✅ | GitHub Actions build | `.github/workflows/build.yml` — build tiap push/PR ke main, upload jar artifact. |
-| ✅ | GitHub Actions release | `.github/workflows/release.yml` — tag `v*` → build + GitHub Release + attach jar. |
+| ✅ | GitHub Actions release (auto) | `.github/workflows/release.yml` — **push ke `main`** → baca versi `pom.xml`; kalau belum ada release-nya → build + tag `vX.Y.Z` + GitHub Release + attach jar. Skip kalau versi sama. Bisa juga manual (workflow_dispatch). |
 | ✅ | Self auto-update module | Cek GitHub Releases, notify admin/console, `auto-download` opsional ke update folder (apply saat restart), `/umccore update [check\|download]`. Dependency-free (regex parse). Bisa di-disable via `modules.update`. |
 
 ---

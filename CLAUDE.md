@@ -47,8 +47,11 @@ auto-update ✅. Detail per-item di `PROGRESS.md`.
 
 Sisa: testing runtime di server Paper 26.2 asli (belum dijalankan — butuh server live).
 
-## Rilis
+## Rilis (otomatis)
 
-- Versi ada di `pom.xml`. Untuk rilis: bump versi → commit → `git tag vX.Y.Z` → push tag.
-  Workflow `.github/workflows/release.yml` otomatis build + GitHub Release + attach jar.
+- **Rilis otomatis dari `pom.xml`**: bump `<version>` → commit → push ke `main`. Workflow
+  `.github/workflows/release.yml` baca versi dari pom; kalau belum ada release-nya, build +
+  buat tag `vX.Y.Z` + GitHub Release + attach jar. Kalau versi sama → tidak rilis ulang.
+- Jadi **jangan lupa naikkan versi di `pom.xml`** setiap mau rilis, kalau tidak tak ada rilis baru.
+- Bisa juga rilis manual via tab Actions (workflow_dispatch).
 - Self-updater membaca GitHub Releases repo `aikeigroup/UMCCore`.

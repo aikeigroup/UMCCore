@@ -35,17 +35,22 @@ auto-update:
 
 ## Releasing new versions (maintainers)
 
-The included GitHub Actions release workflow builds and publishes a release with the jar
-attached whenever you push a tag:
+Releases are **automatic**. Just bump the version in `pom.xml`, commit, and push to `main`:
 
 ```bash
-# bump <version> in pom.xml, commit, then:
-git tag v1.1.0
-git push origin v1.1.0
+# edit <version> in pom.xml, e.g. 1.0.0 -> 1.0.1
+git commit -am "Release 1.0.1"
+git push origin main
 ```
 
-The workflow (`.github/workflows/release.yml`) builds `UMCCore-<version>.jar` and attaches it to
-the `v1.1.0` GitHub Release. The self-updater picks it up from there.
+The release workflow (`.github/workflows/release.yml`) reads the version from `pom.xml` on every
+push to `main`. If no release exists for that version yet, it builds `UMCCore-<version>.jar`,
+creates the tag `v<version>`, and publishes a GitHub Release with the jar attached. If the
+version is unchanged, it does nothing (no duplicate releases). The self-updater picks it up from
+there.
+
+You can still trigger a manual release from the Actions tab (workflow_dispatch), optionally
+passing an explicit tag.
 
 ## Security notes
 

@@ -1,16 +1,22 @@
 name: Release
 
-# On pushing a version tag like v1.0.0, build the jar and publish a GitHub
-# Release with the jar attached. The self-updater reads these releases.
+# Auto-release: on every push to main, read the version from pom.xml and, if a
+# release for that version does NOT already exist, build and publish it as
+# vX.Y.Z with the jar attached. Bumping the version in pom.xml is therefore all
+# it takes to cut a release — no manual tagging.
+#
+# Also supports manual dispatch with an explicit tag.
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag/version to release (e.g. v1.0.1)'
-        required: true
+        description: 'Tag/version to release (e.g. v1.0.1). Leave blank to use pom.xml version.'
+        required: false
 
 permissions:
   contents: write
@@ -29,18 +35,41 @@ jobs:
           java-version: '25'
           cache: maven
 
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
-
-      - name: Determine version
+      - name: Resolve version
         id: ver
         run: |
-          # Use the tag if present, otherwise the manual input.
-          REF="${GITHUB_REF_NAME}"
-          if [ -n "${{ github.event.inputs.tag }}" ]; then REF="${{ github.event.inputs.tag }}"; fi
-          echo "tag=${REF}" >> "$GITHUB_OUTPUT"
+          # Prefer the manual input if provided, else read pom.xml.
+          INPUT="${{ github.event.inputs.tag }}"
+          if [ -n "$INPUT" ]; then
+            VER="${INPUT#v}"   # strip a leading v if present
+          else
+            VER=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
+          fi
+          echo "version=${VER}" >> "$GITHUB_OUTPUT"
+          echo "tag=v${VER}" >> "$GITHUB_OUTPUT"
+          echo "Resolved version: ${VER} (tag v${VER})"
+
+      - name: Check if release already exists
+        id: exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # If a release with this tag already exists, skip (avoids re-releasing
+          # the same version on every commit).
+          if gh release view "${{ steps.ver.outputs.tag }}" >/dev/null 2>&1; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Release ${{ steps.ver.outputs.tag }} already exists — skipping."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "No release ${{ steps.ver.outputs.tag }} yet — will build and publish."
+          fi
+
+      - name: Build with Maven
+        if: steps.exists.outputs.skip == 'false'
+        run: mvn -B package --file pom.xml
 
       - name: Create Release
+        if: steps.exists.outputs.skip == 'false'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.ver.outputs.tag }}
