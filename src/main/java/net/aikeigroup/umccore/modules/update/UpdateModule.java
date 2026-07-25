@@ -87,8 +87,35 @@ public final class UpdateModule extends AbstractModule {
                     .timeout(Duration.ofSeconds(15))
                     .GET().build();
             HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
-            if (resp.statusCode() != 200) {
-                plugin.getLogger().info("Update check: HTTP " + resp.statusCode() + " (no release?).");
+            int status = resp.statusCode();
+            if (status == 403 || status == 429) {
+                // GitHub's unauthenticated API allows only 60 requests/hour per
+                // IP. A 403/429 here almost always means that limit is exhausted
+                // (often shared IP or another plugin hitting the API), NOT a
+                // missing release. Report it clearly with the reset time.
+                String remaining = resp.headers().firstValue("x-ratelimit-remaining").orElse("?");
+                String reset = resp.headers().firstValue("x-ratelimit-reset").orElse("");
+                String when = "";
+                try {
+                    if (!reset.isEmpty()) {
+                        long epoch = Long.parseLong(reset);
+                        long mins = Math.max(0, (epoch * 1000 - System.currentTimeMillis()) / 60000);
+                        when = " Resets in ~" + mins + " min.";
+                    }
+                } catch (NumberFormatException ignored) {
+                    // leave 'when' empty
+                }
+                plugin.getLogger().info("Update check skipped: GitHub API rate limit reached"
+                        + " (remaining=" + remaining + ")." + when
+                        + " This is harmless; the plugin still works.");
+                return;
+            }
+            if (status == 404) {
+                plugin.getLogger().info("Update check: no releases found for '" + repo + "' yet.");
+                return;
+            }
+            if (status != 200) {
+                plugin.getLogger().info("Update check: unexpected HTTP " + status + ".");
                 return;
             }
             ReleaseInfo info = parse(resp.body());
