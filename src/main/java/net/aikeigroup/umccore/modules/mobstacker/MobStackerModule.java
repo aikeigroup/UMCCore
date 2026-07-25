@@ -129,6 +129,7 @@ public final class MobStackerModule extends AbstractModule {
         unstackToolMax = config().getInt("mob-stacker.unstack-tool.max-per-use", 64);
 
         listen(new DeathListener());
+        listen(new BreedListener());
         if (splitOnInteract || unstackToolEnabled) {
             listen(new InteractListener());
         }
@@ -201,6 +202,22 @@ public final class MobStackerModule extends AbstractModule {
             if (maxStackSize > 0 && size >= maxStackSize) break;
         }
         refreshName(stack);
+    }
+
+    // --- Breeding handling -------------------------------------------------
+
+    /**
+     * Keeps a freshly-bred baby individual for a short window so it doesn't get
+     * instantly swallowed into a baby stack — the player sees the baby they just
+     * made, and it ages on its own before (optionally) re-merging.
+     */
+    private final class BreedListener implements Listener {
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onBreed(org.bukkit.event.entity.EntityBreedEvent event) {
+            if (event.getEntity() instanceof Mob baby) {
+                markNoMerge(baby);
+            }
+        }
     }
 
     // --- Death handling ----------------------------------------------------
@@ -420,6 +437,11 @@ public final class MobStackerModule extends AbstractModule {
         // Never stack a mob a player is riding or that rides something, or that
         // carries passengers (e.g. a chicken jockey) — merging would eject them.
         if (mob.isInsideVehicle() || !mob.getPassengers().isEmpty()) return false;
+
+        // A mob currently in love mode (fed a breeding item, waiting for a mate)
+        // must stay individual — merging it would drop its love status and break
+        // the breeding the player just started.
+        if (mob instanceof org.bukkit.entity.Animals animal && animal.isLoveMode()) return false;
 
         // Player-named mobs (name tag) stay individual. Our own stack label is
         // detected by the size PDC key and is allowed.

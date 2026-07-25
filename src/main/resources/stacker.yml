@@ -68,6 +68,10 @@ mob-stacker:
   # you WANT to stack your farm animals. Default false for that reason.
   protect-persistent: false
   # Only merge mobs of the same age group (don't mix babies with adults).
+  # A baby stack shares one age counter, so it grows up together; a solo baby
+  # (e.g. just bred) ages on its own until it re-merges. Mobs in love mode
+  # (fed a breeding item) and freshly-bred babies are automatically kept
+  # separate so breeding works normally.
   match-age: true
   # Only merge mobs that share the same visible state, so an interaction on one
   # mob doesn't appear to affect the whole stack. Keeps separate:

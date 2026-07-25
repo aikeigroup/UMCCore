@@ -101,6 +101,16 @@
 
 ---
 
+## Breeding & grow edge cases (v1.0.6)
+- **Love mode** — mob yang sedang love mode (diberi item breeding, nunggu pasangan) tidak di-merge
+  (`Animals.isLoveMode()` di `canStack`). Tanpa ini, merge menghapus status love → breeding gagal.
+- **Bayi hasil breeding** — `EntityBreedEvent` → bayi baru dapat `markNoMerge` (cooldown) supaya
+  tidak langsung tertelan stack bayi; pemain lihat bayinya, umur jalan sendiri.
+- **Grow (baby→adult)** — `match-age` memisah stack baby dari adult; bayi solo tumbuh sendiri lalu
+  merge ke stack adult saat dewasa. Keterbatasan inheren (stack baby tumbuh bareng) didokumentasikan.
+- Alur breeding stack: feed → split-on-interact kupas 1 → love mode (terlindungi) → kawin → bayi
+  (terlindungi) → induk cooldown → re-merge normal.
+
 ## Unstack tool + state-match (v1.0.6)
 - **Unstack manual pakai tool** — klik-kanan mob stack sambil pegang item tertentu (default STICK)
   → seluruh stack terurai jadi mob individual (temporary; re-merge setelah cooldown). Config
