@@ -43,6 +43,7 @@ public final class UMCCore extends JavaPlugin {
     private TextService textService;
     private MenuService menuService;
     private ActionExecutor actionExecutor;
+    private net.aikeigroup.umccore.ui.IconFactory iconFactory;
 
     @Override
     public void onEnable() {
@@ -60,6 +61,7 @@ public final class UMCCore extends JavaPlugin {
 
         // 3b. Shared UI/text services (long-lived; modules populate them).
         this.textService = new TextService(this);
+        this.iconFactory = new net.aikeigroup.umccore.ui.IconFactory(this);
         this.menuService = new MenuService(this);
         this.actionExecutor = new ActionExecutor(this);
 
@@ -160,6 +162,10 @@ public final class UMCCore extends JavaPlugin {
 
     public ActionExecutor actionExecutor() {
         return actionExecutor;
+    }
+
+    public net.aikeigroup.umccore.ui.IconFactory icons() {
+        return iconFactory;
     }
 
     /**

@@ -221,6 +221,17 @@ Contoh tipe animasi: `SCROLL`, `TYPEWRITER`, `GRADIENT_SHIFT`, `RAINBOW`, `FRAME
 
 Router otomatis memilih berdasarkan: versi server, platform pemain (Java/Bedrock via Floodgate detection), dan konfigurasi. Pada target 26.2, Dialog API adalah jalur utama; chest-GUI tetap disediakan sebagai jaring pengaman.
 
+#### Menu fleksibel (guide/tutorial/help):
+
+Menu bukan sekadar hub tombol — bisa jadi halaman panduan penuh:
+
+- **`kind`**: `MENU` (banyak tombol), `NOTICE` (info + 1 tombol), `CONFIRM` (Ya/Tidak).
+- **`body`**: paragraf teks panjang (width diatur) + baris "gambar" berupa ikon item / kepala player bertekstur (avatar atau logo base64) / custom-model-data (resource pack). MC tak punya gambar arbitrer; head & item-icon adalah pendekatan native.
+- **`inputs`**: form interaktif `TEXT`/`BOOLEAN`/`NUMBER`/`SINGLE_OPTION`; nilai masuk ke aksi sebagai `{input_<key>}`.
+- **`pages`**: guide bertahap; tombol Prev/Next otomatis, tiap page override title/body/buttons.
+- **Aksi**: `RUN_COMMAND`, `CONSOLE_COMMAND`, `OPEN_MENU[:page]`, `PAGE`, `BACK`, `TELEPORT`, `MESSAGE`, `BROADCAST`, `OPEN_URL`, `SOUND`, `CLOSE`.
+- **PlaceholderAPI** aktif di semua field teks, per-pemain. Contoh lengkap: `menus/guide.yml`.
+
 #### Menu Bawaan (Built-in):
 
 | Menu | Isi |

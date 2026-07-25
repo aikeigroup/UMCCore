@@ -3,7 +3,7 @@
 > Status pengerjaan per-milestone & per-fitur. **Selalu update file ini setiap ada
 > perubahan.** Legend: ✅ selesai · 🚧 sedang dikerjakan · ⬜ belum · ⚠️ butuh perhatian.
 
-**Last updated:** 2026-07-25 (v1.2.3 — vote log ke Discord; v1.2.2 fix fishing bobber)
+**Last updated:** 2026-07-26 (v1.2.4 — menu fleksibel guide/tutorial/help; v1.2.3 vote log)
 **Target:** Paper 26.2 · Java 25 · Maven · package `net.aikeigroup.umccore`
 
 ---
@@ -100,6 +100,28 @@
 | ✅ | Self auto-update module | Cek GitHub Releases, notify admin/console, `auto-download` opsional ke update folder (apply saat restart), `/umccore update [check\|download]`. Dependency-free (regex parse). Bisa di-disable via `modules.update`. |
 
 ---
+
+## Menu super fleksibel: guide/tutorial/help (v1.2.4)
+- **Body kaya** — menu kini punya `body:` (di atas tombol): paragraf teks panjang (width diatur),
+  baris "gambar" dari ikon item, kepala player bertekstur (avatar / logo base64), + custom-model-data.
+  Inti untuk guide/tutorial/help. Semua teks parse PlaceholderAPI per-pemain.
+- **Multi-halaman** — `pages:` untuk guide bertahap; tombol Prev/Next otomatis. Tiap page override
+  title/body/buttons.
+- **Input form** — `inputs:` TEXT/BOOLEAN/NUMBER/SINGLE_OPTION (Dialog). Nilai masuk ke aksi sebagai
+  token `{input_<key>}` (disubstitusi sebelum PAPI).
+- **Kind dialog** — `kind: MENU|NOTICE|CONFIRM`. NOTICE = info + 1 tombol; CONFIRM = Ya/Tidak.
+- **Aksi baru** — `PAGE:next|prev|<n>`, `BACK` (riwayat navigasi per-pemain), `BROADCAST`, `OPEN_URL`,
+  `OPEN_MENU:id:page`. Head/custom-model-data juga dipakai chest-GUI fallback.
+- Arsitektur: `MenuBody`/`MenuInput` records baru; `IconFactory` (head/base64/CMD) dipakai kedua
+  renderer; `DialogMenuRenderer` render body+input+NOTICE/CONFIRM+paging; `MenuService` back-stack.
+  Contoh lengkap `menus/guide.yml`. Docs `docs/menus.md` diperbarui.
+- **Port DeluxeMenus** — dukungan agar config DM gampang dikonversi: aksi `TITLE` (title;subtitle;
+  fade;stay;out), aksi ber-`<delay=TICKS>`, dan `filler` (rentang slot `0-8` dsb) untuk chest
+  fallback. `Text.mm` kini auto-konversi kode warna legacy `&`/`&#rrggbb` → MiniMessage (teks tanpa
+  `&` tetap MiniMessage murni), jadi teks DM/Essentials bisa ditempel apa adanya.
+- **Contoh nyata**: `menus/tagfakultas.yml` — konversi penuh menu Pilih Tag Fakultas UNNESMC
+  (9 fakultas, unset perms lain + set + `/tags` + title + `tag set <f>` delay 5s). Toggle lewat
+  permission `umccore.menu.tagfakultas`.
 
 ## Vote Log ke Discord (v1.2.3)
 - **Vote Log** — modul baru `votelog`: dengarkan `VotifierEvent` (NuVotifier/Votifier) lalu kirim

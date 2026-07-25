@@ -1,0 +1,141 @@
+# ==========================================================================
+#  Menu: guide  (menus/guide.yml)
+#  A multi-page tutorial/guide — showcases EVERY flexible menu feature so you
+#  can copy pieces into your own help/tutorial/rules menus.
+#  Open with: /umccore menu guide     Reload with: /umccore reload
+#
+#  WHAT'S POSSIBLE (all optional, mix freely):
+#   - kind: MENU | NOTICE | CONFIRM   (dialog shape)
+#   - body:    long text paragraphs + icon/head "image" rows
+#   - inputs:  TEXT / BOOLEAN / NUMBER / SINGLE_OPTION  (values -> {input_<key>})
+#   - buttons: any number, each with icon/head/custom-model-data + actions
+#   - pages:   flip through steps (Prev/Next added automatically)
+#   - PlaceholderAPI (%papi%) works in EVERY text field, per-player.
+#
+#  ACTIONS a button can run (list, in order):
+#   RUN_COMMAND:<cmd>       run as the player
+#   CONSOLE_COMMAND:<cmd>   run from console (admin-authored only)
+#   OPEN_MENU:<id>          open another menu   (or OPEN_MENU:<id>:<page>)
+#   PAGE:next|prev|<n>      jump to a page of THIS menu
+#   BACK                    return to the previous menu
+#   MESSAGE:<text>          message the player (MiniMessage)
+#   BROADCAST:<text>        message everyone
+#   OPEN_URL:<url>          clickable web link
+#   SOUND:<SOUND_KEY>       play a sound
+#   TELEPORT:world,x,y,z    teleport
+#   CLOSE                   close the menu
+# ==========================================================================
+
+# MiniMessage title (top of the dialog / GUI title).
+title: "<gradient:#00c6ff:#7b2ff7><bold>UNNESMC • Guide</bold></gradient>"
+
+# Dialog shape: MENU (many buttons), NOTICE (info + 1 button), CONFIRM (yes/no).
+kind: MENU
+
+# Render strategy: AUTO (router decides), DIALOG (force native), GUI (force chest).
+type: AUTO
+
+# Chest-GUI rows (1-6), used only if this menu falls back to a chest.
+rows: 6
+
+# ---- PAGE 0 (this file's body/buttons) -----------------------------------
+# body: shown above the buttons. Each entry is either:
+#   - a plain string  -> a text paragraph
+#   - {text: "..."}   -> a text paragraph (optionally width: <pixels>)
+#   - {icon: MATERIAL, text: "..."}      -> an icon "image" row + caption
+#   - {head: <name|base64>, text: "..."} -> a textured player-head "image" row
+body:
+  - "<gray>Selamat datang di <white><bold>UNNESMC</bold></white>, %player_name%!</gray>"
+  - "<gray>Gunakan panduan ini untuk mengenal server. Klik <yellow>Next »</yellow> untuk lanjut, atau pilih topik di bawah.</gray>"
+  - text: "<white>Server ini mendukung Java & Bedrock. Menu ini tampil sebagai form native di kedua platform.</white>"
+    # width in pixels for wrapping (optional). Higher = wider paragraph.
+    width: 320
+  # An icon "image" row (material icon + caption).
+  - icon: KNOWLEDGE_BOOK
+    text: "<aqua>Tips:</aqua> <gray>buka menu ini kapan saja dengan </gray><yellow>/guide</yellow>"
+  # A textured player-head as an "image" (use a player name for their avatar,
+  # or paste a base64 texture value for a fixed logo head).
+  - head: "%player_name%"
+    text: "<gray>Ini avatarmu — head bisa jadi 'gambar' avatar atau logo.</gray>"
+
+# buttons: each key is the button id.
+buttons:
+  rules:
+    label: "<red><bold>📜 Peraturan</bold></red>"
+    description:
+      - "<gray>Baca aturan server</gray>"
+    icon: WRITABLE_BOOK
+    actions:
+      - "OPEN_MENU:guide:1"   # jump straight to the Rules page
+  getting-started:
+    label: "<green><bold>🚀 Mulai Bermain</bold></green>"
+    description:
+      - "<gray>Langkah pertama di server</gray>"
+    icon: GRASS_BLOCK
+    actions:
+      - "PAGE:2"
+  discord:
+    label: "<blue><bold>💬 Discord</bold></blue>"
+    description:
+      - "<gray>Gabung komunitas kami</gray>"
+    # Tip: an unknown icon name simply falls back to STONE (never errors).
+    icon: PAPER
+    actions:
+      - "OPEN_URL:https://discord.gg/your-invite"
+  close:
+    label: "<gray>Tutup</gray>"
+    icon: BARRIER
+    actions:
+      - "CLOSE"
+
+# ---- EXTRA PAGES ----------------------------------------------------------
+# Prev/Next buttons are added automatically. Each page overrides title/body/
+# buttons; omit buttons to reuse the menu's buttons.
+pages:
+  # PAGE 1 — Rules
+  - title: "<red><bold>Peraturan UNNESMC</bold></red>"
+    body:
+      - "<white><bold>1.</bold></white> <gray>Hormati semua pemain. Tanpa toxic/SARA.</gray>"
+      - "<white><bold>2.</bold></white> <gray>Dilarang cheat, hack, atau exploit bug.</gray>"
+      - "<white><bold>3.</bold></white> <gray>Dilarang griefing / mencuri di area orang lain.</gray>"
+      - "<white><bold>4.</bold></white> <gray>Gunakan bahasa yang sopan di chat.</gray>"
+      - icon: BARRIER
+        text: "<red>Pelanggaran berat = ban permanen tanpa peringatan.</red>"
+    buttons:
+      - id: agree
+        label: "<green><bold>Saya Mengerti</bold></green>"
+        icon: EMERALD
+        actions:
+          - "MESSAGE:<green>Terima kasih sudah membaca peraturan!</green>"
+          - "SOUND:ENTITY_PLAYER_LEVELUP"
+          - "PAGE:next"
+      - id: back
+        label: "<yellow>« Kembali ke Menu</yellow>"
+        icon: ARROW
+        actions:
+          - "PAGE:0"
+
+  # PAGE 2 — Getting started
+  - title: "<green><bold>Mulai Bermain</bold></green>"
+    body:
+      - "<gray>Ikuti langkah ini untuk memulai:</gray>"
+      - icon: CRAFTING_TABLE
+        text: "<yellow>1.</yellow> <gray>Ketik </gray><white>/warp start</white><gray> untuk ke area awal.</gray>"
+      - icon: DIAMOND_PICKAXE
+        text: "<yellow>2.</yellow> <gray>Klaim lahanmu dengan </gray><white>/claim</white><gray>.</gray>"
+      - icon: GOLD_INGOT
+        text: "<yellow>3.</yellow> <gray>Buka toko dengan </gray><white>/shop</white><gray>.</gray>"
+    buttons:
+      - id: warp-start
+        label: "<green><bold>Ke Area Awal</bold></green>"
+        description:
+          - "<gray>Teleport ke /warp start</gray>"
+        icon: ENDER_PEARL
+        actions:
+          - "RUN_COMMAND:/warp start"
+          - "CLOSE"
+      - id: home
+        label: "<yellow>« Menu Utama</yellow>"
+        icon: ARROW
+        actions:
+          - "PAGE:0"

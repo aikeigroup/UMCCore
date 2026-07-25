@@ -6,11 +6,15 @@ import net.aikeigroup.umccore.ui.dialog.DialogMenuRenderer;
 import net.aikeigroup.umccore.ui.model.MenuDefinition;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
+import java.util.WeakHashMap;
 
 /**
  * Central entry point for opening menus. Owns the loaded {@link MenuDefinition}s
@@ -34,6 +38,9 @@ public final class MenuService {
 
     private final Map<String, MenuDefinition> menus = new LinkedHashMap<>();
     private final boolean dialogSupported;
+
+    /** Per-player navigation history ("menuId:page") for the BACK action. */
+    private final Map<UUID, Deque<String>> history = new WeakHashMap<>();
 
     public MenuService(UMCCore plugin) {
         this.plugin = plugin;
@@ -64,13 +71,28 @@ public final class MenuService {
     }
 
     /**
-     * Opens a menu for a player by id. Enforces the per-menu permission
-     * ({@code umccore.menu.<id>}). No-ops with a message if the menu is unknown
-     * or the player lacks permission.
+     * Opens a menu for a player by id (page 0). Records navigation history so a
+     * later BACK action can return here. Enforces the per-menu permission.
      *
      * @return true if the menu was opened
      */
     public boolean open(Player player, String id) {
+        return open(player, id, 0, true);
+    }
+
+    /**
+     * Opens a specific page of a menu without pushing history (used by paging
+     * buttons — flipping pages shouldn't stack BACK entries).
+     */
+    public boolean openPage(Player player, String id, int page) {
+        return open(player, id, page, false);
+    }
+
+    /**
+     * Core open. {@code pushHistory} controls whether the previously shown
+     * menu is remembered for BACK (true for cross-menu jumps, false for paging).
+     */
+    public boolean open(Player player, String id, int page, boolean pushHistory) {
         MenuDefinition menu = menus.get(id.toLowerCase(Locale.ROOT));
         if (menu == null) {
             plugin.messages().send(player, "menu.unknown", "name", id);
@@ -80,11 +102,40 @@ public final class MenuService {
             plugin.messages().send(player, "menu.no-permission", "name", id);
             return false;
         }
-        render(player, menu);
+        int clamped = Math.max(0, Math.min(page, menu.pageCount() - 1));
+        if (pushHistory) {
+            history.computeIfAbsent(player.getUniqueId(), k -> new ArrayDeque<>())
+                    .push(menu.id() + ":" + clamped);
+        }
+        render(player, menu, clamped);
         return true;
     }
 
-    private void render(Player player, MenuDefinition menu) {
+    /**
+     * Returns to the previously opened menu, if any. Pops the current entry then
+     * opens the one beneath it. Falls back to closing when history is empty.
+     */
+    public void back(Player player) {
+        Deque<String> stack = history.get(player.getUniqueId());
+        if (stack == null || stack.size() < 2) {
+            player.closeInventory();
+            player.closeDialog();
+            return;
+        }
+        stack.pop(); // discard current
+        String prev = stack.peek();
+        int colon = prev.lastIndexOf(':');
+        String id = prev.substring(0, colon);
+        int page = Integer.parseInt(prev.substring(colon + 1));
+        open(player, id, page, false);
+    }
+
+    /** Clears a player's navigation history (called on quit). */
+    public void clearHistory(UUID uuid) {
+        history.remove(uuid);
+    }
+
+    private void render(Player player, MenuDefinition menu, int page) {
         MenuDefinition.Renderer choice = menu.renderer();
         boolean useDialog = switch (choice) {
             case DIALOG -> dialogSupported;
@@ -95,7 +146,7 @@ public final class MenuService {
 
         if (useDialog) {
             try {
-                dialogRenderer.open(player, menu);
+                dialogRenderer.open(player, menu, page);
                 return;
             } catch (Throwable t) {
                 // Any Dialog failure (unexpected client/version) falls back to GUI.
@@ -103,7 +154,7 @@ public final class MenuService {
                         + "', falling back to chest GUI: " + t.getMessage());
             }
         }
-        chestRenderer.open(player, menu);
+        chestRenderer.open(player, menu, page);
     }
 
     /**

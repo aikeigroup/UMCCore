@@ -2,6 +2,9 @@ package net.aikeigroup.umccore.modules.ui;
 
 import net.aikeigroup.umccore.core.AbstractModule;
 import net.aikeigroup.umccore.ui.MenuLoader;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
  * The UI feature module. Loads menu definitions and registers the chest-GUI
@@ -24,5 +27,13 @@ public final class UIModule extends AbstractModule {
         // Register the chest-GUI click listener (unregistered automatically on
         // disable via AbstractModule tracking).
         listen(plugin.menuService().chestRenderer().newListener());
+
+        // Clear a player's menu navigation history when they leave.
+        listen(new Listener() {
+            @EventHandler
+            public void onQuit(PlayerQuitEvent event) {
+                plugin.menuService().clearHistory(event.getPlayer().getUniqueId());
+            }
+        });
     }
 }

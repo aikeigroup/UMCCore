@@ -1,9 +1,9 @@
 package net.aikeigroup.umccore.ui.chest;
 
 import net.aikeigroup.umccore.UMCCore;
+import net.aikeigroup.umccore.ui.model.MenuBody;
 import net.aikeigroup.umccore.ui.model.MenuButton;
 import net.aikeigroup.umccore.ui.model.MenuDefinition;
-import net.aikeigroup.umccore.util.Text;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -19,7 +19,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -42,15 +41,21 @@ public final class ChestMenuRenderer {
     /** Custom holder that tags an inventory as a UMCCore menu. */
     public static final class MenuHolder implements InventoryHolder {
         private final MenuDefinition menu;
+        private final int page;
         private final Map<Integer, MenuButton> slotButtons = new HashMap<>();
         private Inventory inventory;
 
-        MenuHolder(MenuDefinition menu) {
+        MenuHolder(MenuDefinition menu, int page) {
             this.menu = menu;
+            this.page = page;
         }
 
         public MenuDefinition menu() {
             return menu;
+        }
+
+        public int page() {
+            return page;
         }
 
         public MenuButton buttonAt(int slot) {
@@ -63,16 +68,36 @@ public final class ChestMenuRenderer {
         }
     }
 
-    /** Builds and opens the chest GUI for a player. */
-    public void open(Player player, MenuDefinition menu) {
+    /** Builds and opens the chest GUI for a page of a menu. */
+    public void open(Player player, MenuDefinition menu, int page) {
         int rows = Math.min(6, Math.max(1, menu.rows()));
-        MenuHolder holder = new MenuHolder(menu);
-        Component title = plugin.text().render(player, menu.title());
+        MenuHolder holder = new MenuHolder(menu, page);
+        Component title = plugin.text().render(player, menu.titleFor(page));
         Inventory inv = Bukkit.createInventory(holder, rows * 9, title);
         holder.inventory = inv;
 
-        int auto = 0;
-        for (MenuButton button : menu.buttons()) {
+        // Decorative filler first (so real items overwrite it where they overlap).
+        if (menu.fillerIcon() != null && !menu.fillerSlots().isEmpty()) {
+            ItemStack filler = buildFiller(player, menu.fillerIcon());
+            for (int slot : menu.fillerSlots()) {
+                if (slot >= 0 && slot < inv.getSize()) {
+                    inv.setItem(slot, filler);
+                }
+            }
+        }
+
+        // Body elements become read-only info items across the top row so guides
+        // are still readable in the chest fallback (no click actions).
+        int bodySlot = 0;
+        for (MenuBody el : menu.bodyFor(page)) {
+            if (el.isEmpty() || bodySlot >= 9) {
+                continue;
+            }
+            inv.setItem(bodySlot++, buildBodyItem(player, el));
+        }
+
+        int auto = bodySlot > 0 ? 9 : 0; // start buttons on row 2 if a body exists
+        for (MenuButton button : menu.buttonsFor(page)) {
             if (!button.visibleTo(player)) {
                 continue;
             }
@@ -88,29 +113,48 @@ public final class ChestMenuRenderer {
     }
 
     private ItemStack buildItem(Player player, MenuButton button) {
-        Material material = Material.matchMaterial(
-                button.icon() == null ? "STONE" : button.icon().toUpperCase(Locale.ROOT));
-        if (material == null) {
-            material = Material.STONE;
-        }
-        ItemStack item = new ItemStack(material);
+        ItemStack item = plugin.icons().build(button.icon(), button.headTexture(), button.customModelData());
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(plugin.text().render(player, button.label())
-                    .decorationIfAbsent(net.kyori.adventure.text.format.TextDecoration.ITALIC,
-                            net.kyori.adventure.text.format.TextDecoration.State.FALSE));
+            meta.displayName(noItalic(plugin.text().render(player, button.label())));
             if (button.description() != null && !button.description().isEmpty()) {
                 List<Component> lore = new ArrayList<>();
                 for (String line : button.description()) {
-                    lore.add(plugin.text().render(player, line)
-                            .decorationIfAbsent(net.kyori.adventure.text.format.TextDecoration.ITALIC,
-                                    net.kyori.adventure.text.format.TextDecoration.State.FALSE));
+                    lore.add(noItalic(plugin.text().render(player, line)));
                 }
                 meta.lore(lore);
             }
             item.setItemMeta(meta);
         }
         return item;
+    }
+
+    /** Body element → a non-clickable info item (icon + wrapped caption lore). */
+    private ItemStack buildBodyItem(Player player, MenuBody el) {
+        ItemStack item = plugin.icons().build(el.iconOr("PAPER"), el.headTexture(), el.customModelData());
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null && el.text() != null && !el.text().isBlank()) {
+            // First line as name; keep it readable in the fallback GUI.
+            meta.displayName(noItalic(plugin.text().render(player, el.text())));
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
+
+    /** A blank-named decorative filler item (e.g. a stained-glass pane). */
+    private ItemStack buildFiller(Player player, String icon) {
+        ItemStack item = plugin.icons().build(icon, null, -1);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.displayName(Component.empty());
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
+
+    private Component noItalic(Component c) {
+        return c.decorationIfAbsent(net.kyori.adventure.text.format.TextDecoration.ITALIC,
+                net.kyori.adventure.text.format.TextDecoration.State.FALSE);
     }
 
     /** Click listener; registered once by the UI module. */
@@ -130,7 +174,7 @@ public final class ChestMenuRenderer {
             }
             MenuButton button = holder.buttonAt(event.getSlot());
             if (button != null) {
-                plugin.actionExecutor().run(player, button);
+                plugin.actionExecutor().run(player, button, holder.menu(), holder.page(), Map.of());
             }
         }
     }
