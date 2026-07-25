@@ -101,6 +101,16 @@
 
 ---
 
+## Preset agresif untuk server berat (v1.1.1)
+- Dari analisis spark user (20 player, MSPT 50): penyebab #1 = **mob AI/pathfinding** (Mob,
+  PathNavigation, Brain, GoalSelector, PathFinder) → persis yang stacker kurangi. Juga terdeteksi
+  hopper/Slimefun cargo (di luar cakupan plugin) & clearlag dobel (fernsehheft).
+- **Default dibuat lebih agresif**: mob-stacker merge-radius 5→8, max-stack 100→200, scan 40→60;
+  item-stacker radius 4→6, max-stack 0→500, scan 40→60; limiter hostile 30→20, passive 20→15,
+  ambient 10→8, total 50→35. Tetap ramah gameplay (mob dekat player tetap normal).
+- **docs/performance-tuning.md**: tambah panduan diagnosa spark + preset entity-activation-range
+  Paper + peringatan jangan pakai 2 clearlag.
+
 ## Limit notif + clearlag countdown menarik (v1.1.0)
 - **Notif kena limit** — saat spawn di-block limiter untuk aksi PEMAIN (breeding, spawn egg,
   dispenser egg), pemain terdekat diberi tahu (`limiter.reached`, actionbar/chat) dengan

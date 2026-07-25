@@ -3,6 +3,37 @@
 UMCCore's optimization modules lower entity count and MSPT. This guide explains how to tune
 them for your server. Watch the effect live with `/umccore perf`.
 
+## Diagnose first (important)
+
+High MSPT is not always entities. Install **spark** (`/spark profiler`) to see the real cause.
+UMCCore helps most when the top consumers are mob AI (`Mob`, `PathNavigation`, `Brain`,
+`GoalSelector`, `PathFinder`, `WalkNodeEvaluator`) — i.e. too many mobs. If the top consumers are
+hoppers, redstone, chunk generation, or a specific plugin (e.g. Slimefun cargo networks), those
+need fixing separately — UMCCore's stackers/limiter won't move the needle there.
+
+Do **not** run two clearlag plugins at once. If you use UMCCore's, remove the other (or set
+`modules.clearlag: false` to use the other).
+
+## Aggressive preset for entity-heavy servers
+
+The shipped defaults are already tuned for busy servers (merge-radius 8, larger stacks, tighter
+mob limits). Combine with these Paper settings (paper-world-defaults.yml) — they don't hurt the
+play experience because they only affect mobs far from players:
+
+```yaml
+entity-activation-range:
+  animals: 8        # was 16 — distant animals stop ticking AI
+  monsters: 24      # keep monsters near players active
+  villagers: 16
+  misc: 8
+nerf-spawner-mobs: true      # spawner mobs use reduced AI
+tick-inactive-villagers: false
+```
+
+Then in UMCCore, if you want it even more aggressive, lower `limits.*` in limiter.yml and raise
+`merge-radius` in stacker.yml. Verify with `/umccore perf` before/after and `/umccore clearlag`:
+if MSPT drops sharply right after a clearlag, entities were indeed the cause.
+
 ## The golden rule
 
 Fewer entities = lower MSPT. The stackers and limiter attack that directly; clearlag is the

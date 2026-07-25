@@ -8,12 +8,14 @@ mob-stacker:
   # Merge nearby same-type mobs into one entity representing the whole stack.
   enabled: true
   # Radius (blocks) to search for same-type mobs to merge. Larger = more
-  # aggressive but heavier scans. Recommended 4-8.
-  merge-radius: 5
+  # aggressive merging (fewer live mobs = less AI/pathfinding load, the #1
+  # cause of high MSPT on entity-heavy servers). Recommended 6-10.
+  merge-radius: 8
   # Maximum mobs in a single stack. 0 = unlimited (not recommended).
-  max-stack-size: 100
-  # How often (ticks) to run the merge scan. 20 ticks = 1 second.
-  scan-interval-ticks: 40
+  max-stack-size: 200
+  # How often (ticks) to run the merge scan. Higher = lighter scans but slower
+  # to collapse fresh mobs. 60 (3s) is a good balance for busy servers.
+  scan-interval-ticks: 60
   # Stack name shown above the mob. Tokens: {type} {amount}. Supports PAPI.
   display-name: "<yellow>{type} <gray>x{amount}"
   # When true, killing a stacked mob only removes one from the stack and drops
@@ -90,11 +92,12 @@ item-stacker:
   # Merge same-type item drops on the ground into one entity with a count.
   enabled: true
   # Radius (blocks) to search for matching item drops to merge.
-  merge-radius: 4
+  merge-radius: 6
   # How often (ticks) to run the merge scan.
-  scan-interval-ticks: 40
-  # Maximum items represented by a single ground stack. 0 = vanilla max.
-  max-stack-size: 0
+  scan-interval-ticks: 60
+  # Maximum items represented by a single ground stack. Higher than a vanilla
+  # stack drastically cuts item entities on drop-heavy farms. 0 = vanilla max.
+  max-stack-size: 500
   # Show the amount as a floating label above merged item stacks.
   show-amount-label: true
   # Only merge items whose metadata (name, enchants) matches exactly.

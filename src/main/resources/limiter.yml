@@ -10,14 +10,16 @@ mode: CHUNK
 # Radius in blocks, used only when mode is RADIUS.
 radius: 8
 
-# Per-category limits. When a spawn would exceed the limit, it is cancelled
-# (hard limit) or reduced (soft limit) — see enforcement below.
+# Per-category limits (per chunk by default). Lower = fewer mobs = less AI load.
+# These are tuned for busy servers; raise them if your gameplay needs denser
+# mobs. When a spawn would exceed the limit it is cancelled (hard) or reduced
+# (soft) — see enforcement below.
 limits:
-  hostile: 30
-  passive: 20
-  ambient: 10
+  hostile: 20
+  passive: 15
+  ambient: 8
   # Total cap across all categories (0 = no separate total cap).
-  total: 50
+  total: 35
 
 # Which spawn sources the limiter applies to.
 apply-to:
