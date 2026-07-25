@@ -83,6 +83,9 @@ permissions:
   umccore.pickup.hostile:
     description: Also pick up hostile mobs (requires umccore.pickup.use).
     default: op
+  umccore.pickup.mob.*:
+    description: Pick up any mob type when per-mob-permission is enabled.
+    default: op
 
   # --- Commands --------------------------------------------------------------
   umccore.command.help:

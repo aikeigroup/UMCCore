@@ -17,6 +17,13 @@ require-sneak: true
 # Require an empty main hand to pick up (so held items still work normally).
 require-empty-hand: true
 
+# Per-mob permission. When true, a player also needs
+#   umccore.pickup.mob.<type>   (e.g. umccore.pickup.mob.cow)
+# to pick up that specific mob type. Grant all with umccore.pickup.mob.* in
+# LuckPerms. When false (default), only umccore.pickup.use (+ .hostile) is
+# checked, regardless of mob type.
+per-mob-permission: false
+
 # Which mob categories may be picked up.
 allow-passive: true
 allow-hostile: true

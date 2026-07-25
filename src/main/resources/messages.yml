@@ -13,6 +13,7 @@ pickup:
   dropped: "<gray>Dropped the mob.</gray>"
   not-allowed: "<red>That mob can't be picked up.</red>"
   no-hostile-perm: "<red>You can't pick up hostile mobs.</red>"
+  no-mob-perm: "<red>You can't pick up this type of mob.</red>"
 
 command:
   # Shown when an unknown sub-command is typed. {input} = what was typed.

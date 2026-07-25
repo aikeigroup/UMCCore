@@ -101,6 +101,12 @@
 
 ---
 
+## Pickup per-mob permission (v1.0.8)
+- **Permission per jenis mob** — opsi `per-mob-permission` (pickup.yml). Kalau true, pemain juga
+  butuh `umccore.pickup.mob.<type>` (mis. `umccore.pickup.mob.cow`) untuk mob spesifik. Wildcard
+  `umccore.pickup.mob.*` untuk semua. Default false (cukup `umccore.pickup.use`). Semua node
+  teregistrasi di plugin.yml → otomatis kebaca LuckPerms.
+
 ## State-match tambahan + Mob Pickup (v1.0.7)
 - **State-match diperluas** — zombie_villager mid-cure (isConverting), collar color (wolf/cat),
   slime/magma size, varian cat/fox/axolotl/frog/wolf, chested pack animal (donkey/mule/llama

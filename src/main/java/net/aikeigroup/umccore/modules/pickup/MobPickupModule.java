@@ -36,6 +36,7 @@ public final class MobPickupModule extends AbstractModule {
     private boolean allowHostile;
     private boolean allowPassive;
     private boolean requireEmptyHand;
+    private boolean perMobPermission;
     private double maxHealth;
     private List<String> blacklist;
 
@@ -54,6 +55,7 @@ public final class MobPickupModule extends AbstractModule {
         allowHostile = config().getBoolean("allow-hostile", true);
         allowPassive = config().getBoolean("allow-passive", true);
         requireEmptyHand = config().getBoolean("require-empty-hand", true);
+        perMobPermission = config().getBoolean("per-mob-permission", false);
         maxHealth = config().getDouble("max-health", 0); // 0 = no limit
         blacklist = config().getStringList("blacklist-types").stream()
                 .map(s -> s.toLowerCase(Locale.ROOT)).toList();
@@ -178,6 +180,12 @@ public final class MobPickupModule extends AbstractModule {
         }
         if (hostile && !player.hasPermission("umccore.pickup.hostile")) {
             feedback(player, "pickup.no-hostile-perm");
+            return false;
+        }
+        // Optional per-mob permission: umccore.pickup.mob.<type> (e.g.
+        // umccore.pickup.mob.cow). The wildcard umccore.pickup.mob.* grants all.
+        if (perMobPermission && !player.hasPermission("umccore.pickup.mob." + type)) {
+            feedback(player, "pickup.no-mob-perm");
             return false;
         }
         if (maxHealth > 0 && mob instanceof LivingEntity le
