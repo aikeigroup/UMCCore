@@ -44,6 +44,15 @@ module:
   # {name} = module, {state} = its current state (active/inactive).
   already: "<yellow>{name}</yellow> <gray>is already {state}.</gray>"
 
+actionbar:
+  # Shown when the module is disabled but /umccore actionbar is used.
+  disabled: "<red>The action bar module is disabled.</red>"
+  # Shown when toggling is disabled in config.
+  toggle-disabled: "<red>Action bar toggling is disabled on this server.</red>"
+  # Feedback when the player shows/hides their bar.
+  shown: "<green>Action bar shown.</green>"
+  hidden: "<gray>Action bar hidden.</gray>"
+
 menu:
   # Usage hint for /umccore menu.
   usage: "<gray>Usage:</gray> <white>/umccore menu <name> [player]</white>"

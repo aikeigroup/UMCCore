@@ -3,7 +3,7 @@
 > Status pengerjaan per-milestone & per-fitur. **Selalu update file ini setiap ada
 > perubahan.** Legend: ✅ selesai · 🚧 sedang dikerjakan · ⬜ belum · ⚠️ butuh perhatian.
 
-**Last updated:** 2026-07-25 (M3 selesai)
+**Last updated:** 2026-07-25 (M4 selesai)
 **Target:** Paper 26.2 · Java 21 · Maven · package `net.aikeigroup.umccore`
 
 ---
@@ -60,15 +60,15 @@
 
 **Catatan:** Floodgate form path (fallback Bedrock non-Dialog) belum diperlukan karena target 26.2 Dialog API sudah native lintas platform; disediakan sebagai opsi masa depan bila server < 1.21.6.
 
-## Milestone M4 — Integrasi & Action Bar ⬜
+## Milestone M4 — Integrasi & Action Bar ✅ (build hijau)
 
-| Status | Item |
-|---|---|
-| ⬜ | Action bar **full animasi** (frame-based, transisi tiap ganti segment) |
-| ⬜ | PlaceholderAPI expansion (`%umccore_*%`) + resolver global |
-| ⬜ | Vault (economy) |
-| ⬜ | LuckPerms (rank/meta) |
-| ⬜ | Subcommand: `actionbar` |
+| Status | Item | Catatan |
+|---|---|---|
+| ✅ | Action bar **full animasi** | `AnimationEngine`: per-char HSV motion. Segment anim: RAINBOW/GRADIENT_SHIFT/PULSE/SCROLL/WAVE. Transisi tiap ganti segment: TYPEWRITER/SLIDE/FADE/WAVE — **tidak ada hard cut**. Per-player permission-gated & toggle. |
+| ✅ | PlaceholderAPI expansion (`%umccore_*%`) | tps, mspt, online, max_players, ram_used/max, uptime, entities, chunks. Register/unregister mengikuti keberadaan PAPI (reload-safe). |
+| ✅ | Resolver global PAPI | `TextService` dipakai di menu, action bar, (nanti) Discord. Soft — aman tanpa PAPI. |
+| ✅ | Vault / LuckPerms | Dipakai via placeholder di menu (`%vault_*%`, `%luckperms_*%`), flag deteksi soft di `IntegrationManager`. Wrapper khusus ditunda (belum diperlukan). |
+| ✅ | Subcommand: `actionbar toggle` | Player-only, cek toggle-allowed. |
 
 ## Milestone M5 — Discord ⬜
 

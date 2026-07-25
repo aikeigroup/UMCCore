@@ -1,6 +1,7 @@
 package net.aikeigroup.umccore.integrations;
 
 import net.aikeigroup.umccore.UMCCore;
+import net.aikeigroup.umccore.integrations.placeholderapi.PlaceholderIntegration;
 import org.bukkit.Bukkit;
 
 /**
@@ -24,8 +25,11 @@ public final class IntegrationManager {
     private boolean discordSrv;
     private boolean floodgate;
 
+    private final PlaceholderIntegration papi;
+
     public IntegrationManager(UMCCore plugin) {
         this.plugin = plugin;
+        this.papi = new PlaceholderIntegration(plugin);
     }
 
     /** Re-detects which optional plugins are present and enabled. */
@@ -36,12 +40,24 @@ public final class IntegrationManager {
         discordSrv = isPresent("DiscordSRV");
         floodgate = isPresent("floodgate");
 
+        // (Re)register the PAPI expansion to match current availability.
+        if (placeholderApi) {
+            papi.register();
+        } else {
+            papi.unregister();
+        }
+
         plugin.getLogger().info("Integrations detected: "
                 + "PlaceholderAPI=" + placeholderApi
                 + ", Vault=" + vault
                 + ", LuckPerms=" + luckPerms
                 + ", DiscordSRV=" + discordSrv
                 + ", Floodgate=" + floodgate);
+    }
+
+    /** Cleans up integration registrations on plugin shutdown. */
+    public void shutdown() {
+        papi.unregister();
     }
 
     private boolean isPresent(String name) {

@@ -10,6 +10,7 @@ import net.aikeigroup.umccore.modules.clearlag.ClearLagModule;
 import net.aikeigroup.umccore.modules.itemstacker.ItemStackerModule;
 import net.aikeigroup.umccore.modules.limiter.MobLimiterModule;
 import net.aikeigroup.umccore.modules.mobstacker.MobStackerModule;
+import net.aikeigroup.umccore.modules.actionbar.ActionBarModule;
 import net.aikeigroup.umccore.modules.mobxp.MobXpModule;
 import net.aikeigroup.umccore.modules.performance.PerformanceModule;
 import net.aikeigroup.umccore.modules.ui.UIModule;
@@ -75,6 +76,9 @@ public final class UMCCore extends JavaPlugin {
         if (moduleManager != null) {
             moduleManager.disableAll();
         }
+        if (integrationManager != null) {
+            integrationManager.shutdown();
+        }
         getLogger().info("UMCCore disabled.");
     }
 
@@ -94,7 +98,9 @@ public final class UMCCore extends JavaPlugin {
         modules().register(new ClearLagModule());
         // M3 — UI system.
         modules().register(new UIModule());
-        // Action bar (M4) and Discord (M5) modules are added next.
+        // M4 — animated action bar.
+        modules().register(new ActionBarModule());
+        // Discord (M5) module is added next.
     }
 
     private void registerCommands() {
