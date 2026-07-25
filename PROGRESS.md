@@ -101,6 +101,15 @@
 
 ---
 
+## Limit notif + clearlag countdown menarik (v1.1.0)
+- **Notif kena limit** — saat spawn di-block limiter untuk aksi PEMAIN (breeding, spawn egg,
+  dispenser egg), pemain terdekat diberi tahu (`limiter.reached`, actionbar/chat) dengan
+  scope+count/limit. Spawn natural tidak di-notif (biar tak spam). Config `limiter.yml → notify`.
+- **Action bar countdown clearlag** — sekarang LIVE per-detik di action bar (bukan cuma warn-mark).
+  `actionbar-countdown-seconds` (default 10). Di-repaint tiap tick supaya menang vs modul action
+  bar. Semua pesan MiniMessage → support `<bold>`, `<gradient>`, `<#hex>`, `<rainbow>` dll.
+  Default countdown pakai gradient + bold biar menarik.
+
 ## ClearLagg type blacklist (v1.0.9)
 - **Blacklist tipe di clearlag** — `protect.blacklist-types` + `protect.use-default-blacklist`.
   Default melindungi villager/zombie_villager/trader, golem/allay, boss, mount, sniffer/shulker/

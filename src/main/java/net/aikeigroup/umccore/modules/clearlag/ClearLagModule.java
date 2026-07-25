@@ -72,22 +72,39 @@ public final class ClearLagModule extends AbstractModule {
         blacklist = config().getStringList("protect.blacklist-types").stream()
                 .map(s -> s.toLowerCase(java.util.Locale.ROOT)).toList();
 
-        // One-second heartbeat drives both the countdown and the cleanup.
+        // One-second heartbeat drives the schedule + chat warnings + cleanup.
         track(scheduler.runTimer(this::tick, 20L, 20L));
+        // Per-tick repaint of the action-bar countdown so it stays visible even
+        // alongside the action-bar module.
+        track(scheduler.runTimer(this::countdownTick, 1L, 1L));
     }
 
     private void tick() {
         secondsUntilClean--;
-        // Only warn when there is LESS THAN ONE MINUTE left, so long intervals
-        // don't spam players early. A warn mark at exactly 60s or above is
-        // ignored on purpose.
+
+        // Chat warnings only at the configured marks, and only under a minute so
+        // long intervals don't spam players early.
         if (secondsUntilClean > 0 && secondsUntilClean < 60 && warnAt.contains(secondsUntilClean)) {
             broadcastWarning(secondsUntilClean);
         }
+
         if (secondsUntilClean <= 0) {
             int removed = runCleanup(false);
             announceDone(removed);
             secondsUntilClean = intervalSeconds;
+        }
+    }
+
+    /**
+     * Runs every tick. During the final countdown window it repaints the
+     * action-bar countdown each tick so it stays visible even if the action-bar
+     * module is also writing there (last writer per tick wins; repainting every
+     * tick lets the countdown dominate).
+     */
+    private void countdownTick() {
+        int cd = config().getInt("actionbar-countdown-seconds", 10);
+        if (cd > 0 && secondsUntilClean > 0 && secondsUntilClean <= cd) {
+            broadcastActionBarCountdown(secondsUntilClean);
         }
     }
 
@@ -97,6 +114,16 @@ public final class ClearLagModule extends AbstractModule {
                 .replace("{seconds}", String.valueOf(seconds)));
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.sendMessage(msg);
+        }
+    }
+
+    /** Live per-second action-bar countdown with MiniMessage formatting. */
+    private void broadcastActionBarCountdown(int seconds) {
+        String template = config().getString("messages.actionbar",
+                "<bold><gradient:#ff512f:#dd2476>CLEAR LAG</gradient></bold> "
+                        + "<gray>in</gray> <bold><yellow>{seconds}s</yellow></bold>");
+        var msg = Text.mm(template.replace("{seconds}", String.valueOf(seconds)));
+        for (Player p : Bukkit.getOnlinePlayers()) {
             p.sendActionBar(msg);
         }
     }

@@ -38,3 +38,10 @@ enforcement:
 #     limits:
 #       hostile: 60
 per-world: {}
+
+# Tell the nearest player when their spawn is blocked by a limit. Only fires for
+# player-driven spawns (breeding, spawn eggs) so natural spawns don't spam.
+notify:
+  enabled: true
+  # Where to show it: actionbar or chat.
+  where: actionbar

@@ -15,6 +15,11 @@ pickup:
   no-hostile-perm: "<red>You can't pick up hostile mobs.</red>"
   no-mob-perm: "<red>You can't pick up this type of mob.</red>"
 
+# Mob limiter feedback. Tokens: {scope} (category or "total"), {count}, {limit}.
+# MiniMessage: <bold>, <gradient>, <#hex> etc. all work.
+limiter:
+  reached: "<red><bold>Mob limit reached</bold></red> <gray>({scope}: {count}/{limit}) — this area is full.</gray>"
+
 command:
   # Shown when an unknown sub-command is typed. {input} = what was typed.
   unknown: "<red>Unknown command:</red> <yellow>{input}</yellow><red>. Try</red> <white>/umccore help</white><red>.</red>"

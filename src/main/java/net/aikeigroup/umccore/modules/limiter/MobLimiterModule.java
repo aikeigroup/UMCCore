@@ -68,7 +68,58 @@ public final class MobLimiterModule extends AbstractModule {
 
             if ((overCategory || overTotal) && shouldCancel()) {
                 event.setCancelled(true);
+                // Tell a nearby player why their spawn was blocked (e.g. breeding
+                // or a spawn egg), so a full area doesn't feel like a silent bug.
+                notifyLimitReached(event, category,
+                        overCategory ? categoryCount : totalCount,
+                        overCategory ? limit : totalLimit,
+                        overCategory);
             }
+        }
+    }
+
+    /** Notifies the nearest player (if any) that a mob limit blocked this spawn. */
+    private void notifyLimitReached(CreatureSpawnEvent event, Category category,
+                                    int count, int limit, boolean perCategory) {
+        if (!config().getBoolean("notify.enabled", true)) {
+            return;
+        }
+        // Only bother for player-driven spawns; natural spawns happen constantly
+        // and would spam. Breeding and spawn eggs are the ones a player expects.
+        switch (event.getSpawnReason()) {
+            case BREEDING, EGG, SPAWNER_EGG, DISPENSE_EGG -> { }
+            default -> { return; }
+        }
+
+        double radius = config().getInt("radius", 8) + 4;
+        org.bukkit.entity.Player nearest = null;
+        double best = Double.MAX_VALUE;
+        for (org.bukkit.entity.Player p : event.getLocation().getWorld().getPlayers()) {
+            double d = p.getLocation().distanceSquared(event.getLocation());
+            if (d <= radius * radius && d < best) {
+                best = d;
+                nearest = p;
+            }
+        }
+        if (nearest == null) {
+            return;
+        }
+
+        String scope = perCategory ? category.name().toLowerCase(Locale.ROOT) : "total";
+        String template = plugin.configs().messages().getString("limiter.reached",
+                "<red><bold>Mob limit reached</bold></red> <gray>({scope}: {count}/{limit}) — "
+                        + "spawn blocked here.</gray>");
+        String out = template
+                .replace("{scope}", scope)
+                .replace("{count}", String.valueOf(count))
+                .replace("{limit}", String.valueOf(limit));
+
+        String where = config().getString("notify.where", "actionbar").toLowerCase(Locale.ROOT);
+        var comp = net.aikeigroup.umccore.util.Text.mm(out);
+        if (where.equals("chat")) {
+            nearest.sendMessage(comp);
+        } else {
+            nearest.sendActionBar(comp);
         }
     }
 

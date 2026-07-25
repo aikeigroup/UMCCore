@@ -55,7 +55,17 @@ protect:
   # Only clean entities in chunks that have no player nearby.
   playerless-chunks-only: false
 
+# Show a live per-second action-bar countdown during the final N seconds before
+# a cleanup (0 = off). Separate from the chat warn marks above.
+actionbar-countdown-seconds: 10
+
 # Message tokens: {count} = entities removed, {seconds} = time remaining.
+# All messages use MiniMessage, so <bold>, <gradient:#a:#b>, <#hex>, <rainbow>,
+# <italic>, etc. all work to make them eye-catching.
 messages:
-  warn: "<gray>Clearing ground entities in <yellow>{seconds}s</yellow>...</gray>"
-  done: "<green>Removed <yellow>{count}</yellow> entities.</green>"
+  # Chat warning at each warn-at-seconds mark.
+  warn: "<gray>Clearing ground entities in <yellow><bold>{seconds}s</bold></yellow>...</gray>"
+  # Live action-bar countdown (shown every second in the final stretch).
+  actionbar: "<bold><gradient:#ff512f:#dd2476>CLEAR LAG</gradient></bold> <gray>in</gray> <bold><yellow>{seconds}s</yellow></bold>"
+  # Sent in chat after a cleanup finishes.
+  done: "<green>Removed <yellow><bold>{count}</bold></yellow> entities.</green>"
