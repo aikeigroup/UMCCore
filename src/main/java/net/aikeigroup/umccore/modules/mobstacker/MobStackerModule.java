@@ -130,6 +130,7 @@ public final class MobStackerModule extends AbstractModule {
 
         listen(new DeathListener());
         listen(new BreedListener());
+        listen(new WoolRegrowListener());
         if (splitOnInteract || unstackToolEnabled) {
             listen(new InteractListener());
         }
@@ -218,6 +219,55 @@ public final class MobStackerModule extends AbstractModule {
                 markNoMerge(baby);
             }
         }
+    }
+
+    /**
+     * When a stacked, sheared sheep eats grass and regrows its wool, only ONE
+     * sheep of the stack should become woolly — not the whole stack. Otherwise a
+     * player could shear the re-woolled representative and get wool times the
+     * stack size (a duplication exploit), and the visible state would be wrong.
+     * So we peel one sheep off (it keeps the regrown wool) and leave the rest
+     * sheared, mirroring the split-on-interact behaviour.
+     */
+    private final class WoolRegrowListener implements Listener {
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onRegrow(org.bukkit.event.entity.SheepRegrowWoolEvent event) {
+            org.bukkit.entity.Sheep sheep = event.getEntity();
+            int size = sizeOf(sheep);
+            if (size <= 1) {
+                return; // single sheep — nothing special to do
+            }
+            // Peel one off: this sheep (about to be woolly) becomes a single
+            // sheep; the remaining (size-1) split off as a still-sheared stack.
+            setSize(sheep, 1);
+            refreshName(sheep);
+            markNoMerge(sheep);
+            splitShearedRemainder(sheep, size - 1);
+        }
+    }
+
+    /**
+     * Spawns a stack of {@code remaining} sheared sheep next to a sheep that was
+     * peeled off when its wool regrew, preserving colour and age.
+     */
+    private void splitShearedRemainder(org.bukkit.entity.Sheep from, int remaining) {
+        if (remaining <= 0) {
+            return;
+        }
+        World world = from.getWorld();
+        var loc = from.getLocation();
+        org.bukkit.DyeColor color = from.getColor();
+        boolean baby = !from.isAdult();
+        runLaterTracked(() -> {
+            Entity spawned = world.spawnEntity(loc, EntityType.SHEEP);
+            if (spawned instanceof org.bukkit.entity.Sheep newStack) {
+                newStack.setSheared(true);        // the remainder stays sheared
+                if (color != null) newStack.setColor(color);
+                if (baby) newStack.setBaby();
+                setSize(newStack, remaining);
+                refreshName(newStack);
+            }
+        }, 1L);
     }
 
     // --- Death handling ----------------------------------------------------

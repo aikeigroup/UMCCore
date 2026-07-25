@@ -101,6 +101,12 @@
 
 ---
 
+## Sheep wool regrow (v1.0.6)
+- **Bulu sheep tumbuh lagi** — saat sheep sheared di stack makan rumput (`SheepRegrowWoolEvent`),
+  tanpa handler si representative jadi woolly mewakili N → cukur dapat wool xN (**eksploit
+  duplikasi**) + state salah. Fix: kupas 1 sheep (jadi woolly single), sisanya tetap stack sheared.
+  `match-state` mencegah re-merge. Jadi hanya 1 yang berbulu, cukur = 1 wool. Warna & umur disalin.
+
 ## Breeding & grow edge cases (v1.0.6)
 - **Love mode** — mob yang sedang love mode (diberi item breeding, nunggu pasangan) tidak di-merge
   (`Animals.isLoveMode()` di `canStack`). Tanpa ini, merge menghapus status love → breeding gagal.
