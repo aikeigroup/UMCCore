@@ -24,9 +24,32 @@ import java.util.List;
  */
 public final class ClearLagModule extends AbstractModule {
 
+    /**
+     * Entity types that should never be cleared by default — the important,
+     * hard-to-replace mobs (traders/NPCs, golems, bosses, mounts, pets, etc.).
+     * Admins extend this via {@code protect.blacklist-types} or turn off the
+     * built-in list with {@code protect.use-default-blacklist}.
+     */
+    private static final java.util.Set<String> DEFAULT_BLACKLIST = java.util.Set.of(
+            // Trading / utility NPCs
+            "villager", "zombie_villager", "wandering_trader",
+            // Golems / helpers
+            "iron_golem", "snow_golem", "allay",
+            // Bosses & unique
+            "ender_dragon", "wither", "elder_guardian", "warden",
+            // Mounts / pack animals
+            "horse", "donkey", "mule", "llama", "trader_llama",
+            "skeleton_horse", "zombie_horse", "camel", "strider", "happy_ghast",
+            // Special / valuable
+            "sniffer", "creaking", "shulker"
+    );
+
     private int intervalSeconds;
     private List<Integer> warnAt;
     private int secondsUntilClean;
+
+    private boolean useDefaultBlacklist;
+    private List<String> blacklist;
 
     /**
      * The mob stacker's PDC key ({@code umccore:stack_size}). A mob carrying it
@@ -45,6 +68,9 @@ public final class ClearLagModule extends AbstractModule {
         warnAt = config().getIntegerList("warn-at-seconds");
         secondsUntilClean = intervalSeconds;
         stackKey = new org.bukkit.NamespacedKey(plugin, "stack_size");
+        useDefaultBlacklist = config().getBoolean("protect.use-default-blacklist", true);
+        blacklist = config().getStringList("protect.blacklist-types").stream()
+                .map(s -> s.toLowerCase(java.util.Locale.ROOT)).toList();
 
         // One-second heartbeat drives both the countdown and the cleanup.
         track(scheduler.runTimer(this::tick, 20L, 20L));
@@ -147,6 +173,12 @@ public final class ClearLagModule extends AbstractModule {
 
     private boolean isProtected(Entity e) {
         if (e instanceof Player) return true;
+
+        // Type blacklist: never clear these mob types (villagers, bosses,
+        // mounts, pets, etc.). Admin list + built-in default unless opted out.
+        String type = e.getType().name().toLowerCase(java.util.Locale.ROOT);
+        if (blacklist.contains(type)) return true;
+        if (useDefaultBlacklist && DEFAULT_BLACKLIST.contains(type)) return true;
 
         // Custom-name protection is meant for named MOBS/entities the owner wants
         // to keep. It must NOT protect:

@@ -101,6 +101,14 @@
 
 ---
 
+## ClearLagg type blacklist (v1.0.9)
+- **Blacklist tipe di clearlag** — `protect.blacklist-types` + `protect.use-default-blacklist`.
+  Default melindungi villager/zombie_villager/trader, golem/allay, boss, mount, sniffer/shulker/
+  creaking dari clearlag. Admin bisa tambah tipe sendiri.
+- **Konfirmasi**: end_crystal, item_frame, painting, armor_stand, minecart, boat, dll masuk
+  kategori OTHER → memang TIDAK PERNAH dihapus clearlag (by design). Yang dihapus hanya kategori
+  yang di-toggle: dropped-items, hostile-mobs, passive-mobs, projectiles, experience-orbs.
+
 ## Pickup per-mob permission (v1.0.8)
 - **Permission per jenis mob** — opsi `per-mob-permission` (pickup.yml). Kalau true, pemain juga
   butuh `umccore.pickup.mob.<type>` (mis. `umccore.pickup.mob.cow`) untuk mob spesifik. Wildcard

@@ -23,6 +23,18 @@ remove:
 
 # Never remove entities matching these protections.
 protect:
+  # Extra entity types to never clear (Bukkit EntityType names, lowercase),
+  # e.g. [cow, pig]. Adds to the built-in default list below.
+  blacklist-types: []
+  # Use the built-in default blacklist of important mobs that are never cleared:
+  #   villager, zombie_villager, wandering_trader   (trades)
+  #   iron_golem, snow_golem, allay                 (helpers)
+  #   ender_dragon, wither, elder_guardian, warden  (bosses)
+  #   horse, donkey, mule, llama, trader_llama, camel, strider, happy_ghast,
+  #     skeleton_horse, zombie_horse                (mounts)
+  #   sniffer, creaking, shulker                    (special/valuable)
+  # Set false to manage the blacklist yourself via blacklist-types above.
+  use-default-blacklist: true
   # Mobs with a name tag / custom name (does NOT protect stacked item drops).
   custom-named: true
   # Tamed pets (wolves, cats, horses, parrots...).
