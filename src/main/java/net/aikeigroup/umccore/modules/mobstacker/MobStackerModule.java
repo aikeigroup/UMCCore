@@ -17,6 +17,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
@@ -47,9 +49,10 @@ public final class MobStackerModule extends AbstractModule {
             "iron_golem", "snow_golem", "allay",
             // Bosses & unique
             "ender_dragon", "wither", "elder_guardian", "warden",
-            // Rideable mounts / pack animals
+            // Rideable mounts / pack animals (a stacked mount can't be ridden)
             "horse", "donkey", "mule", "llama", "trader_llama",
             "skeleton_horse", "zombie_horse", "camel", "strider", "pig",
+            "happy_ghast",
             // Sensitive / special-behaviour mobs
             "sniffer", "creaking", "shulker", "ravager"
     );
@@ -68,6 +71,16 @@ public final class MobStackerModule extends AbstractModule {
     private boolean protectEquipped;
     private boolean protectPersistent;
     private boolean matchAge;
+    private boolean splitOnInteract;
+    private int splitCooldownMs;
+
+    /**
+     * Mobs recently peeled off a stack by interaction, mapped to the time until
+     * which they must NOT be re-merged. Without this, the merge scan would
+     * instantly re-stack a sheep the player just split off to shear it.
+     */
+    private final java.util.Map<java.util.UUID, Long> noMergeUntil =
+            new java.util.concurrent.ConcurrentHashMap<>();
 
     public MobStackerModule() {
         super("mobstacker");
@@ -99,8 +112,20 @@ public final class MobStackerModule extends AbstractModule {
             return;
         }
 
+        splitOnInteract = config().getBoolean("mob-stacker.split-on-interact", true);
+        splitCooldownMs = Math.max(0, config().getInt("mob-stacker.split-cooldown-seconds", 5)) * 1000;
+
         listen(new DeathListener());
+        if (splitOnInteract) {
+            listen(new InteractListener());
+        }
         track(scheduler.runTimer(this::scanAll, scanInterval, scanInterval));
+    }
+
+    @Override
+    protected void disable() {
+        // Clear transient split cooldowns so a reload starts clean.
+        noMergeUntil.clear();
     }
 
     // --- Merge scan --------------------------------------------------------
@@ -194,6 +219,69 @@ public final class MobStackerModule extends AbstractModule {
         }
     }
 
+    // --- Interaction handling ---------------------------------------------
+
+    /**
+     * When a player interacts with a stacked mob (shear a sheep, milk a cow,
+     * dye/name/breed/leash it, etc.), vanilla only ever affects the single
+     * representative entity — so a stack of 64 sheep would yield wool once and
+     * then get stuck. To keep interactions behaving per-mob, we peel ONE mob off
+     * the stack the instant it is clicked: the clicked entity becomes a normal
+     * size-1 mob (so vanilla runs on it as usual), and a new stack of the
+     * remaining (size-1) is spawned alongside it. Interacting repeatedly thus
+     * works through the stack one mob at a time, exactly like unstacked mobs.
+     */
+    private final class InteractListener implements Listener {
+        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+        public void onInteract(PlayerInteractEntityEvent event) {
+            // Only handle one hand to avoid double-processing.
+            if (event.getHand() != EquipmentSlot.HAND) {
+                return;
+            }
+            if (!(event.getRightClicked() instanceof Mob mob)) {
+                return;
+            }
+            int size = sizeOf(mob);
+            if (size <= 1) {
+                return; // not a stack — vanilla behaviour is already correct
+            }
+            // Peel one off: the clicked mob becomes a single mob, and the rest
+            // (size-1) split into a fresh stack. Vanilla then processes the
+            // click on the now-single mob normally. Mark the peeled mob so the
+            // merge scan doesn't instantly re-stack it while the player is still
+            // interacting with it.
+            setSize(mob, 1);
+            refreshName(mob);
+            markNoMerge(mob);
+            splitRemainder(mob, size - 1);
+        }
+    }
+
+    /**
+     * Spawns a fresh stack of {@code remaining} mobs of the same type next to a
+     * mob that was just peeled off. Copies age so a baby stack stays babies.
+     */
+    private void splitRemainder(Mob from, int remaining) {
+        if (remaining <= 0) {
+            return;
+        }
+        World world = from.getWorld();
+        var loc = from.getLocation();
+        EntityType type = from.getType();
+        boolean baby = from instanceof org.bukkit.entity.Ageable ag && !ag.isAdult();
+        // Next tick so we don't spawn mid-interaction processing.
+        runLaterTracked(() -> {
+            Entity spawned = world.spawnEntity(loc, type);
+            if (spawned instanceof Mob newStack) {
+                if (baby && newStack instanceof org.bukkit.entity.Ageable ag) {
+                    ag.setBaby();
+                }
+                setSize(newStack, remaining);
+                refreshName(newStack);
+            }
+        }, 1L);
+    }
+
     private void respawnRemainder(Mob dead, int remaining) {
         World world = dead.getWorld();
         var loc = dead.getLocation();
@@ -214,6 +302,10 @@ public final class MobStackerModule extends AbstractModule {
 
     private boolean canStack(Mob mob) {
         String type = mob.getType().name().toLowerCase(Locale.ROOT);
+
+        // Recently peeled off a stack by interaction — leave it alone for a bit
+        // so the player can shear/milk/breed it without it re-stacking.
+        if (isOnSplitCooldown(mob)) return false;
 
         // Whitelist wins: if set, only listed types stack.
         if (!whitelist.isEmpty() && !whitelist.contains(type)) return false;
@@ -247,6 +339,26 @@ public final class MobStackerModule extends AbstractModule {
         // items) are typically special — protect them from stacking.
         if (protectEquipped && hasEquipment(mob)) return false;
 
+        return true;
+    }
+
+    /** Marks a mob so the merge scan won't re-stack it until the cooldown ends. */
+    private void markNoMerge(Mob mob) {
+        if (splitCooldownMs > 0) {
+            noMergeUntil.put(mob.getUniqueId(), System.currentTimeMillis() + splitCooldownMs);
+        }
+    }
+
+    /** @return true if the mob is still within its post-split no-merge window. */
+    private boolean isOnSplitCooldown(Mob mob) {
+        Long until = noMergeUntil.get(mob.getUniqueId());
+        if (until == null) {
+            return false;
+        }
+        if (System.currentTimeMillis() >= until) {
+            noMergeUntil.remove(mob.getUniqueId()); // expired; clean up
+            return false;
+        }
         return true;
     }
 

@@ -101,6 +101,15 @@
 
 ---
 
+## Interaksi mob stack (v1.0.5)
+- **Interact mob stack cuma proses 1 mob** (mis. cukur sheep stack → 1 wool lalu stuck) — karena
+  stack = 1 entity, vanilla cuma memproses si representative. Fix: **split-on-interact**. Saat
+  `PlayerInteractEntityEvent`, kupas 1 mob dari stack (mob yang diklik jadi size 1, sisanya
+  spawn jadi stack baru); vanilla lalu jalan normal di mob single itu. Berlaku universal:
+  cukur/perah/warnai/breed/leash/nametag. Ada `split-cooldown-seconds` (default 5s) supaya mob
+  yang baru dikupas tak langsung ter-merge lagi saat masih diinteraksi. Umur (baby/adult) ikut disalin.
+- **happy_ghast** ditambahkan ke default blacklist (rideable, tak boleh stack).
+
 ## ClearLagg vs mob stack (v1.0.4)
 - **Mob ter-stack tidak ter-clear** — mob stack punya custom name ("{type} x{amount}"), dan
   `protect.custom-named` melindungi semua entity bernama → stack tak pernah kehapus (sama seperti
