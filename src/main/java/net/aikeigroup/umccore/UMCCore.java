@@ -6,6 +6,12 @@ import net.aikeigroup.umccore.core.MessageManager;
 import net.aikeigroup.umccore.core.ModuleManager;
 import net.aikeigroup.umccore.core.ReloadService;
 import net.aikeigroup.umccore.integrations.IntegrationManager;
+import net.aikeigroup.umccore.modules.clearlag.ClearLagModule;
+import net.aikeigroup.umccore.modules.itemstacker.ItemStackerModule;
+import net.aikeigroup.umccore.modules.limiter.MobLimiterModule;
+import net.aikeigroup.umccore.modules.mobstacker.MobStackerModule;
+import net.aikeigroup.umccore.modules.mobxp.MobXpModule;
+import net.aikeigroup.umccore.modules.performance.PerformanceModule;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -65,9 +71,16 @@ public final class UMCCore extends JavaPlugin {
      * modules yet; later milestones add stacker, clearlag, discord, ui, etc.
      */
     private void registerModules() {
-        // modules().register(new MobStackerModule());
-        // modules().register(new ClearLagModule());
-        // ... added in M2+.
+        // M2 — Performance & optimization. Order matters for enable/disable:
+        // performance first (others may reference it), stackers before mobxp so
+        // death handling composes predictably.
+        modules().register(new PerformanceModule());
+        modules().register(new MobStackerModule());
+        modules().register(new ItemStackerModule());
+        modules().register(new MobLimiterModule());
+        modules().register(new MobXpModule());
+        modules().register(new ClearLagModule());
+        // UI, action bar, and Discord modules are added in M3–M5.
     }
 
     private void registerCommands() {

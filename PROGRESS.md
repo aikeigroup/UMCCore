@@ -3,7 +3,7 @@
 > Status pengerjaan per-milestone & per-fitur. **Selalu update file ini setiap ada
 > perubahan.** Legend: ✅ selesai · 🚧 sedang dikerjakan · ⬜ belum · ⚠️ butuh perhatian.
 
-**Last updated:** 2026-07-25
+**Last updated:** 2026-07-25 (M2 selesai)
 **Target:** Paper 26.2 · Java 21 · Maven · package `net.aikeigroup.umccore`
 
 ---
@@ -28,18 +28,21 @@
 
 ---
 
-## Milestone M2 — Performance & Optimisasi ⬜
+## Milestone M2 — Performance & Optimisasi ✅ (build hijau)
 
-| Status | Item |
-|---|---|
-| ⬜ | Performance monitor (MSPT/TPS/RAM) + auto-optimize triggers |
-| ⬜ | `Scheduler` util (Folia-aware wrapper) |
-| ⬜ | Mob Stacker (`StackMergeEvent`, `StackKillEvent`) |
-| ⬜ | Item Drop Stacker |
-| ⬜ | ClearLagg (countdown, whitelist, kategori) |
-| ⬜ | Mob Limiter per-chunk/radius |
-| ⬜ | Mob XP & Drop control |
-| ⬜ | Subcommand: `perf`, `clearlag`, `stack`, `module` |
+| Status | Item | Catatan |
+|---|---|---|
+| ✅ | `AbstractModule` + `Scheduler` | Base leak-free: track task/listener, auto-cleanup di onDisable, `runLaterTracked` self-removing. Scheduler defensif Folia. |
+| ✅ | Performance monitor (MSPT/TPS/RAM) + auto-optimize | `ServerStats` snapshot atomic, sampling interval, trigger notify-staff / clearlag-light. |
+| ✅ | Mob Stacker (`StackMergeEvent`, `StackKillEvent`) | Ukuran stack di PDC, merge scan, display name, kill-one/kill-all + multiplier loot/XP, proteksi named/tamed/leashed, black/whitelist. |
+| ✅ | Item Drop Stacker | Merge item ground metadata-aware, label jumlah, interval scan. |
+| ✅ | ClearLagg (countdown, whitelist, kategori) | Countdown broadcast+actionbar, kategori toggle, proteksi, playerless-chunks, `runCleanup(light)`. |
+| ✅ | Mob Limiter per-chunk/radius | CreatureSpawnEvent cancel, kategori hostile/passive/ambient + total, hard/soft, per-world, filter spawn-source. |
+| ✅ | Mob XP & Drop control | Multiplier global+per-type, require-player-kill, no-xp-from-spawners (tag PDC spawn-reason). |
+| ✅ | Subcommand: `perf`, `clearlag`, `stack`, `module` | Tab completion + permission-aware; `module` bisa enable/disable runtime. |
+| ✅ | Build verify | `mvn package` → jar 39 kelas. |
+
+**Catatan uji:** kompilasi & packaging OK. Uji runtime di server Paper 26.2 asli belum dilakukan (butuh server) — direncanakan di M6 (testing beban).
 
 ## Milestone M3 — UI System ⬜
 

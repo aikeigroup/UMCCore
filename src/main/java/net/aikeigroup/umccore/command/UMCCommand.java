@@ -1,8 +1,12 @@
 package net.aikeigroup.umccore.command;
 
 import net.aikeigroup.umccore.UMCCore;
+import net.aikeigroup.umccore.command.subcommands.ClearLagCommand;
 import net.aikeigroup.umccore.command.subcommands.HelpCommand;
+import net.aikeigroup.umccore.command.subcommands.ModuleCommand;
+import net.aikeigroup.umccore.command.subcommands.PerfCommand;
 import net.aikeigroup.umccore.command.subcommands.ReloadCommand;
+import net.aikeigroup.umccore.command.subcommands.StackCommand;
 import net.aikeigroup.umccore.command.subcommands.VersionCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -40,6 +44,11 @@ public final class UMCCommand implements CommandExecutor, TabCompleter {
         register(new HelpCommand(this));
         register(new ReloadCommand());
         register(new VersionCommand());
+        // M2 — performance & optimization.
+        register(new PerfCommand());
+        register(new ClearLagCommand());
+        register(new StackCommand());
+        register(new ModuleCommand());
     }
 
     /** Registers a sub-command under its name and each alias. */

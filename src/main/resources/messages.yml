@@ -22,3 +22,24 @@ reload:
   success: "<green>Reload complete.</green> <gray>{modules} module(s) active in {ms}ms.</gray>"
   # Sent on failure. {error} = the error message.
   failure: "<red>Reload failed:</red> <gray>{error}</gray> <red>See console for details.</red>"
+
+perf:
+  # Shown when /umccore perf is used but the performance module is disabled.
+  disabled: "<red>The performance module is disabled.</red>"
+
+clearlag:
+  # Shown when /umccore clearlag is used but the clearlag module is disabled.
+  disabled: "<red>The clearlag module is disabled.</red>"
+  # Result of a manual cleanup. {count} = entities removed.
+  manual: "<green>Cleanup complete.</green> <gray>Removed <yellow>{count}</yellow> entities.</gray>"
+
+module:
+  # Correct usage hint for /umccore module.
+  usage: "<gray>Usage:</gray> <white>/umccore module <list|enable|disable> [name]</white>"
+  # {name} = module id that does not exist.
+  unknown: "<red>Unknown module:</red> <yellow>{name}</yellow>"
+  # {name} = module just enabled/disabled.
+  enabled: "<green>Enabled module</green> <yellow>{name}</yellow><green>.</green>"
+  disabled: "<green>Disabled module</green> <yellow>{name}</yellow><green>.</green>"
+  # {name} = module, {state} = its current state (active/inactive).
+  already: "<yellow>{name}</yellow> <gray>is already {state}.</gray>"
