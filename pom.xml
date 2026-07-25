@@ -13,8 +13,8 @@
     <description>All-in-one performance, optimization, and cross-platform UI core for Minecraft servers.</description>
 
     <properties>
-        <java.version>21</java.version>
-        <maven.compiler.release>21</maven.compiler.release>
+        <java.version>25</java.version>
+        <maven.compiler.release>25</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Paper API for Minecraft 26.2 (new build-numbered scheme) -->
         <paper.version>26.2.build.65-beta</paper.version>
@@ -112,30 +112,9 @@
                 <version>3.13.0</version>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.6.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <!-- Adventure/MiniMessage ships with Paper, so nothing to relocate yet.
-                                 Kept here so future shaded libs are relocated under our namespace. -->
-                            <relocations>
-                                <relocation>
-                                    <pattern>net.aikeigroup.umccore.libs</pattern>
-                                    <shadedPattern>net.aikeigroup.umccore.libs</shadedPattern>
-                                </relocation>
-                            </relocations>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+            <!-- No shade plugin: every dependency is 'provided' (supplied by the
+                 server at runtime), so nothing is bundled. The plain jar from
+                 the jar plugin is the final artifact. -->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

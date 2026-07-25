@@ -4,7 +4,7 @@
 > perubahan.** Legend: ✅ selesai · 🚧 sedang dikerjakan · ⬜ belum · ⚠️ butuh perhatian.
 
 **Last updated:** 2026-07-25 (M6 selesai — semua milestone inti selesai)
-**Target:** Paper 26.2 · Java 21 · Maven · package `net.aikeigroup.umccore`
+**Target:** Paper 26.2 · Java 25 · Maven · package `net.aikeigroup.umccore`
 
 ---
 
@@ -101,6 +101,12 @@
 
 ---
 
+## Build/CI fixes (post-M6)
+- **JDK 25 wajib** (lihat catatan teknis di bawah). pom + kedua workflow diset ke Java 25.
+- **maven-shade-plugin dihapus** — semua dependency `provided` (tidak ada yang di-bundle), dan
+  shade 3.6.0 tak bisa membaca bytecode Java 25. Artifact final = jar biasa dari jar plugin
+  (tak ada lagi `original-*.jar`).
+
 ## Sisa / Catatan
 - **Testing runtime di server Paper 26.2 asli** belum dilakukan (environment ini tak menjalankan server). Semua milestone lolos compile + package.
 - Floodgate form path (fallback Bedrock non-Dialog) belum diimplementasi — tidak diperlukan di 26.2 karena Dialog API sudah native lintas platform. Disediakan sebagai opsi masa depan.
@@ -110,5 +116,7 @@
 ## Catatan / Keputusan Teknis
 - **Versi Minecraft 26.2** dikonfirmasi sebagai release stabil terbaru (skema year-based). Dialog API native.
 - Build system **Maven** (Gradle tidak terpasang di environment).
-- Java compile target **21** (server berjalan di Java 21+; environment build Java 26).
+- Java compile target **25** — paper-api 26.2 dikompilasi ke bytecode Java 25 (major version 69),
+  jadi build **wajib** JDK 25+. CI (GitHub Actions) memakai temurin 25. (Sebelumnya keliru set 21 →
+  CI gagal "wrong version 69.0, should be 65.0"; sudah diperbaiki.)
 - Action bar: requirement khusus → **setiap pergantian/perubahan harus animatif**, tidak ada hard cut.

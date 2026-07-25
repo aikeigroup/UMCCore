@@ -8,7 +8,7 @@
 | Base Package | `net.aikeigroup.umccore` |
 | Platform Target | Paper / Purpur (Bukkit API) |
 | Versi Minecraft | **26.2** (target utama, release stabil terbaru) — Dialog API tersedia native |
-| Java Version | Java 21 |
+| Java Version | Java 25 (Minecraft/Paper 26.2 dikompilasi ke bytecode Java 25) |
 | Build System | Gradle (Kotlin DSL) atau Maven |
 | Tipe | All-in-one Performance + Optimization + UI Core |
 | Tanggal | 2026-07-25 |

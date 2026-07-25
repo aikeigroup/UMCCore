@@ -27,7 +27,7 @@
 
 ## Teknis
 
-- Target **Paper 26.2**, **Java 21**, build **Maven**.
+- Target **Paper 26.2**, **Java 25** (paper-api 26.2 = bytecode Java 25/major 69), build **Maven**.
 - Package root: `net.aikeigroup.umccore`.
 - Teks pakai **MiniMessage** via `util/Text`.
 - Build: `mvn package` → `target/UMCCore-<version>.jar`.

@@ -2,7 +2,7 @@
 
 All-in-one **performance, optimization, and cross-platform UI core** for Minecraft servers.
 
-Targets **Paper 26.2** · **Java 21** · built with **Maven**.
+Targets **Paper 26.2** · **Java 25** · built with **Maven**.
 
 UMCCore replaces a stack of separate plugins (clearlag + stackers + a Discord status bot +
 a menu plugin) with one structured, documented, permission-safe core.
@@ -44,7 +44,7 @@ Every feature can be disabled in `config.yml` under `modules.<name>: false`.
 ### Requirements
 
 - Paper (or a fork) for **Minecraft 26.2**.
-- Java 21+.
+- Java 25+ (required by Minecraft/Paper 26.2).
 
 ---
 
