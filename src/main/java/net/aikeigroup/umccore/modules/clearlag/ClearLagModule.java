@@ -41,7 +41,11 @@ public final class ClearLagModule extends AbstractModule {
             "horse", "donkey", "mule", "llama", "trader_llama",
             "skeleton_horse", "zombie_horse", "camel", "strider", "happy_ghast",
             // Special / valuable
-            "sniffer", "creaking", "shulker"
+            "sniffer", "creaking", "shulker",
+            // Player-attached projectiles — a fishing bobber is a Projectile, so
+            // it falls in the PROJECTILE category and would be cleared while a
+            // player is actively fishing. Never clear it.
+            "fishing_bobber"
     );
 
     private int intervalSeconds;

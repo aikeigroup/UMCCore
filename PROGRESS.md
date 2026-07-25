@@ -3,7 +3,7 @@
 > Status pengerjaan per-milestone & per-fitur. **Selalu update file ini setiap ada
 > perubahan.** Legend: ✅ selesai · 🚧 sedang dikerjakan · ⬜ belum · ⚠️ butuh perhatian.
 
-**Last updated:** 2026-07-25 (M6 selesai — semua milestone inti selesai)
+**Last updated:** 2026-07-25 (fix: clearlag tak lagi membuang pelampung pancing)
 **Target:** Paper 26.2 · Java 25 · Maven · package `net.aikeigroup.umccore`
 
 ---
@@ -240,6 +240,10 @@
   TYPEWRITER→FADE 12→20 frame (~1s) supaya kalem & tidak mengganggu.
 - **Notif clearlag hanya < 1 menit** — warning hanya muncul saat sisa < 60 detik (mark 60+
   diabaikan); default `warn-at-seconds` jadi [30,10,5,3,2,1].
+- **ClearLagg membuang umpan/pelampung pancing** — `FISHING_BOBBER` adalah `Projectile`, jadi
+  masuk kategori PROJECTILE dan ikut terhapus saat pemain sedang memancing (`remove.projectiles`
+  default true). Fix: `fishing_bobber` ditambahkan ke `DEFAULT_BLACKLIST`. Bisa juga di-blacklist
+  manual via `protect.blacklist-types: [fishing_bobber]` tanpa update jar.
 
 ## Build/CI fixes (post-M6)
 - **JDK 25 wajib** (lihat catatan teknis di bawah). pom + kedua workflow diset ke Java 25.

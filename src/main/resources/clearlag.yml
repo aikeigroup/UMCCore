@@ -33,6 +33,7 @@ protect:
   #   horse, donkey, mule, llama, trader_llama, camel, strider, happy_ghast,
   #     skeleton_horse, zombie_horse                (mounts)
   #   sniffer, creaking, shulker                    (special/valuable)
+  #   fishing_bobber                                (active fishing lines)
   # Set false to manage the blacklist yourself via blacklist-types above.
   use-default-blacklist: true
   # Mobs with a name tag / custom name (does NOT protect stacked item drops).
