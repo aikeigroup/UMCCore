@@ -15,6 +15,7 @@ import net.aikeigroup.umccore.modules.actionbar.ActionBarModule;
 import net.aikeigroup.umccore.modules.discord.DiscordModule;
 import net.aikeigroup.umccore.modules.mobxp.MobXpModule;
 import net.aikeigroup.umccore.modules.performance.PerformanceModule;
+import net.aikeigroup.umccore.modules.pickup.MobPickupModule;
 import net.aikeigroup.umccore.modules.ui.UIModule;
 import net.aikeigroup.umccore.modules.update.UpdateModule;
 import net.aikeigroup.umccore.ui.ActionExecutor;
@@ -102,6 +103,7 @@ public final class UMCCore extends JavaPlugin {
         modules().register(new MobLimiterModule());
         modules().register(new MobXpModule());
         modules().register(new ClearLagModule());
+        modules().register(new MobPickupModule());
         // M3 — UI system.
         modules().register(new UIModule());
         // M4 — animated action bar.

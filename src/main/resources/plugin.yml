@@ -77,6 +77,12 @@ permissions:
   umccore.stacker.unstack:
     description: Use the unstack tool to break a mob stack apart.
     default: op
+  umccore.pickup.use:
+    description: Pick up and carry mobs on your head.
+    default: op
+  umccore.pickup.hostile:
+    description: Also pick up hostile mobs (requires umccore.pickup.use).
+    default: op
 
   # --- Commands --------------------------------------------------------------
   umccore.command.help:

@@ -555,7 +555,8 @@ public final class MobStackerModule extends AbstractModule {
             if (sa.isSheared() != sb.isSheared()) return false;
             if (sa.getColor() != sb.getColor()) return false;
         }
-        // Tameable (wolf/cat/parrot): don't merge tamed with wild.
+        // Tameable (wolf/cat/parrot): don't merge tamed with wild, and if tamed,
+        // keep different collar colours separate.
         if (a instanceof Tameable ta && b instanceof Tameable tb) {
             if (ta.isTamed() != tb.isTamed()) return false;
         }
@@ -563,6 +564,42 @@ public final class MobStackerModule extends AbstractModule {
         if (a instanceof org.bukkit.entity.MushroomCow ma
                 && b instanceof org.bukkit.entity.MushroomCow mb) {
             if (ma.getVariant() != mb.getVariant()) return false;
+        }
+        // Zombie villager mid-cure must not merge (would break the conversion).
+        if (a instanceof org.bukkit.entity.ZombieVillager za
+                && b instanceof org.bukkit.entity.ZombieVillager zb) {
+            if (za.isConverting() != zb.isConverting()) return false;
+        }
+        // Coloured collars (wolf/cat): keep different collar colours apart.
+        if (a instanceof org.bukkit.material.Colorable ca
+                && b instanceof org.bukkit.material.Colorable cb
+                && !(a instanceof org.bukkit.entity.Sheep)) {
+            if (ca.getColor() != cb.getColor()) return false;
+        }
+        // Slime / magma cube size must match (size affects drops & behaviour).
+        if (a instanceof org.bukkit.entity.Slime sla && b instanceof org.bukkit.entity.Slime slb) {
+            if (sla.getSize() != slb.getSize()) return false;
+        }
+        // Variant-based mobs: don't blur different variants together.
+        if (a instanceof org.bukkit.entity.Cat ca2 && b instanceof org.bukkit.entity.Cat cb2) {
+            if (ca2.getCatType() != cb2.getCatType()) return false;
+        }
+        if (a instanceof org.bukkit.entity.Fox fa && b instanceof org.bukkit.entity.Fox fb) {
+            if (fa.getFoxType() != fb.getFoxType()) return false;
+        }
+        if (a instanceof org.bukkit.entity.Axolotl aa && b instanceof org.bukkit.entity.Axolotl ab) {
+            if (aa.getVariant() != ab.getVariant()) return false;
+        }
+        if (a instanceof org.bukkit.entity.Frog fra && b instanceof org.bukkit.entity.Frog frb) {
+            if (fra.getVariant() != frb.getVariant()) return false;
+        }
+        if (a instanceof org.bukkit.entity.Wolf wa && b instanceof org.bukkit.entity.Wolf wb) {
+            if (wa.getVariant() != wb.getVariant()) return false;
+        }
+        // Chested pack animals (donkey/mule/llama): a chest = player storage.
+        if (a instanceof org.bukkit.entity.ChestedHorse cha
+                && b instanceof org.bukkit.entity.ChestedHorse chb) {
+            if (cha.isCarryingChest() != chb.isCarryingChest()) return false;
         }
         return true;
     }

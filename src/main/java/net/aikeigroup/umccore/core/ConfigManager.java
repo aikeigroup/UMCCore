@@ -36,7 +36,8 @@ public final class ConfigManager {
             "limiter",
             "mobxp",
             "actionbar",
-            "discord"
+            "discord",
+            "pickup"
     };
 
     private final UMCCore plugin;

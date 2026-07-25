@@ -1,0 +1,35 @@
+# ==========================================================================
+#  UMCCore — Mob Pickup (pickup.yml)
+#  Pick up a mob and carry it on your head, then drop it.
+#  Disable with modules.pickup: false in config.yml.
+#
+#  How to use (in game):
+#   - Sneak + right-click a mob (empty hand) to lift it onto your head.
+#   - Sneak + right-click again (on the mob, or air) to set it down in front.
+#  Requires permission umccore.pickup.use (hostile mobs also need
+#  umccore.pickup.hostile).
+# ==========================================================================
+
+# Require the player to be sneaking (shift) to pick up / drop. Recommended true
+# so normal right-click interactions (breeding, trading) aren't hijacked.
+require-sneak: true
+
+# Require an empty main hand to pick up (so held items still work normally).
+require-empty-hand: true
+
+# Which mob categories may be picked up.
+allow-passive: true
+allow-hostile: true
+
+# Optional: only pick up mobs at or below this health (0 = no limit). Useful to
+# stop players lifting full-health bosses/minibosses.
+max-health: 0
+
+# Mob types that can never be picked up (Bukkit EntityType names, lowercase).
+# Bosses and large mounts are good candidates.
+blacklist-types:
+  - ender_dragon
+  - wither
+  - warden
+  - ravager
+  - happy_ghast

@@ -7,6 +7,13 @@
 # Prefix prepended to most plugin messages.
 prefix: "<gray>[<gradient:#00c6ff:#0072ff>UMC</gradient>]</gray> "
 
+# Mob pickup action-bar feedback (no prefix; shown on the action bar).
+pickup:
+  picked: "<green>Picked up the mob. Sneak + right-click to drop.</green>"
+  dropped: "<gray>Dropped the mob.</gray>"
+  not-allowed: "<red>That mob can't be picked up.</red>"
+  no-hostile-perm: "<red>You can't pick up hostile mobs.</red>"
+
 command:
   # Shown when an unknown sub-command is typed. {input} = what was typed.
   unknown: "<red>Unknown command:</red> <yellow>{input}</yellow><red>. Try</red> <white>/umccore help</white><red>.</red>"

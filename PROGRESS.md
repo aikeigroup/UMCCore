@@ -101,6 +101,16 @@
 
 ---
 
+## State-match tambahan + Mob Pickup (v1.0.7)
+- **State-match diperluas** — zombie_villager mid-cure (isConverting), collar color (wolf/cat),
+  slime/magma size, varian cat/fox/axolotl/frog/wolf, chested pack animal (donkey/mule/llama
+  bawa chest). zombie_villager tetap di blacklist (tak bisa stack) sesuai keputusan user.
+- **Modul baru: Mob Pickup** (`modules.pickup`) — sneak+klik-kanan (tangan kosong) angkat mob ke
+  atas kepala (jadi passenger), sneak+klik lagi (mob/udara) untuk turunkan di depan. Permission
+  `umccore.pickup.use` + `umccore.pickup.hostile` untuk mob hostile. Config `pickup.yml`
+  (require-sneak, require-empty-hand, allow-passive/hostile, max-health, blacklist). Drop otomatis
+  saat quit. Boss/ravager/happy_ghast default di-blacklist.
+
 ## Sheep wool regrow (v1.0.6)
 - **Bulu sheep tumbuh lagi** — saat sheep sheared di stack makan rumput (`SheepRegrowWoolEvent`),
   tanpa handler si representative jadi woolly mewakili N → cukur dapat wool xN (**eksploit

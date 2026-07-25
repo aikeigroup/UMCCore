@@ -32,6 +32,8 @@ modules:
   ui: true
   # Self-updater: checks GitHub releases for a newer version.
   update: true
+  # Pick up and carry mobs on your head (permission-gated).
+  pickup: true
 
 # General plugin behaviour.
 general:
