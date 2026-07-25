@@ -9,8 +9,9 @@
 enabled: true
 
 # Ticks between animation frames. Lower = smoother but slightly more work.
-# 2 ticks (~10 fps) is a good balance for scrolling/gradient effects.
-frame-interval-ticks: 2
+# 1 tick (~20 fps) is the smoothest; 2 (~10 fps) is lighter. Default 1 for
+# smooth motion.
+frame-interval-ticks: 1
 
 # Players can hide their own action bar with /umccore actionbar toggle.
 allow-player-toggle: true
@@ -25,15 +26,18 @@ resolve-placeholders: true
 # ---------------------------------------------------------------------------
 rotation:
   # How long (in frames) each segment stays fully visible before transitioning.
-  hold-frames: 60
+  # At 1 tick/frame, 160 frames = 8 seconds per segment. Raise this if the
+  # rotation feels too frequent/distracting; lower it to cycle faster.
+  hold-frames: 160
   # Transition animation played between segments. Options:
   #   TYPEWRITER  - old text erased char-by-char, new text typed in
   #   SLIDE       - old text slides out, new text slides in
   #   FADE        - cross-fade using color interpolation
   #   WAVE        - characters ripple as they swap
-  transition: TYPEWRITER
-  # Frames the transition takes to complete.
-  transition-frames: 12
+  transition: FADE
+  # Frames the transition takes to complete. At 1 tick/frame, 20 = 1 second —
+  # a gentle, non-jarring change.
+  transition-frames: 20
 
 # The segments themselves. Each has a base text plus an in-segment animation
 # that runs continuously while the segment is displayed.

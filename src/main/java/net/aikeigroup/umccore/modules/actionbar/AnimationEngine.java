@@ -41,8 +41,10 @@ public final class AnimationEngine {
         }
         return switch (animation) {
             case NONE -> Text.mm(miniMessageText);
-            case RAINBOW -> Text.mm(perCharHue(plain, frame, 0, 360, 6));
-            case GRADIENT_SHIFT -> Text.mm(perCharHue(plain, frame, 190, 70, 5));
+            // Speeds are hue-degrees per frame. At ~20 fps these are kept low so
+            // the motion reads as smooth and calm, not strobing.
+            case RAINBOW -> Text.mm(perCharHue(plain, frame, 0, 360, 1.6));
+            case GRADIENT_SHIFT -> Text.mm(perCharHue(plain, frame, 190, 70, 1.4));
             case PULSE -> Text.mm(pulse(plain, frame));
             case SCROLL -> Text.mm(scroll(plain, frame, 40));
             case WAVE -> Text.mm(wave(plain, frame));
@@ -70,15 +72,16 @@ public final class AnimationEngine {
             case WAVE -> waveWipe(from, to, progress);
         };
         // Give the transition gentle motion colour so it always looks alive.
-        return Text.mm(perCharHue(out, frame, 200, 40, 4));
+        return Text.mm(perCharHue(out, frame, 200, 40, 1.2));
     }
 
     // --- Segment animations ------------------------------------------------
 
     private static String pulse(String plain, long frame) {
-        // Brightness oscillates between ~40% and 100% of white.
-        double t = (Math.sin(frame / 6.0) + 1) / 2; // 0..1
-        int v = (int) (110 + t * 145);              // 110..255
+        // Brightness oscillates between ~40% and 100% of white. Slower divisor
+        // = gentler pulse (a full breath every ~3s at 20 fps).
+        double t = (Math.sin(frame / 10.0) + 1) / 2; // 0..1
+        int v = (int) (110 + t * 145);               // 110..255
         String hex = hex(v, v, v);
         return "<" + hex + ">" + escape(plain);
     }
@@ -87,18 +90,21 @@ public final class AnimationEngine {
         String padded = plain + "   •   ";
         int len = padded.length();
         int width = Math.min(window, len);
-        int offset = (int) (frame % len);
+        // Advance one character every 2 frames so scrolling reads smoothly
+        // instead of racing past at 20 chars/second.
+        int offset = (int) ((frame / 2) % len);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < width; i++) {
             sb.append(padded.charAt((offset + i) % len));
         }
-        return perCharHue(sb.toString(), frame, 190, 60, 5);
+        return perCharHue(sb.toString(), frame, 190, 60, 1.4);
     }
 
     private static String wave(String plain, long frame) {
         // A bright highlight travels across the text (bold) while the rest is dim.
+        // Advance every 2 frames for a calm sweep.
         int len = plain.length();
-        int pos = (int) (frame % len);
+        int pos = (int) ((frame / 2) % len);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < len; i++) {
             char c = plain.charAt(i);

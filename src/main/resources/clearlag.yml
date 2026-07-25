@@ -8,8 +8,10 @@
 interval-seconds: 300
 
 # Countdown warnings before a cleanup, in seconds-remaining. A broadcast +
-# action bar is shown at each of these marks.
-warn-at-seconds: [60, 30, 10, 5, 3, 2, 1]
+# action bar is shown at each of these marks. Warnings only appear when LESS
+# THAN 60 seconds remain (marks of 60+ are ignored on purpose), so players are
+# not disturbed early on long intervals.
+warn-at-seconds: [30, 10, 5, 3, 2, 1]
 
 # Which entity categories to remove. Toggle each independently.
 remove:

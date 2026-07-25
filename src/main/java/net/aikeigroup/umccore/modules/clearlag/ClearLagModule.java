@@ -44,7 +44,10 @@ public final class ClearLagModule extends AbstractModule {
 
     private void tick() {
         secondsUntilClean--;
-        if (warnAt.contains(secondsUntilClean) && secondsUntilClean > 0) {
+        // Only warn when there is LESS THAN ONE MINUTE left, so long intervals
+        // don't spam players early. A warn mark at exactly 60s or above is
+        // ignored on purpose.
+        if (secondsUntilClean > 0 && secondsUntilClean < 60 && warnAt.contains(secondsUntilClean)) {
             broadcastWarning(secondsUntilClean);
         }
         if (secondsUntilClean <= 0) {
@@ -136,7 +139,12 @@ public final class ClearLagModule extends AbstractModule {
 
     private boolean isProtected(Entity e) {
         if (e instanceof Player) return true;
+        // Custom-name protection is meant for named MOBS/entities the owner wants
+        // to keep. It must NOT protect dropped items — the item stacker gives
+        // them an "x{amount}" label, which previously made clearlag skip stacked
+        // item drops entirely. So exclude Item entities from this rule.
         if (config().getBoolean("protect.custom-named", true)
+                && !(e instanceof Item)
                 && e.customName() != null) return true;
         if (config().getBoolean("protect.tamed", true)
                 && e instanceof Tameable t && t.isTamed()) return true;

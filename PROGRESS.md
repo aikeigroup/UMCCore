@@ -101,6 +101,20 @@
 
 ---
 
+## Bugfix (post-rilis, dari testing user)
+- **Mob stacker: mob hilang, bukan ter-stack** — snapshot list di `scanAll` bisa berisi entity
+  yang sudah di-remove (terserap stack lain); loop lalu merge stack hidup KE entity mati →
+  dua-duanya lenyap. Fix: cek `isValid()` di scanAll + guard `stack.isValid()`/`other.isValid()`
+  di dalam `tryMergeInto`.
+- **ClearLagg tidak menghapus item drop ter-stack** — item stacker memberi custom name ("x64"),
+  dan `protect.custom-named` melindungi semua entity ber-nama → item stack tak pernah kehapus.
+  Fix: proteksi custom-name tidak berlaku untuk entity `Item` (label stacker ≠ penanda "keep").
+- **Action bar kurang smooth & pergantian terlalu cepat** — frame 2→1 tick (20fps), kecepatan
+  motion warna/scroll/wave/pulse diperlambat, `hold-frames` 60→160 (~8s/segment), transisi
+  TYPEWRITER→FADE 12→20 frame (~1s) supaya kalem & tidak mengganggu.
+- **Notif clearlag hanya < 1 menit** — warning hanya muncul saat sisa < 60 detik (mark 60+
+  diabaikan); default `warn-at-seconds` jadi [30,10,5,3,2,1].
+
 ## Build/CI fixes (post-M6)
 - **JDK 25 wajib** (lihat catatan teknis di bawah). pom + kedua workflow diset ke Java 25.
 - **maven-shade-plugin dihapus** — semua dependency `provided` (tidak ada yang di-bundle), dan

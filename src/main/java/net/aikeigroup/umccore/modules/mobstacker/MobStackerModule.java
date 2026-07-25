@@ -79,7 +79,11 @@ public final class MobStackerModule extends AbstractModule {
     private void scanAll() {
         for (World world : Bukkit.getWorlds()) {
             for (Entity e : world.getEntitiesByClass(Mob.class)) {
-                if (e instanceof Mob mob && canStack(mob)) {
+                // The list is a snapshot: an entity earlier in it may have been
+                // removed (absorbed into another stack) by the time we reach it.
+                // Skip anything no longer valid so we never merge INTO a dead
+                // entity (which previously made both mobs disappear).
+                if (e instanceof Mob mob && mob.isValid() && canStack(mob)) {
                     tryMergeInto(mob);
                 }
             }
@@ -95,6 +99,10 @@ public final class MobStackerModule extends AbstractModule {
         for (Entity near : stack.getWorld().getNearbyEntities(stack.getLocation(), r, r, r)) {
             if (near == stack) continue;
             if (!(near instanceof Mob other)) continue;
+            // Guard: both the surviving stack and the candidate must still be
+            // alive. If a prior iteration removed one of them, bail out.
+            if (!stack.isValid()) return;
+            if (!other.isValid()) continue;
             if (other.getType() != stack.getType()) continue;
             if (!canStack(other)) continue;
 
