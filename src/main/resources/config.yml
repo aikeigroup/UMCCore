@@ -51,3 +51,11 @@ integrations:
   luckperms:
     # Prefer LuckPerms for rank/prefix/meta lookups (falls back to Vault).
     prefer-for-meta: true
+
+# Cross-platform UI behaviour.
+ui:
+  # When true, AUTO menus use the native Dialog API (renders as a form on both
+  # Java and Bedrock via Geyser) whenever the server supports it. Set false to
+  # force chest-GUI everywhere. Individual menus can override with type: DIALOG
+  # or type: GUI in their menus/<name>.yml file.
+  prefer-dialog: true

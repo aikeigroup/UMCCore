@@ -12,6 +12,10 @@ import net.aikeigroup.umccore.modules.limiter.MobLimiterModule;
 import net.aikeigroup.umccore.modules.mobstacker.MobStackerModule;
 import net.aikeigroup.umccore.modules.mobxp.MobXpModule;
 import net.aikeigroup.umccore.modules.performance.PerformanceModule;
+import net.aikeigroup.umccore.modules.ui.UIModule;
+import net.aikeigroup.umccore.ui.ActionExecutor;
+import net.aikeigroup.umccore.ui.MenuService;
+import net.aikeigroup.umccore.util.TextService;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -30,6 +34,9 @@ public final class UMCCore extends JavaPlugin {
     private IntegrationManager integrationManager;
     private ModuleManager moduleManager;
     private ReloadService reloadService;
+    private TextService textService;
+    private MenuService menuService;
+    private ActionExecutor actionExecutor;
 
     @Override
     public void onEnable() {
@@ -44,6 +51,11 @@ public final class UMCCore extends JavaPlugin {
         // 3. Detect optional integrations.
         this.integrationManager = new IntegrationManager(this);
         this.integrationManager.refresh();
+
+        // 3b. Shared UI/text services (long-lived; modules populate them).
+        this.textService = new TextService(this);
+        this.menuService = new MenuService(this);
+        this.actionExecutor = new ActionExecutor(this);
 
         // 4. Module registry + reload orchestrator.
         this.moduleManager = new ModuleManager(this);
@@ -80,7 +92,9 @@ public final class UMCCore extends JavaPlugin {
         modules().register(new MobLimiterModule());
         modules().register(new MobXpModule());
         modules().register(new ClearLagModule());
-        // UI, action bar, and Discord modules are added in M3–M5.
+        // M3 — UI system.
+        modules().register(new UIModule());
+        // Action bar (M4) and Discord (M5) modules are added next.
     }
 
     private void registerCommands() {
@@ -114,5 +128,17 @@ public final class UMCCore extends JavaPlugin {
 
     public ReloadService reloadService() {
         return reloadService;
+    }
+
+    public TextService text() {
+        return textService;
+    }
+
+    public MenuService menuService() {
+        return menuService;
+    }
+
+    public ActionExecutor actionExecutor() {
+        return actionExecutor;
     }
 }

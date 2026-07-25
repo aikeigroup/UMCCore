@@ -1,0 +1,47 @@
+# ==========================================================================
+#  Menu: stats  (menus/stats.yml)
+#  Shows live server & player stats. Uses UMCCore + PlaceholderAPI tokens.
+#  UMCCore placeholders: %umccore_tps% %umccore_mspt% %umccore_online%
+#    %umccore_max_players% %umccore_ram_used% %umccore_ram_max%
+#    %umccore_uptime% %umccore_entities% %umccore_chunks%
+# ==========================================================================
+
+title: "<green><bold>Server Stats</bold></green>"
+type: AUTO
+rows: 3
+
+buttons:
+  tps:
+    label: "<white>TPS: <green>%umccore_tps%</green></white>"
+    description:
+      - "<gray>Ticks per second (20 = perfect)</gray>"
+    icon: CLOCK
+    slot: 10
+    actions:
+      - "CLOSE"
+  mspt:
+    label: "<white>MSPT: <aqua>%umccore_mspt% ms</aqua></white>"
+    description:
+      - "<gray>Milliseconds per tick (lower is better)</gray>"
+    icon: REPEATER
+    slot: 12
+    actions:
+      - "CLOSE"
+  players:
+    label: "<white>Online: <yellow>%umccore_online%/%umccore_max_players%</yellow></white>"
+    icon: PLAYER_HEAD
+    slot: 14
+    actions:
+      - "CLOSE"
+  ram:
+    label: "<white>RAM: <light_purple>%umccore_ram_used%/%umccore_ram_max% MB</light_purple></white>"
+    icon: MINECART
+    slot: 16
+    actions:
+      - "CLOSE"
+  back:
+    label: "<gray>Back</gray>"
+    icon: ARROW
+    slot: 22
+    actions:
+      - "OPEN_MENU:main"

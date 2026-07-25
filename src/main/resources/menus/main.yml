@@ -1,0 +1,56 @@
+# ==========================================================================
+#  Menu: main  (menus/main.yml)
+#  The hub menu that links to the others. Every option is documented.
+#  Reload with /umccore reload after editing.
+# ==========================================================================
+
+# MiniMessage title shown at the top of the dialog / as the GUI title.
+title: "<gradient:#00c6ff:#0072ff><bold>Main Menu</bold></gradient>"
+
+# Render strategy: AUTO (router decides), DIALOG (force native form), GUI (force chest).
+type: AUTO
+
+# Chest-GUI row count (1-6), used only when this menu renders as a chest.
+rows: 3
+
+# Buttons. Each key is the button id. Placeholders (PAPI) work in label/description.
+buttons:
+  stats:
+    # Button text.
+    label: "<green><bold>Server Stats</bold></green>"
+    # Tooltip (dialog) / lore (GUI) lines.
+    description:
+      - "<gray>View live server performance</gray>"
+    # Material icon for chest-GUI rendering.
+    icon: CLOCK
+    # Chest slot (0-based). -1 = auto-place.
+    slot: 11
+    # Permission to see/use this button (empty = everyone).
+    permission: umccore.menu.stats
+    # Actions run on click, in order. See docs/menus.md for all action types.
+    actions:
+      - "OPEN_MENU:stats"
+  shortcut:
+    label: "<yellow><bold>Shortcuts</bold></yellow>"
+    description:
+      - "<gray>Quick actions</gray>"
+    icon: COMPASS
+    slot: 13
+    permission: umccore.menu.shortcut
+    actions:
+      - "OPEN_MENU:shortcut"
+  warps:
+    label: "<aqua><bold>Warps</bold></aqua>"
+    description:
+      - "<gray>Teleport to server locations</gray>"
+    icon: ENDER_PEARL
+    slot: 15
+    permission: umccore.menu.warps
+    actions:
+      - "OPEN_MENU:warps"
+  close:
+    label: "<red>Close</red>"
+    icon: BARRIER
+    slot: 22
+    actions:
+      - "CLOSE"

@@ -3,7 +3,7 @@
 > Status pengerjaan per-milestone & per-fitur. **Selalu update file ini setiap ada
 > perubahan.** Legend: ✅ selesai · 🚧 sedang dikerjakan · ⬜ belum · ⚠️ butuh perhatian.
 
-**Last updated:** 2026-07-25 (M2 selesai)
+**Last updated:** 2026-07-25 (M3 selesai)
 **Target:** Paper 26.2 · Java 21 · Maven · package `net.aikeigroup.umccore`
 
 ---
@@ -44,17 +44,21 @@
 
 **Catatan uji:** kompilasi & packaging OK. Uji runtime di server Paper 26.2 asli belum dilakukan (butuh server) — direncanakan di M6 (testing beban).
 
-## Milestone M3 — UI System ⬜
+## Milestone M3 — UI System ✅ (build hijau)
 
-| Status | Item |
-|---|---|
-| ⬜ | `MenuService` router (Dialog → Floodgate form → chest-GUI) |
-| ⬜ | Dialog API renderer (native, 26.2) |
-| ⬜ | Chest-GUI fallback |
-| ⬜ | Model: `MenuDefinition`, `Button`, `Action` |
-| ⬜ | Menu bawaan: main, stats, shortcut, data, warps |
-| ⬜ | Custom menu loader (`menus/*.yml`) |
-| ⬜ | Subcommand: `menu` |
+| Status | Item | Catatan |
+|---|---|---|
+| ✅ | Model: `MenuDefinition`, `MenuButton`, `MenuAction` | Action types: RUN_COMMAND, CONSOLE_COMMAND, OPEN_MENU, TELEPORT, MESSAGE, SOUND, CLOSE + chaining. |
+| ✅ | `ActionExecutor` | Eksekusi aman: RUN_COMMAND as-player, CONSOLE_COMMAND admin-only (dari file), PAPI resolve arg. |
+| ✅ | Dialog API renderer (native, 26.2) | `Dialog.create` + `multiAction` + `ActionButton.customClick` → callback jalan di main thread. Native Java & Bedrock (Geyser). |
+| ✅ | Chest-GUI fallback | `MenuHolder` custom (slot→button map), listener cancel-click read-only. |
+| ✅ | `MenuService` router | AUTO → Dialog (jika `ui.prefer-dialog` & didukung) else chest; per-menu override DIALOG/GUI; fallback aman bila Dialog gagal. |
+| ✅ | `TextService` (PAPI resolver) | Resolve `%papi%` per-player lalu MiniMessage. Soft: aman tanpa PAPI. |
+| ✅ | Custom menu loader (`menus/*.yml`) | Copy default saat pertama jalan; parse section & list style. |
+| ✅ | Menu bawaan: main, stats, shortcut, data, warps | Semua ada keterangan; permission `umccore.menu.<id>`. |
+| ✅ | Subcommand: `menu <name> [player]` | Tab completion sesuai izin; buka untuk orang lain butuh `umccore.command.menu.others`. |
+
+**Catatan:** Floodgate form path (fallback Bedrock non-Dialog) belum diperlukan karena target 26.2 Dialog API sudah native lintas platform; disediakan sebagai opsi masa depan bila server < 1.21.6.
 
 ## Milestone M4 — Integrasi & Action Bar ⬜
 

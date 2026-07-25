@@ -1,0 +1,45 @@
+# ==========================================================================
+#  Menu: data  (menus/data.yml)
+#  Player profile / data view. Uses PlaceholderAPI for per-player values.
+#  Balance requires Vault; rank requires LuckPerms/Vault. Missing = shows raw.
+# ==========================================================================
+
+title: "<light_purple><bold>Your Data</bold></light_purple>"
+type: AUTO
+rows: 3
+
+buttons:
+  name:
+    label: "<white>Name: <yellow>%player_name%</yellow></white>"
+    icon: PLAYER_HEAD
+    slot: 10
+    actions:
+      - "CLOSE"
+  rank:
+    label: "<white>Rank: <gold>%luckperms_primary_group_name%</gold></white>"
+    description:
+      - "<gray>Your primary group</gray>"
+    icon: NAME_TAG
+    slot: 12
+    actions:
+      - "CLOSE"
+  balance:
+    label: "<white>Balance: <green>%vault_eco_balance_formatted%</green></white>"
+    description:
+      - "<gray>Requires Vault economy</gray>"
+    icon: GOLD_INGOT
+    slot: 14
+    actions:
+      - "CLOSE"
+  playtime:
+    label: "<white>Playtime: <aqua>%statistic_time_played%</aqua></white>"
+    icon: CLOCK
+    slot: 16
+    actions:
+      - "CLOSE"
+  back:
+    label: "<gray>Back</gray>"
+    icon: ARROW
+    slot: 22
+    actions:
+      - "OPEN_MENU:main"

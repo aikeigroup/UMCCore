@@ -1,0 +1,49 @@
+# ==========================================================================
+#  Menu: warps  (menus/warps.yml)
+#  A warp list. Each button teleports to a location. Give per-warp permission
+#  with umccore.warp.<name> if you want to restrict individual warps.
+#  TELEPORT format: world,x,y,z[,yaw,pitch]
+# ==========================================================================
+
+title: "<aqua><bold>Warps</bold></aqua>"
+type: AUTO
+rows: 3
+
+buttons:
+  spawn:
+    label: "<green>Spawn</green>"
+    description:
+      - "<gray>The main hub</gray>"
+    icon: BEACON
+    slot: 10
+    permission: umccore.warp.spawn
+    actions:
+      - "TELEPORT:world,0.5,100,0.5"
+      - "MESSAGE:<green>Warped to spawn.</green>"
+      - "CLOSE"
+  shop:
+    label: "<gold>Shop</gold>"
+    description:
+      - "<gray>Buy and sell</gray>"
+    icon: EMERALD
+    slot: 12
+    permission: umccore.warp.shop
+    actions:
+      - "TELEPORT:world,50.5,100,50.5"
+      - "CLOSE"
+  pvp:
+    label: "<red>PvP Arena</red>"
+    description:
+      - "<gray>Fight other players</gray>"
+    icon: DIAMOND_SWORD
+    slot: 14
+    permission: umccore.warp.pvp
+    actions:
+      - "TELEPORT:world,-100.5,80,-100.5"
+      - "CLOSE"
+  back:
+    label: "<gray>Back</gray>"
+    icon: ARROW
+    slot: 22
+    actions:
+      - "OPEN_MENU:main"

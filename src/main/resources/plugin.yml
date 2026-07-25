@@ -47,6 +47,32 @@ permissions:
   umccore.menu.*:
     description: Access to every built-in and custom menu.
     default: op
+    children:
+      umccore.menu.main: true
+      umccore.menu.stats: true
+      umccore.menu.shortcut: true
+      umccore.menu.data: true
+      umccore.menu.warps: true
+
+  # --- Built-in menus (each menu also checks umccore.menu.<id>) --------------
+  umccore.menu.main:
+    description: Open the main menu.
+    default: true
+  umccore.menu.stats:
+    description: Open the stats menu.
+    default: true
+  umccore.menu.shortcut:
+    description: Open the shortcut menu.
+    default: true
+  umccore.menu.data:
+    description: Open the data menu.
+    default: true
+  umccore.menu.warps:
+    description: Open the warp list menu.
+    default: true
+  umccore.command.menu.others:
+    description: Open a menu for another player.
+    default: op
 
   # --- Commands --------------------------------------------------------------
   umccore.command.help:

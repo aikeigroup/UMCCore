@@ -1,0 +1,41 @@
+# ==========================================================================
+#  Menu: shortcut  (menus/shortcut.yml)
+#  Quick action buttons. Example commands — edit to fit your server.
+#  RUN_COMMAND runs as the player; use CONSOLE_COMMAND for admin actions.
+# ==========================================================================
+
+title: "<yellow><bold>Shortcuts</bold></yellow>"
+type: AUTO
+rows: 3
+
+buttons:
+  spawn:
+    label: "<green>Spawn</green>"
+    description:
+      - "<gray>Teleport to spawn</gray>"
+    icon: RED_BED
+    slot: 11
+    actions:
+      - "RUN_COMMAND:/spawn"
+  discord:
+    label: "<blue>Discord</blue>"
+    description:
+      - "<gray>Show the Discord invite</gray>"
+    icon: PAPER
+    slot: 13
+    actions:
+      - "MESSAGE:<blue>Join our Discord: <underlined>https://discord.gg/example</underlined></blue>"
+  vote:
+    label: "<gold>Vote</gold>"
+    description:
+      - "<gray>Support the server</gray>"
+    icon: SUNFLOWER
+    slot: 15
+    actions:
+      - "RUN_COMMAND:/vote"
+  back:
+    label: "<gray>Back</gray>"
+    icon: ARROW
+    slot: 22
+    actions:
+      - "OPEN_MENU:main"

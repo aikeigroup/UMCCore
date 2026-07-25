@@ -3,6 +3,7 @@ package net.aikeigroup.umccore.command;
 import net.aikeigroup.umccore.UMCCore;
 import net.aikeigroup.umccore.command.subcommands.ClearLagCommand;
 import net.aikeigroup.umccore.command.subcommands.HelpCommand;
+import net.aikeigroup.umccore.command.subcommands.MenuCommand;
 import net.aikeigroup.umccore.command.subcommands.ModuleCommand;
 import net.aikeigroup.umccore.command.subcommands.PerfCommand;
 import net.aikeigroup.umccore.command.subcommands.ReloadCommand;
@@ -49,6 +50,8 @@ public final class UMCCommand implements CommandExecutor, TabCompleter {
         register(new ClearLagCommand());
         register(new StackCommand());
         register(new ModuleCommand());
+        // M3 — UI.
+        register(new MenuCommand());
     }
 
     /** Registers a sub-command under its name and each alias. */

@@ -43,3 +43,15 @@ module:
   disabled: "<green>Disabled module</green> <yellow>{name}</yellow><green>.</green>"
   # {name} = module, {state} = its current state (active/inactive).
   already: "<yellow>{name}</yellow> <gray>is already {state}.</gray>"
+
+menu:
+  # Usage hint for /umccore menu.
+  usage: "<gray>Usage:</gray> <white>/umccore menu <name> [player]</white>"
+  # {name} = menu id that does not exist.
+  unknown: "<red>Unknown menu:</red> <yellow>{name}</yellow>"
+  # Shown when the player lacks the menu's permission. {name} = menu id.
+  no-permission: "<red>You can't open that menu.</red>"
+  # {player} = the offline/absent target of /umccore menu <name> <player>.
+  player-offline: "<red>Player</red> <yellow>{player}</yellow> <red>is not online.</red>"
+  # Confirmation when opening a menu for someone else.
+  opened-for: "<green>Opened</green> <yellow>{name}</yellow> <green>for</green> <white>{player}</white><green>.</green>"
