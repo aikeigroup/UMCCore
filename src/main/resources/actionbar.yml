@@ -1,0 +1,65 @@
+# ==========================================================================
+#  UMCCore — Animated Action Bar (actionbar.yml)
+#  Fully animated: text is redrawn every frame, and EVERY transition between
+#  messages is animated too (no hard cuts). Disable with
+#  modules.actionbar: false in config.yml.
+# ==========================================================================
+
+# Master enable (redundant with modules.actionbar, kept for convenience).
+enabled: true
+
+# Ticks between animation frames. Lower = smoother but slightly more work.
+# 2 ticks (~10 fps) is a good balance for scrolling/gradient effects.
+frame-interval-ticks: 2
+
+# Players can hide their own action bar with /umccore actionbar toggle.
+allow-player-toggle: true
+
+# Resolve PlaceholderAPI placeholders inside frames (per-player).
+resolve-placeholders: true
+
+# ---------------------------------------------------------------------------
+# Rotation: a list of "segments" shown in sequence. Each segment is animated
+# while displayed, and the change from one segment to the next is ALSO animated
+# via the configured transition. Nothing ever appears as an instant hard cut.
+# ---------------------------------------------------------------------------
+rotation:
+  # How long (in frames) each segment stays fully visible before transitioning.
+  hold-frames: 60
+  # Transition animation played between segments. Options:
+  #   TYPEWRITER  - old text erased char-by-char, new text typed in
+  #   SLIDE       - old text slides out, new text slides in
+  #   FADE        - cross-fade using color interpolation
+  #   WAVE        - characters ripple as they swap
+  transition: TYPEWRITER
+  # Frames the transition takes to complete.
+  transition-frames: 12
+
+# The segments themselves. Each has a base text plus an in-segment animation
+# that runs continuously while the segment is displayed.
+segments:
+  - id: welcome
+    text: "<gray>Welcome to <gradient:#00c6ff:#0072ff>the server</gradient></gray>"
+    # In-segment animation while shown. Options:
+    #   GRADIENT_SHIFT - the gradient scrolls across the text
+    #   RAINBOW        - animated rainbow colors
+    #   SCROLL         - text scrolls horizontally within a window
+    #   WAVE           - vertical character wave via formatting
+    #   PULSE          - brightness pulse
+    #   NONE           - static (still transitions between segments)
+    animation: GRADIENT_SHIFT
+    # Optional permission to see this segment; empty = everyone.
+    permission: ""
+
+  - id: stats
+    text: "<green>TPS %umccore_tps%</green> <dark_gray>|</dark_gray> <aqua>Online %umccore_online%</aqua>"
+    animation: PULSE
+    permission: ""
+
+  - id: tip
+    text: "<yellow>Tip: open the menu with /umccore menu main</yellow>"
+    animation: SCROLL
+    permission: ""
+
+# Scroll animation window width (characters) for SCROLL segments.
+scroll-window: 40

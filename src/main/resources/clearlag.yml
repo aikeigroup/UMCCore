@@ -1,0 +1,35 @@
+# ==========================================================================
+#  UMCCore — ClearLagg (clearlag.yml)
+#  Scheduled entity cleanup with countdown warnings.
+#  Disable with modules.clearlag: false in config.yml.
+# ==========================================================================
+
+# Seconds between automatic cleanup passes. 300 = every 5 minutes.
+interval-seconds: 300
+
+# Countdown warnings before a cleanup, in seconds-remaining. A broadcast +
+# action bar is shown at each of these marks.
+warn-at-seconds: [60, 30, 10, 5, 3, 2, 1]
+
+# Which entity categories to remove. Toggle each independently.
+remove:
+  dropped-items: true
+  hostile-mobs: false
+  passive-mobs: false
+  projectiles: true
+  experience-orbs: false
+
+# Never remove entities matching these protections.
+protect:
+  custom-named: true
+  tamed: true
+  leashed: true
+  in-vehicle: true
+  armor-stands: true
+  # Only clean entities in chunks that have no player nearby.
+  playerless-chunks-only: false
+
+# Message tokens: {count} = entities removed, {seconds} = time remaining.
+messages:
+  warn: "<gray>Clearing ground entities in <yellow>{seconds}s</yellow>...</gray>"
+  done: "<green>Removed <yellow>{count}</yellow> entities.</green>"

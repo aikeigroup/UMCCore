@@ -1,0 +1,28 @@
+# ==========================================================================
+#  UMCCore — Mob XP & Drop Control (mobxp.yml)
+#  Adjust experience and item drops per mob type and condition.
+#  Disable with modules.mobxp: false in config.yml.
+# ==========================================================================
+
+xp:
+  # Global multiplier applied to all mob XP drops. 1.0 = vanilla.
+  global-multiplier: 1.0
+  # Only grant XP when the mob was killed by a player.
+  require-player-kill: true
+  # Give no XP for mobs spawned by spawners (anti XP-farm).
+  no-xp-from-spawners: false
+  # Per-type XP multiplier overrides. Example:
+  # per-type:
+  #   ZOMBIE: 1.5
+  #   ENDERMAN: 2.0
+  per-type: {}
+
+drops:
+  # Global multiplier applied to all item drop amounts. 1.0 = vanilla.
+  global-multiplier: 1.0
+  # Only drop items when the mob was killed by a player.
+  require-player-kill: false
+  # Per-type drop multiplier overrides. Example:
+  # per-type:
+  #   BLAZE: 2.0
+  per-type: {}

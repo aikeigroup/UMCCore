@@ -1,0 +1,48 @@
+# ==========================================================================
+#  UMCCore — Stackers (stacker.yml)
+#  Mob stacker and item-drop stacker. Reduces entity count to lower MSPT.
+#  Disable modules individually in config.yml (mobstacker / itemstacker).
+# ==========================================================================
+
+mob-stacker:
+  # Merge nearby same-type mobs into one entity representing the whole stack.
+  enabled: true
+  # Radius (blocks) to search for same-type mobs to merge. Larger = more
+  # aggressive but heavier scans. Recommended 4-8.
+  merge-radius: 5
+  # Maximum mobs in a single stack. 0 = unlimited (not recommended).
+  max-stack-size: 100
+  # How often (ticks) to run the merge scan. 20 ticks = 1 second.
+  scan-interval-ticks: 40
+  # Stack name shown above the mob. Tokens: {type} {amount}. Supports PAPI.
+  display-name: "<yellow>{type} <gray>x{amount}"
+  # When true, killing a stacked mob only removes one from the stack and drops
+  # loot/XP for one. When false, the whole stack dies at once.
+  kill-one-at-a-time: true
+  # Mobs to never stack (always kept as individual entities).
+  blacklist-types: []
+  # If non-empty, ONLY these types are allowed to stack.
+  whitelist-types: []
+  # Never stack these regardless of type: named, tamed, or leashed mobs.
+  protect-named: true
+  protect-tamed: true
+  protect-leashed: true
+  # Per-world overrides. Example:
+  # per-world:
+  #   world_nether:
+  #     enabled: false
+  per-world: {}
+
+item-stacker:
+  # Merge same-type item drops on the ground into one entity with a count.
+  enabled: true
+  # Radius (blocks) to search for matching item drops to merge.
+  merge-radius: 4
+  # How often (ticks) to run the merge scan.
+  scan-interval-ticks: 40
+  # Maximum items represented by a single ground stack. 0 = vanilla max.
+  max-stack-size: 0
+  # Show the amount as a floating label above merged item stacks.
+  show-amount-label: true
+  # Only merge items whose metadata (name, enchants) matches exactly.
+  respect-metadata: true

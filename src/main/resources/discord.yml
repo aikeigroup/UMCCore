@@ -1,0 +1,53 @@
+# ==========================================================================
+#  UMCCore — Discord Status Embed (discord.yml)
+#  Real-time server status embeds edited in place via DiscordSRV.
+#  Requires DiscordSRV. Disable with modules.discord: false in config.yml.
+# ==========================================================================
+
+# Seconds between embed edits. Keep >= 15 to respect Discord rate limits.
+update-interval-seconds: 30
+
+# Persist Discord message IDs here so the SAME message is edited across
+# reloads/restarts (managed automatically; do not edit by hand).
+# Stored in data/discord-state.yml.
+
+# One or more embeds. Each targets a DiscordSRV-known channel.
+embeds:
+  - id: server-stats
+    # DiscordSRV channel name (as configured in DiscordSRV), or a raw channel ID.
+    channel: "global"
+    enabled: true
+    # Embed color changes dynamically based on TPS thresholds below.
+    dynamic-color: true
+    color-thresholds:
+      # TPS >= good -> green, >= warn -> yellow, else red.
+      good: 18.0
+      warn: 15.0
+    good-color: "#43b581"
+    warn-color: "#faa61a"
+    bad-color: "#f04747"
+    # Static color used when dynamic-color is false.
+    color: "#5865F2"
+    # Embed content. Tokens: {tps} {mspt} {online} {max} {ram_used} {ram_max}
+    # {uptime} {world_entities}. PlaceholderAPI %..% also works.
+    title: "Server Status"
+    description: "Live statistics, updated every {interval}s."
+    thumbnail-url: ""
+    fields:
+      - name: "Players"
+        value: "{online} / {max}"
+        inline: true
+      - name: "TPS"
+        value: "{tps}"
+        inline: true
+      - name: "MSPT"
+        value: "{mspt} ms"
+        inline: true
+      - name: "Memory"
+        value: "{ram_used} / {ram_max} MB"
+        inline: true
+      - name: "Uptime"
+        value: "{uptime}"
+        inline: true
+    footer: "UMCCore"
+    show-timestamp: true

@@ -1,0 +1,24 @@
+# ==========================================================================
+#  UMCCore — Messages (messages.yml)
+#  All text uses MiniMessage format: https://docs.advntr.dev/minimessage/
+#  Tokens like {name} are replaced by the plugin before display.
+# ==========================================================================
+
+# Prefix prepended to most plugin messages.
+prefix: "<gray>[<gradient:#00c6ff:#0072ff>UMC</gradient>]</gray> "
+
+command:
+  # Shown when an unknown sub-command is typed. {input} = what was typed.
+  unknown: "<red>Unknown command:</red> <yellow>{input}</yellow><red>. Try</red> <white>/umccore help</white><red>.</red>"
+  # Shown when the sender lacks permission for a sub-command.
+  no-permission: "<red>You don't have permission to do that.</red>"
+  # Shown when a player-only command is run from console.
+  player-only: "<red>This command can only be used by a player.</red>"
+
+reload:
+  # Sent right before the reload begins.
+  start: "<gray>Reloading UMCCore...</gray>"
+  # Sent on success. {modules} = how many modules re-enabled, {ms} = duration.
+  success: "<green>Reload complete.</green> <gray>{modules} module(s) active in {ms}ms.</gray>"
+  # Sent on failure. {error} = the error message.
+  failure: "<red>Reload failed:</red> <gray>{error}</gray> <red>See console for details.</red>"

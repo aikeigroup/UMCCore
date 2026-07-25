@@ -1,0 +1,84 @@
+name: UMCCore
+version: '${project.version}'
+main: net.aikeigroup.umccore.UMCCore
+api-version: '1.21'
+author: aikeigroup
+description: All-in-one performance, optimization, and cross-platform UI core.
+website: https://aikeigroup.net
+
+# All third-party hooks are optional; UMCCore runs without any of them.
+softdepend:
+  - PlaceholderAPI
+  - Vault
+  - LuckPerms
+  - DiscordSRV
+  - floodgate
+  - Geyser-Spigot
+
+commands:
+  umccore:
+    description: UMCCore root command.
+    usage: /umccore help
+    aliases: [umc]
+
+permissions:
+  # --- Wildcards -------------------------------------------------------------
+  umccore.*:
+    description: Grants every UMCCore permission (full admin).
+    default: op
+    children:
+      umccore.command.*: true
+      umccore.menu.*: true
+  umccore.command.*:
+    description: Grants every UMCCore command.
+    default: op
+    children:
+      umccore.command.help: true
+      umccore.command.reload: true
+      umccore.command.version: true
+      umccore.command.perf: true
+      umccore.command.clearlag: true
+      umccore.command.stack: true
+      umccore.command.menu: true
+      umccore.command.actionbar: true
+      umccore.command.discord: true
+      umccore.command.module: true
+      umccore.command.debug: true
+  umccore.menu.*:
+    description: Access to every built-in and custom menu.
+    default: op
+
+  # --- Commands --------------------------------------------------------------
+  umccore.command.help:
+    description: Show the help listing.
+    default: true
+  umccore.command.reload:
+    description: Full reload of modules and configuration.
+    default: op
+  umccore.command.version:
+    description: Show version and detected integrations.
+    default: op
+  umccore.command.perf:
+    description: Show a performance summary (TPS/MSPT/RAM).
+    default: op
+  umccore.command.clearlag:
+    description: Trigger a manual clearlag pass.
+    default: op
+  umccore.command.stack:
+    description: Inspect mob/item stacker state.
+    default: op
+  umccore.command.menu:
+    description: Open a menu (also requires umccore.menu.<name>).
+    default: true
+  umccore.command.actionbar:
+    description: Toggle your own action bar.
+    default: true
+  umccore.command.discord:
+    description: Force a Discord embed update.
+    default: op
+  umccore.command.module:
+    description: Enable/disable/list modules at runtime.
+    default: op
+  umccore.command.debug:
+    description: Show diagnostic information.
+    default: op

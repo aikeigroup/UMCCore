@@ -1,0 +1,30 @@
+# ==========================================================================
+#  UMCCore — Performance Module (performance.yml)
+#  Live MSPT/TPS/RAM monitoring and optional auto-optimization triggers.
+#  Disable the whole module with modules.performance: false in config.yml.
+# ==========================================================================
+
+# How often (in ticks) to sample TPS/MSPT/memory. 20 ticks = 1 second.
+sample-interval-ticks: 100
+
+# Auto-optimization: when the server is lagging, run mitigating actions.
+auto-optimize:
+  # Master toggle for automatic reactions to lag.
+  enabled: false
+  # Trigger when MSPT stays above this value...
+  mspt-threshold: 45.0
+  # ...for at least this many consecutive seconds.
+  sustained-seconds: 10
+  # Actions to run when triggered (executed in order). Available:
+  #   clearlag-light  - remove dropped items + stray hostiles in playerless chunks
+  #   notify-staff    - message players with umccore.command.perf
+  actions:
+    - notify-staff
+
+# Optional throttling of expensive mechanics while lagging. Off by default to
+# avoid surprising gameplay changes.
+throttle:
+  # Reduce hopper item-transfer frequency under lag.
+  hoppers: false
+  # Reduce redstone update rate under lag.
+  redstone: false

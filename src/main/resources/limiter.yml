@@ -1,0 +1,40 @@
+# ==========================================================================
+#  UMCCore — Mob Limiter (limiter.yml)
+#  Cap the number of mobs per chunk (or radius) to prevent entity buildup.
+#  Disable with modules.moblimiter: false in config.yml.
+# ==========================================================================
+
+# Scope of the limit: CHUNK (per 16x16 chunk) or RADIUS (per area around spawn).
+mode: CHUNK
+
+# Radius in blocks, used only when mode is RADIUS.
+radius: 8
+
+# Per-category limits. When a spawn would exceed the limit, it is cancelled
+# (hard limit) or reduced (soft limit) — see enforcement below.
+limits:
+  hostile: 30
+  passive: 20
+  ambient: 10
+  # Total cap across all categories (0 = no separate total cap).
+  total: 50
+
+# Which spawn sources the limiter applies to.
+apply-to:
+  natural: true
+  spawner: true
+  breeding: false
+  other: false
+
+enforcement:
+  # HARD = cancel spawns over the limit. SOFT = probabilistically reduce them.
+  type: HARD
+  # For SOFT mode: chance (0.0-1.0) to cancel each over-limit spawn.
+  soft-cancel-chance: 0.5
+
+# Per-world overrides. Example:
+# per-world:
+#   world_the_end:
+#     limits:
+#       hostile: 60
+per-world: {}

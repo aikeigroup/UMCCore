@@ -1,0 +1,53 @@
+# ==========================================================================
+#  UMCCore — Main Configuration (config.yml)
+#  Every option is documented. Values shown are sane defaults; the plugin
+#  runs optimally out of the box. Use /umccore reload after editing.
+# ==========================================================================
+
+# Internal config version. Do NOT change by hand — used for automatic
+# migration when you update the plugin.
+config-version: 1
+
+# Master toggle for each feature module. Set to false to disable a module
+# entirely (it will not register listeners or run tasks). You can also toggle
+# modules at runtime with /umccore module <enable|disable> <name>.
+modules:
+  # Live performance monitor + auto-optimization triggers (MSPT/TPS/RAM).
+  performance: true
+  # Merge nearby same-type mobs into a single entity to cut entity count.
+  mobstacker: true
+  # Merge stacked ground item drops to reduce item entities.
+  itemstacker: true
+  # Scheduled entity cleanup with countdown warnings.
+  clearlag: true
+  # Cap the number of mobs per chunk / area.
+  moblimiter: true
+  # Control mob XP and drops (multipliers, conditions).
+  mobxp: true
+  # Animated, per-player action bar.
+  actionbar: true
+  # DiscordSRV real-time status embed.
+  discord: true
+  # Cross-platform UI (Dialog API + Floodgate form + chest-GUI fallback).
+  ui: true
+
+# General plugin behaviour.
+general:
+  # Language/locale hint for messages (currently informational; messages live
+  # in messages.yml).
+  locale: en
+  # If true, prints extra diagnostic logging to console. Also see /umccore debug.
+  debug: false
+
+# Integration behaviour. UMCCore auto-detects these; here you only tune how
+# they are used. Missing plugins are simply ignored.
+integrations:
+  placeholderapi:
+    # Resolve %papi% placeholders inside UMCCore text (embeds, menus, actionbar).
+    resolve-in-text: true
+  vault:
+    # Use Vault economy for balance placeholders/menus when available.
+    use-economy: true
+  luckperms:
+    # Prefer LuckPerms for rank/prefix/meta lookups (falls back to Vault).
+    prefer-for-meta: true
