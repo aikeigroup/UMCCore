@@ -82,6 +82,12 @@ mob-stacker:
   #   - red vs brown mooshrooms
   # Recommended true (fixes: shear one sheep, the rest re-merge as "sheared").
   match-state: true
+  # Keep the merged stack near the nearest player. On grinders, mobs spawn at the
+  # spawner (often above) and get pushed to a kill spot near the player; without
+  # this the stack can drift back up toward freshly-spawned mobs at the spawner.
+  # When on, the stack is moved to the closest-to-player position it merged from,
+  # so it stays where the player is farming. Recommended true for mob farms.
+  merge-toward-player: true
   # Per-world overrides. Example:
   # per-world:
   #   world_nether:

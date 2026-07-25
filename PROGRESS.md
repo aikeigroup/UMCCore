@@ -101,6 +101,15 @@
 
 ---
 
+## Spawner limit + stack-aware limiter + merge-toward-player (v1.1.2)
+- **Limit spawner** — `spawner-limit` (limiter.yml): batasi jumlah mob di sekitar spawner (radius,
+  max, count-all-types), dicek sebelum limit chunk. Lawan utama grinder farm menumpuk ratusan mob.
+- **Limiter hitung ukuran stack** — `count-stack-size` (default true): stack 100 dihitung 100, bukan
+  1, via PDC `stack_size`. Berlaku untuk limit chunk & spawner. Tanpa ini stack lolos limit.
+- **Merge toward player** — `merge-toward-player` (default true): stack hasil merge dipindah ke posisi
+  terdekat player. Fix grinder: dulu stack "hanyut" ke mob baru di spawner (atas/jauh) saat merge;
+  sekarang tetap di titik kill dekat player.
+
 ## Preset agresif untuk server berat (v1.1.1)
 - Dari analisis spark user (20 player, MSPT 50): penyebab #1 = **mob AI/pathfinding** (Mob,
   PathNavigation, Brain, GoalSelector, PathFinder) → persis yang stacker kurangi. Juga terdeteksi

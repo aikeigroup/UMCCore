@@ -28,6 +28,10 @@ public final class MobLimiterModule extends AbstractModule {
     private enum Mode { CHUNK, RADIUS }
     private enum Category { HOSTILE, PASSIVE, AMBIENT }
 
+    /** Mob stacker's PDC key, so a stack counts as its real mob count, not 1. */
+    private org.bukkit.NamespacedKey stackKey;
+    private boolean countStackSize;
+
     public MobLimiterModule() {
         super("moblimiter");
     }
@@ -39,17 +43,43 @@ public final class MobLimiterModule extends AbstractModule {
 
     @Override
     protected void enable() {
+        stackKey = new org.bukkit.NamespacedKey(plugin, "stack_size");
+        countStackSize = config().getBoolean("count-stack-size", true);
         listen(new SpawnListener());
+    }
+
+    /**
+     * @return how many real mobs an entity represents: its stack size (from the
+     *         mob stacker's PDC) when stack-counting is on, else 1.
+     */
+    private int mobWeight(Entity e) {
+        if (countStackSize) {
+            Integer size = e.getPersistentDataContainer()
+                    .get(stackKey, org.bukkit.persistence.PersistentDataType.INTEGER);
+            if (size != null && size > 1) {
+                return size;
+            }
+        }
+        return 1;
     }
 
     private final class SpawnListener implements Listener {
 
         @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onSpawn(CreatureSpawnEvent event) {
-            if (!appliesToSource(event.getSpawnReason())) {
+            if (!(event.getEntity() instanceof Mob mob)) {
                 return;
             }
-            if (!(event.getEntity() instanceof Mob mob)) {
+
+            // Dedicated spawner limit: cap how many mobs may exist around a mob
+            // spawner, independent of the chunk/radius limit. Stops grinder farms
+            // from piling up hundreds of mobs (a major AI/MSPT source).
+            if (isSpawnerReason(event.getSpawnReason()) && isOverSpawnerLimit(event, mob)) {
+                event.setCancelled(true);
+                return;
+            }
+
+            if (!appliesToSource(event.getSpawnReason())) {
                 return;
             }
 
@@ -76,6 +106,47 @@ public final class MobLimiterModule extends AbstractModule {
                         overCategory);
             }
         }
+    }
+
+    private boolean isSpawnerReason(CreatureSpawnEvent.SpawnReason reason) {
+        return reason == CreatureSpawnEvent.SpawnReason.SPAWNER
+                || reason == CreatureSpawnEvent.SpawnReason.TRIAL_SPAWNER;
+    }
+
+    /**
+     * Returns true if there are already at least {@code spawner-limit.max} mobs
+     * within {@code spawner-limit.radius} blocks of a spawner-driven spawn, so
+     * the spawn should be cancelled. Counts only the same category (hostile/
+     * passive/ambient) by default, or all mobs if {@code count-all} is true.
+     */
+    private boolean isOverSpawnerLimit(CreatureSpawnEvent event, Mob mob) {
+        if (!config().getBoolean("spawner-limit.enabled", true)) {
+            return false;
+        }
+        int max = config().getInt("spawner-limit.max", 12);
+        if (max <= 0) {
+            return false;
+        }
+        double radius = config().getInt("spawner-limit.radius", 6);
+        boolean countAll = config().getBoolean("spawner-limit.count-all-types", false);
+        Category category = categorize(mob);
+
+        var loc = event.getLocation();
+        if (loc.getWorld() == null) {
+            return false;
+        }
+        int count = 0;
+        for (Entity e : loc.getWorld().getNearbyEntities(loc, radius, radius, radius)) {
+            if (e instanceof Mob other && !(e instanceof Player)) {
+                if (countAll || categorize(other) == category) {
+                    count += mobWeight(e); // a stack counts as its full size
+                    if (count >= max) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /** Notifies the nearest player (if any) that a mob limit blocked this spawn. */
@@ -199,7 +270,7 @@ public final class MobLimiterModule extends AbstractModule {
         for (Entity e : candidates) {
             if (e instanceof Mob mob && !(e instanceof Player)) {
                 if (category == null || categorize(mob) == category) {
-                    count++;
+                    count += mobWeight(e); // a stacked mob counts as its full size
                 }
             }
         }

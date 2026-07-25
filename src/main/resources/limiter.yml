@@ -10,6 +10,12 @@ mode: CHUNK
 # Radius in blocks, used only when mode is RADIUS.
 radius: 8
 
+# Count stacked mobs by their real size, not as one entity. With the mob stacker
+# on, a stack of 100 would otherwise count as 1 and slip past the limits. Keep
+# true so limits reflect the actual mob population. Applies to both the chunk
+# limits and the spawner-limit below.
+count-stack-size: true
+
 # Per-category limits (per chunk by default). Lower = fewer mobs = less AI load.
 # These are tuned for busy servers; raise them if your gameplay needs denser
 # mobs. When a spawn would exceed the limit it is cancelled (hard) or reduced
@@ -21,7 +27,24 @@ limits:
   # Total cap across all categories (0 = no separate total cap).
   total: 35
 
-# Which spawn sources the limiter applies to.
+# Dedicated limit for mobs from a spawner (mob spawner / trial spawner). This
+# caps how many mobs may pile up around a spawner, independent of the per-chunk
+# limits above — the main defence against grinder farms hoarding hundreds of
+# mobs (a big AI/MSPT cost). Checked before the chunk limit.
+spawner-limit:
+  enabled: true
+  # Max mobs allowed within 'radius' of a spawner-driven spawn. Once reached,
+  # further spawner spawns there are cancelled until some are removed/killed.
+  # 0 disables this specific cap.
+  max: 12
+  # Radius (blocks) around the spawn point to count mobs in.
+  radius: 6
+  # Count all mob types together (true) or only the same category as the mob
+  # trying to spawn (false — hostile/passive/ambient counted separately).
+  count-all-types: false
+
+# Which spawn sources the per-chunk limiter (limits.* above) applies to. Note:
+# spawner spawns are ALSO subject to spawner-limit above regardless of this.
 apply-to:
   natural: true
   spawner: true

@@ -72,6 +72,7 @@ public final class MobStackerModule extends AbstractModule {
     private boolean protectPersistent;
     private boolean matchAge;
     private boolean matchState;
+    private boolean mergeTowardPlayer;
     private boolean splitOnInteract;
     private int splitCooldownMs;
     private boolean unstackToolEnabled;
@@ -112,6 +113,7 @@ public final class MobStackerModule extends AbstractModule {
         protectPersistent = config().getBoolean("mob-stacker.protect-persistent", false);
         matchAge = config().getBoolean("mob-stacker.match-age", true);
         matchState = config().getBoolean("mob-stacker.match-state", true);
+        mergeTowardPlayer = config().getBoolean("mob-stacker.merge-toward-player", true);
 
         if (!config().getBoolean("mob-stacker.enabled", true)) {
             plugin.getLogger().info("Mob stacker sub-toggle is off; module idle.");
@@ -165,6 +167,15 @@ public final class MobStackerModule extends AbstractModule {
             return;
         }
         double r = mergeRadius;
+
+        // Track the location closest to a player among the surviving stack and
+        // everything it absorbs. At the end the survivor is moved there so the
+        // stack stays near the player (e.g. at a grinder's kill spot) instead of
+        // drifting up/away toward freshly-spawned mobs at the spawner.
+        org.bukkit.Location bestLoc = stack.getLocation();
+        double bestDist = nearestPlayerDistanceSq(stack.getLocation());
+
+        boolean mergedAny = false;
         for (Entity near : stack.getWorld().getNearbyEntities(stack.getLocation(), r, r, r)) {
             if (near == stack) continue;
             if (!(near instanceof Mob other)) continue;
@@ -192,8 +203,16 @@ public final class MobStackerModule extends AbstractModule {
             Bukkit.getPluginManager().callEvent(event);
             if (event.isCancelled()) continue;
 
+            // Remember the closest-to-player position we've seen.
+            double otherDist = nearestPlayerDistanceSq(other.getLocation());
+            if (otherDist < bestDist) {
+                bestDist = otherDist;
+                bestLoc = other.getLocation();
+            }
+
             size += add;
             setSize(stack, size);
+            mergedAny = true;
             if (add >= otherSize) {
                 other.remove();
             } else {
@@ -202,7 +221,33 @@ public final class MobStackerModule extends AbstractModule {
             }
             if (maxStackSize > 0 && size >= maxStackSize) break;
         }
+
+        // Keep the merged stack near the player if configured and it would move
+        // it noticeably closer (avoids pointless teleports).
+        if (mergedAny && mergeTowardPlayer && bestLoc != stack.getLocation()
+                && bestDist < nearestPlayerDistanceSq(stack.getLocation())) {
+            stack.teleport(bestLoc);
+        }
         refreshName(stack);
+    }
+
+    /**
+     * @return squared distance to the nearest player in the same world, or
+     *         {@link Double#MAX_VALUE} if no player is present. Squared to avoid
+     *         a sqrt on the hot merge path.
+     */
+    private double nearestPlayerDistanceSq(org.bukkit.Location loc) {
+        if (loc.getWorld() == null) {
+            return Double.MAX_VALUE;
+        }
+        double best = Double.MAX_VALUE;
+        for (Player p : loc.getWorld().getPlayers()) {
+            double d = p.getLocation().distanceSquared(loc);
+            if (d < best) {
+                best = d;
+            }
+        }
+        return best;
     }
 
     // --- Breeding handling -------------------------------------------------
