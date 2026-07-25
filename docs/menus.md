@@ -179,6 +179,21 @@ buttons:
       - "OPEN_MENU:stats"
 ```
 
+## Opening menus with a command / on first join
+
+Configured in `config.yml` under `ui:`:
+
+```yaml
+ui:
+  menu-commands:            # register commands that open a menu (like DeluxeMenus open_command)
+    guide: guide            # /guide opens the "guide" menu
+    "tagfakultas,fakultas": tagfakultas   # /tagfakultas or /fakultas
+  open-on-first-join: "guide"   # open this menu the first time a player joins (empty = off)
+```
+
+Both still honour the menu's `umccore.menu.<id>` permission. Commands are cleanly unregistered on
+`/umccore reload`.
+
 ## Permissions
 
 - Opening a menu requires `umccore.menu.<id>`.

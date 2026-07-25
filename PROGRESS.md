@@ -3,7 +3,7 @@
 > Status pengerjaan per-milestone & per-fitur. **Selalu update file ini setiap ada
 > perubahan.** Legend: ✅ selesai · 🚧 sedang dikerjakan · ⬜ belum · ⚠️ butuh perhatian.
 
-**Last updated:** 2026-07-26 (v1.2.4 — menu fleksibel guide/tutorial/help; v1.2.3 vote log)
+**Last updated:** 2026-07-26 (v1.2.5 — guide UNNESMC + command /guide + first-join)
 **Target:** Paper 26.2 · Java 25 · Maven · package `net.aikeigroup.umccore`
 
 ---
@@ -100,6 +100,19 @@
 | ✅ | Self auto-update module | Cek GitHub Releases, notify admin/console, `auto-download` opsional ke update folder (apply saat restart), `/umccore update [check\|download]`. Dependency-free (regex parse). Bisa di-disable via `modules.update`. |
 
 ---
+
+## Guide UNNESMC + command menu + first-join (v1.2.5)
+- **guide.yml UNNESMC** — panduan multi-halaman berisi info nyata: identitas (UNNES Minecraft
+  Community), gamemode (Skyblock Slimefun, Survival + Custom Enchant, cross-platform Java 25565 /
+  Bedrock 19132), cara mulai (/rtp, /warp reso NPC, claim RedProtect /rp wand, angkat mob shift+klik),
+  fitur & command (/jobs /vote /sf), ekonomi & gacha (/shop /cshop /bank /ah /bpass /rewards, crate
+  /warp crate + /key), Rank Paket Plus Mahasiswa (Rp10rb/bln, benefit lengkap), peraturan, link
+  dc.unnesmc.my.id & vote.unnesmc.my.id.
+- **Command pembuka menu** — `ui.menu-commands` (mirip open_command DeluxeMenus): daftar
+  "cmd,alias: menuId" → registrasi command runtime via CommandMap, dibersihkan saat reload.
+  Default: `/guide` → guide, `/tagfakultas` (alias `/fakultas`) → tagfakultas.
+- **Auto-open first join** — `ui.open-on-first-join` (default `guide`): buka menu otomatis untuk
+  pemain baru (cek `hasPlayedBefore`). Tombol Panduan juga ditambah di `main.yml`.
 
 ## Menu super fleksibel: guide/tutorial/help (v1.2.4)
 - **Body kaya** — menu kini punya `body:` (di atas tombol): paragraf teks panjang (width diatur),

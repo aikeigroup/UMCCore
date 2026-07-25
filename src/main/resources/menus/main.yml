@@ -48,6 +48,15 @@ buttons:
     permission: umccore.menu.warps
     actions:
       - "OPEN_MENU:warps"
+  guide:
+    label: "<light_purple><bold>Panduan</bold></light_purple>"
+    description:
+      - "<gray>Buka panduan server (/guide)</gray>"
+    icon: KNOWLEDGE_BOOK
+    slot: 4
+    permission: umccore.menu.guide
+    actions:
+      - "OPEN_MENU:guide"
   close:
     label: "<red>Close</red>"
     icon: BARRIER

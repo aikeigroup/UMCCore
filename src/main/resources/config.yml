@@ -66,6 +66,19 @@ ui:
   # or type: GUI in their menus/<name>.yml file.
   prefer-dialog: true
 
+  # Register extra commands that open a menu directly (like DeluxeMenus'
+  # open_command). Format: "command: menuId". Aliases separated by commas.
+  # Opening still checks the menu's umccore.menu.<id> permission.
+  # Example below makes /guide open the guide menu and /tagfakultas (alias
+  # /fakultas) open the faculty tag picker.
+  menu-commands:
+    guide: guide
+    "tagfakultas,fakultas": tagfakultas
+
+  # Automatically open a menu the first time a player ever joins (empty = off).
+  # Great for showing new players the guide. Uses the same permission check.
+  open-on-first-join: "guide"
+
 # Self-updater. Checks the GitHub Releases of the repository below for a newer
 # version. Requires the 'update' module to be enabled above.
 auto-update:

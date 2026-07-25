@@ -109,7 +109,32 @@ public final class ChestMenuRenderer {
             holder.slotButtons.put(slot, button);
         }
 
+        // For multi-page menus, add automatic Prev/Next on the bottom row so the
+        // chest fallback has the same navigation the Dialog backend adds.
+        if (menu.pageCount() > 1) {
+            int last = inv.getSize() - 1;
+            if (page > 0) {
+                placeNav(player, inv, holder, last - 8, "<yellow>« Prev</yellow>", "ARROW", page - 1);
+            }
+            if (page < menu.pageCount() - 1) {
+                placeNav(player, inv, holder, last, "<yellow>Next »</yellow>", "ARROW", page + 1);
+            }
+        }
+
         player.openInventory(inv);
+    }
+
+    /** Places a synthetic navigation button that flips to {@code targetPage}. */
+    private void placeNav(Player player, Inventory inv, MenuHolder holder, int slot, String label,
+                          String icon, int targetPage) {
+        if (slot < 0 || slot >= inv.getSize()) {
+            return;
+        }
+        MenuButton nav = new MenuButton("__nav" + targetPage, label, List.of(), icon,
+                null, -1, slot, -1, "",
+                List.of(net.aikeigroup.umccore.ui.model.MenuAction.parse("PAGE:" + targetPage)));
+        inv.setItem(slot, buildItem(player, nav));
+        holder.slotButtons.put(slot, nav);
     }
 
     private ItemStack buildItem(Player player, MenuButton button) {
