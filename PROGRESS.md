@@ -101,6 +101,15 @@
 
 ---
 
+## Unstack tool + state-match (v1.0.6)
+- **Unstack manual pakai tool** — klik-kanan mob stack sambil pegang item tertentu (default STICK)
+  → seluruh stack terurai jadi mob individual (temporary; re-merge setelah cooldown). Config
+  `mob-stacker.unstack-tool` (enabled/item/require-sneak/max-per-use), permission
+  `umccore.stacker.unstack`. Event di-cancel supaya tak trigger interaksi vanilla.
+- **State-match (fix sheared re-merge)** — sheep yang sudah dicukur RE-MERGE dengan stack woolly
+  karena merge cuma cek tipe+umur. Tambah `match-state`: cek shear+warna sheep, tamed vs wild,
+  varian mooshroom. Jadi mob yang state-nya beda tidak digabung → cukur 1 sheep tak menular ke stack.
+
 ## Interaksi mob stack (v1.0.5)
 - **Interact mob stack cuma proses 1 mob** (mis. cukur sheep stack → 1 wool lalu stuck) — karena
   stack = 1 entity, vanilla cuma memproses si representative. Fix: **split-on-interact**. Saat

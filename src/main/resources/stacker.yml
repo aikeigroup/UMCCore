@@ -28,6 +28,20 @@ mob-stacker:
   # Seconds a just-peeled mob is kept from re-stacking, so you can finish
   # interacting with it before the merge scan pulls it back into a stack.
   split-cooldown-seconds: 5
+  # Manual "temporary unstack" tool. Right-click a stacked mob while holding the
+  # configured item to break the WHOLE stack into individual mobs at once. They
+  # stay separated for split-cooldown-seconds, then the scan re-merges them.
+  # Requires permission umccore.stacker.unstack (default: op).
+  unstack-tool:
+    enabled: true
+    # Item that triggers a full unstack (Bukkit Material name).
+    item: STICK
+    # If true, the player must be sneaking (shift) while right-clicking.
+    require-sneak: false
+    # Safety cap on how many mobs one use may separate at once (prevents a huge
+    # stack from spawning hundreds of entities in one click). Overflow stays as
+    # a smaller stack.
+    max-per-use: 64
   # Extra mob types to never stack (add your own). Uses Bukkit EntityType names
   # in lowercase, e.g. [pig, cow]. This adds to the built-in default list below.
   blacklist-types: []
@@ -55,6 +69,13 @@ mob-stacker:
   protect-persistent: false
   # Only merge mobs of the same age group (don't mix babies with adults).
   match-age: true
+  # Only merge mobs that share the same visible state, so an interaction on one
+  # mob doesn't appear to affect the whole stack. Keeps separate:
+  #   - sheared sheep vs woolly sheep, and different wool colours
+  #   - tamed vs wild pets
+  #   - red vs brown mooshrooms
+  # Recommended true (fixes: shear one sheep, the rest re-merge as "sheared").
+  match-state: true
   # Per-world overrides. Example:
   # per-world:
   #   world_nether:

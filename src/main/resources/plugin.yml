@@ -74,6 +74,9 @@ permissions:
   umccore.command.menu.others:
     description: Open a menu for another player.
     default: op
+  umccore.stacker.unstack:
+    description: Use the unstack tool to break a mob stack apart.
+    default: op
 
   # --- Commands --------------------------------------------------------------
   umccore.command.help:

@@ -71,8 +71,13 @@ public final class MobStackerModule extends AbstractModule {
     private boolean protectEquipped;
     private boolean protectPersistent;
     private boolean matchAge;
+    private boolean matchState;
     private boolean splitOnInteract;
     private int splitCooldownMs;
+    private boolean unstackToolEnabled;
+    private org.bukkit.Material unstackToolMaterial;
+    private boolean unstackToolSneakOnly;
+    private int unstackToolMax;
 
     /**
      * Mobs recently peeled off a stack by interaction, mapped to the time until
@@ -106,6 +111,7 @@ public final class MobStackerModule extends AbstractModule {
         protectEquipped = config().getBoolean("mob-stacker.protect-equipped", true);
         protectPersistent = config().getBoolean("mob-stacker.protect-persistent", false);
         matchAge = config().getBoolean("mob-stacker.match-age", true);
+        matchState = config().getBoolean("mob-stacker.match-state", true);
 
         if (!config().getBoolean("mob-stacker.enabled", true)) {
             plugin.getLogger().info("Mob stacker sub-toggle is off; module idle.");
@@ -115,8 +121,15 @@ public final class MobStackerModule extends AbstractModule {
         splitOnInteract = config().getBoolean("mob-stacker.split-on-interact", true);
         splitCooldownMs = Math.max(0, config().getInt("mob-stacker.split-cooldown-seconds", 5)) * 1000;
 
+        unstackToolEnabled = config().getBoolean("mob-stacker.unstack-tool.enabled", true);
+        unstackToolMaterial = parseMaterial(
+                config().getString("mob-stacker.unstack-tool.item", "STICK"),
+                org.bukkit.Material.STICK);
+        unstackToolSneakOnly = config().getBoolean("mob-stacker.unstack-tool.require-sneak", false);
+        unstackToolMax = config().getInt("mob-stacker.unstack-tool.max-per-use", 64);
+
         listen(new DeathListener());
-        if (splitOnInteract) {
+        if (splitOnInteract || unstackToolEnabled) {
             listen(new InteractListener());
         }
         track(scheduler.runTimer(this::scanAll, scanInterval, scanInterval));
@@ -162,6 +175,11 @@ public final class MobStackerModule extends AbstractModule {
             // Don't mix babies and adults in one stack (keeps breeding/behaviour
             // sane and avoids a baby stack "growing up" all at once).
             if (matchAge && !sameAgeGroup(stack, other)) continue;
+            // Don't mix mobs whose visible state differs — e.g. a sheared sheep
+            // must NOT merge back into a woolly stack, a differently-dyed sheep
+            // stays separate, etc. Otherwise shearing one mob would "spread" to
+            // the whole stack when it re-merges.
+            if (matchState && !sameState(stack, other)) continue;
 
             int otherSize = sizeOf(other);
             int room = maxStackSize > 0 ? (maxStackSize - size) : Integer.MAX_VALUE;
@@ -245,6 +263,24 @@ public final class MobStackerModule extends AbstractModule {
             if (size <= 1) {
                 return; // not a stack — vanilla behaviour is already correct
             }
+
+            Player player = event.getPlayer();
+
+            // Manual full-unstack tool: right-click a stack while holding the
+            // configured item (e.g. a stick) to break the WHOLE stack into
+            // individual mobs at once. Takes priority over the per-interact
+            // peel, and cancels the event so no vanilla interaction fires.
+            if (unstackToolEnabled && isUnstackTool(player)) {
+                event.setCancelled(true);
+                if (player.hasPermission("umccore.stacker.unstack")) {
+                    unstackFully(mob, size);
+                }
+                return;
+            }
+
+            if (!splitOnInteract) {
+                return;
+            }
             // Peel one off: the clicked mob becomes a single mob, and the rest
             // (size-1) split into a fresh stack. Vanilla then processes the
             // click on the now-single mob normally. Mark the peeled mob so the
@@ -255,6 +291,72 @@ public final class MobStackerModule extends AbstractModule {
             markNoMerge(mob);
             splitRemainder(mob, size - 1);
         }
+    }
+
+    /** @return true if the player is holding the configured unstack tool (respecting sneak). */
+    private boolean isUnstackTool(Player player) {
+        if (unstackToolSneakOnly && !player.isSneaking()) {
+            return false;
+        }
+        var inHand = player.getInventory().getItemInMainHand();
+        return inHand != null && inHand.getType() == unstackToolMaterial;
+    }
+
+    /**
+     * Fully unstacks a mob into individual entities: the clicked mob becomes a
+     * single mob, and (size-1) fresh single mobs are spawned around it — up to
+     * {@code unstack-tool.max-per-use}. Every resulting mob gets a no-merge
+     * cooldown so they stay separated temporarily before the scan re-merges
+     * them, giving the "temporary unstack" behaviour requested.
+     */
+    private void unstackFully(Mob stack, int size) {
+        int toSpawn = Math.min(size - 1, Math.max(0, unstackToolMax - 1));
+
+        // The clicked mob becomes a normal single mob.
+        setSize(stack, 1);
+        refreshName(stack);
+        markNoMerge(stack);
+
+        World world = stack.getWorld();
+        var loc = stack.getLocation();
+        EntityType type = stack.getType();
+        boolean baby = stack instanceof org.bukkit.entity.Ageable ag && !ag.isAdult();
+
+        // Spawn the rest as individual mobs on the next tick.
+        runLaterTracked(() -> {
+            for (int i = 0; i < toSpawn; i++) {
+                Entity spawned = world.spawnEntity(loc, type);
+                if (spawned instanceof Mob single) {
+                    if (baby && single instanceof org.bukkit.entity.Ageable ag) {
+                        ag.setBaby();
+                    }
+                    setSize(single, 1);
+                    refreshName(single);
+                    markNoMerge(single);
+                }
+            }
+            // If the stack was larger than the per-use cap, leave the overflow
+            // as a smaller stack next to the unstacked mobs.
+            int overflow = size - 1 - toSpawn;
+            if (overflow > 0) {
+                Entity rest = world.spawnEntity(loc, type);
+                if (rest instanceof Mob restStack) {
+                    if (baby && restStack instanceof org.bukkit.entity.Ageable ag) {
+                        ag.setBaby();
+                    }
+                    setSize(restStack, overflow);
+                    refreshName(restStack);
+                }
+            }
+        }, 1L);
+    }
+
+    private org.bukkit.Material parseMaterial(String name, org.bukkit.Material def) {
+        if (name == null) {
+            return def;
+        }
+        org.bukkit.Material m = org.bukkit.Material.matchMaterial(name.trim().toUpperCase(Locale.ROOT));
+        return m != null ? m : def;
     }
 
     /**
@@ -367,6 +469,30 @@ public final class MobStackerModule extends AbstractModule {
         boolean aBaby = a instanceof org.bukkit.entity.Ageable ag && !ag.isAdult();
         boolean bBaby = b instanceof org.bukkit.entity.Ageable bg && !bg.isAdult();
         return aBaby == bBaby;
+    }
+
+    /**
+     * @return true if two same-type mobs share the visible state that stacking
+     *         should not blur together. This stops a sheared sheep from merging
+     *         back into a woolly stack (which would look like shearing spread to
+     *         all of them), keeps different wool colours separate, etc.
+     */
+    private boolean sameState(Mob a, Mob b) {
+        // Sheep: shear state + wool colour must match.
+        if (a instanceof org.bukkit.entity.Sheep sa && b instanceof org.bukkit.entity.Sheep sb) {
+            if (sa.isSheared() != sb.isSheared()) return false;
+            if (sa.getColor() != sb.getColor()) return false;
+        }
+        // Tameable (wolf/cat/parrot): don't merge tamed with wild.
+        if (a instanceof Tameable ta && b instanceof Tameable tb) {
+            if (ta.isTamed() != tb.isTamed()) return false;
+        }
+        // Mooshroom variant (red vs brown) must match.
+        if (a instanceof org.bukkit.entity.MushroomCow ma
+                && b instanceof org.bukkit.entity.MushroomCow mb) {
+            if (ma.getVariant() != mb.getVariant()) return false;
+        }
+        return true;
     }
 
     /** @return true if the mob has any armour or hand item equipped. */
