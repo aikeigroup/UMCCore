@@ -1,13 +1,9 @@
 name: Build
 
-# Compile and package on every push/PR so breakage is caught early, and upload
-# the built jar as a workflow artifact for easy download.
+# CI build for pull requests (and manual runs), so breakage is caught before
+# merge. Pushes to main are handled by the Release workflow, which also builds —
+# keeping build.yml off `push: main` avoids running two builds per push.
 on:
-  push:
-    branches: [ main ]
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
   pull_request:
     branches: [ main ]
   workflow_dispatch:
