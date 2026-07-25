@@ -1,0 +1,66 @@
+# ==========================================================================
+#  UMCCore — Vote Log (votelog.yml)
+#  Posts a Discord embed (via DiscordSRV) every time a player votes.
+#  Requires NuVotifier/Votifier + DiscordSRV.
+#  Disable with modules.votelog: false in config.yml.
+# ==========================================================================
+#
+#  HOW IT WORKS
+#  Votifier/NuVotifier fires a VotifierEvent when a vote arrives; this module
+#  listens for it and sends one embed to Discord. It does NOT depend on your
+#  reward plugin (SuperbVote/VotingPlugin/etc.) — those also listen to the same
+#  event; UMCCore just adds a Discord post alongside them.
+#
+#  DUPLICATE VOTES (proxy -> backend setups)
+#  If NuVotifier on your proxy forwards votes to the backend, a single vote can
+#  fire VotifierEvent more than once on the same backend. `dedupe-window-seconds`
+#  drops any repeat of the same player+site within that many seconds. A real
+#  vote for one site happens at most once per day, so this never blocks a
+#  legitimate vote — it only kills forward/retry duplicates.
+#
+#  MULTIPLE BACKENDS
+#  The dedupe cache is in-memory and per-server. If you later add more backends
+#  and the vote is broadcast to all of them, EACH would post to Discord. To keep
+#  one post per vote, enable this module (modules.votelog: true) on ONE server
+#  only, or give each server its own `channel` below.
+
+# Seconds within which a repeated player+site vote is treated as a duplicate and
+# NOT posted. 0 disables dedupe (post every event). Default 60.
+dedupe-window-seconds: 60
+
+# Log ignored duplicates to the server console (helps verify your forwarding
+# setup). Set false to stay quiet.
+log-duplicates: true
+
+# DiscordSRV channel name (as configured in DiscordSRV), or a raw channel ID.
+channel: "global"
+
+# The embed sent for each vote. All text supports PlaceholderAPI (%..%) plus
+# these tokens: {player} {service} {address}.
+#   {player}  = voter's name
+#   {service} = vote site name (as sent by the list, e.g. "TopMinecraftServers")
+#   {address} = voter IP as reported by the vote site (may be blank)
+embed:
+  # Left color bar. Hex #rrggbb.
+  color: "#43b581"
+  # Big heading. Leave blank to omit.
+  title: "🎉 New Vote!"
+  # Body text under the title. Leave blank to omit.
+  description: "**{player}** just voted on **{service}**. Thank you!"
+  # Show the player's head as the embed thumbnail (mc-heads.net). When true it
+  # overrides thumbnail-url below. Set false to use a fixed image (or none).
+  show-player-head: true
+  # Fixed thumbnail image URL (used only when show-player-head is false).
+  thumbnail-url: ""
+  # Extra fields (each: name, value, inline). Remove the list to show none.
+  fields:
+    - name: "Player"
+      value: "{player}"
+      inline: true
+    - name: "Site"
+      value: "{service}"
+      inline: true
+  # Small footer line. Leave blank to omit.
+  footer: "UMCCore • Vote Log"
+  # Add Discord's "sent at" timestamp to the embed.
+  show-timestamp: true

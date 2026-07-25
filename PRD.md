@@ -194,6 +194,18 @@ Contoh tipe animasi: `SCROLL`, `TYPEWRITER`, `GRADIENT_SHIFT`, `RAINBOW`, `FRAME
 - State persist: simpan message ID agar tetap edit embed yang sama setelah reload/restart.
 - Fallback aman bila DiscordSRV tidak ada / channel invalid → log warning, modul disable.
 
+### 4.8b Vote Log ke Discord (via NuVotifier + DiscordSRV)
+
+**Tujuan:** setiap vote pemain (dari situs vote) diposting sebagai embed ke channel Discord.
+
+- Mendengarkan **`VotifierEvent`** dari **NuVotifier/Votifier** (bukan dari plugin reward — plugin reward hanya konsumen event yang sama).
+- Kirim **embed** via DiscordSRV JDA: `channel.sendMessageEmbeds(...)` (pesan baru per vote, bukan edit).
+- Embed customizable: `color`, `title`, `description`, `fields`, `footer`, thumbnail (kepala pemain via mc-heads / URL statis), timestamp.
+- **Placeholder**: `{player}`, `{service}` (nama situs vote), `{address}` (IP voter), + PlaceholderAPI.
+- **Anti-duplikat**: pada setup proxy→backend, satu vote bisa memicu `VotifierEvent` lebih dari sekali. Kunci dedupe `username|serviceName` dengan window configurable (`dedupe-window-seconds`, default 60; `0` = off). Vote sah per situs ≤ 1×/hari sehingga window tak pernah menolak vote asli.
+- **Catatan multi-backend**: cache dedupe in-memory & per-server. Jika modul aktif di banyak backend yang menerima broadcast vote yang sama, aktifkan votelog di **satu** server saja atau pakai channel berbeda.
+- Soft-depend: bila Votifier atau DiscordSRV tidak ada → log warning, modul idle. Config `votelog.yml`, toggle `modules.votelog`.
+
 ### 4.9 UI System — Menu Modal Cross-Platform
 
 **Inti fitur UI.** Tujuan: menu yang **aman di Java** dan **ramah Bedrock (Geyser)**.
@@ -316,6 +328,7 @@ UMCCore/
 ├── mobxp.yml            # xp & drop control
 ├── actionbar.yml        # daftar animasi action bar
 ├── discord.yml          # embed config (multi-embed)
+├── votelog.yml          # embed vote log (NuVotifier + DiscordSRV, anti-dupe)
 ├── menus/               # folder definisi menu custom
 │   ├── main.yml
 │   ├── stats.yml

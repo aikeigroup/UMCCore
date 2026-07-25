@@ -3,7 +3,7 @@
 > Status pengerjaan per-milestone & per-fitur. **Selalu update file ini setiap ada
 > perubahan.** Legend: ✅ selesai · 🚧 sedang dikerjakan · ⬜ belum · ⚠️ butuh perhatian.
 
-**Last updated:** 2026-07-25 (fix: clearlag tak lagi membuang pelampung pancing)
+**Last updated:** 2026-07-25 (v1.2.3 — vote log ke Discord; v1.2.2 fix fishing bobber)
 **Target:** Paper 26.2 · Java 25 · Maven · package `net.aikeigroup.umccore`
 
 ---
@@ -100,6 +100,22 @@
 | ✅ | Self auto-update module | Cek GitHub Releases, notify admin/console, `auto-download` opsional ke update folder (apply saat restart), `/umccore update [check\|download]`. Dependency-free (regex parse). Bisa di-disable via `modules.update`. |
 
 ---
+
+## Vote Log ke Discord (v1.2.3)
+- **Vote Log** — modul baru `votelog`: dengarkan `VotifierEvent` (NuVotifier/Votifier) lalu kirim
+  **embed** ke Discord via DiscordSRV. Embed customizable (color/title/description/fields/footer,
+  thumbnail kepala pemain via mc-heads, timestamp). Token `{player}` `{service}` `{address}` + PAPI.
+  Soft-depend: idle bila Votifier/DiscordSRV tak ada. Config `votelog.yml`, toggle `modules.votelog`.
+- **Anti-duplikat vote** — pada setup proxy→backend, satu vote bisa memicu `VotifierEvent` >1×.
+  Dedupe key `username|serviceName` dengan window `dedupe-window-seconds` (default 60, `0`=off).
+  Cache in-memory per-server; catatan multi-backend ada di komentar `votelog.yml`.
+  Dependency: `com.github.NuVotifier.NuVotifier:nuvotifier-bukkit/api:2.7.2` (jitpack, provided).
+  IntegrationManager kini punya `hasVotifier()` (deteksi "Votifier"/"NuVotifier").
+
+## Fix: clearlag membuang umpan pancing (v1.2.2)
+- **`FISHING_BOBBER` = Projectile** → ikut terhapus saat `remove.projectiles` (default true) waktu
+  pemain sedang memancing. Ditambahkan ke `DEFAULT_BLACKLIST`. Bisa juga di-blacklist manual via
+  `protect.blacklist-types: [fishing_bobber]` tanpa update jar.
 
 ## Throw mob + charge meter + config auto-write (v1.2.0)
 - **Lempar mob** — saat menggendong: tap sneak = drop biasa; tahan sneak = power bar berosilasi

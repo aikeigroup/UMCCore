@@ -24,6 +24,7 @@ public final class IntegrationManager {
     private boolean luckPerms;
     private boolean discordSrv;
     private boolean floodgate;
+    private boolean votifier;
 
     private final PlaceholderIntegration papi;
 
@@ -39,6 +40,8 @@ public final class IntegrationManager {
         luckPerms = isPresent("LuckPerms");
         discordSrv = isPresent("DiscordSRV");
         floodgate = isPresent("floodgate");
+        // NuVotifier registers as "Votifier"; plain Votifier does too.
+        votifier = isPresent("Votifier") || isPresent("NuVotifier");
 
         // (Re)register the PAPI expansion to match current availability.
         if (placeholderApi) {
@@ -52,7 +55,8 @@ public final class IntegrationManager {
                 + ", Vault=" + vault
                 + ", LuckPerms=" + luckPerms
                 + ", DiscordSRV=" + discordSrv
-                + ", Floodgate=" + floodgate);
+                + ", Floodgate=" + floodgate
+                + ", Votifier=" + votifier);
     }
 
     /** Cleans up integration registrations on plugin shutdown. */
@@ -83,5 +87,10 @@ public final class IntegrationManager {
 
     public boolean hasFloodgate() {
         return floodgate;
+    }
+
+    /** @return true if NuVotifier (or classic Votifier) is present. */
+    public boolean hasVotifier() {
+        return votifier;
     }
 }

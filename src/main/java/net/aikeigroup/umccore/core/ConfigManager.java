@@ -37,6 +37,7 @@ public final class ConfigManager {
             "mobxp",
             "actionbar",
             "discord",
+            "votelog",
             "pickup"
     };
 

@@ -18,6 +18,7 @@ import net.aikeigroup.umccore.modules.performance.PerformanceModule;
 import net.aikeigroup.umccore.modules.pickup.MobPickupModule;
 import net.aikeigroup.umccore.modules.ui.UIModule;
 import net.aikeigroup.umccore.modules.update.UpdateModule;
+import net.aikeigroup.umccore.modules.votelog.VoteLogModule;
 import net.aikeigroup.umccore.ui.ActionExecutor;
 import net.aikeigroup.umccore.ui.MenuService;
 import net.aikeigroup.umccore.util.TextService;
@@ -110,6 +111,8 @@ public final class UMCCore extends JavaPlugin {
         modules().register(new ActionBarModule());
         // M5 — Discord status embed.
         modules().register(new DiscordModule());
+        // Vote log — Discord embed on each Votifier vote (soft: Votifier+DiscordSRV).
+        modules().register(new VoteLogModule());
         // M6 — self updater.
         modules().register(new UpdateModule());
     }

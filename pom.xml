@@ -6,7 +6,7 @@
 
     <groupId>net.aikeigroup</groupId>
     <artifactId>UMCCore</artifactId>
-    <version>1.2.2</version>
+    <version>1.2.3</version>
     <packaging>jar</packaging>
 
     <name>UMCCore</name>
@@ -99,6 +99,22 @@
             <groupId>com.discordsrv</groupId>
             <artifactId>discordsrv</artifactId>
             <version>1.29.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- NuVotifier (soft, vote log). nuvotifier-bukkit provides the Bukkit
+             VotifierEvent; nuvotifier-api provides the Vote model. Both via
+             jitpack (com.github.NuVotifier). Provided: never bundled. -->
+        <dependency>
+            <groupId>com.github.NuVotifier.NuVotifier</groupId>
+            <artifactId>nuvotifier-bukkit</artifactId>
+            <version>2.7.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.NuVotifier.NuVotifier</groupId>
+            <artifactId>nuvotifier-api</artifactId>
+            <version>2.7.2</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

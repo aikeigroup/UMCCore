@@ -28,6 +28,8 @@ modules:
   actionbar: true
   # DiscordSRV real-time status embed.
   discord: true
+  # Post a Discord embed on each vote (needs NuVotifier/Votifier + DiscordSRV).
+  votelog: true
   # Cross-platform UI (Dialog API + Floodgate form + chest-GUI fallback).
   ui: true
   # Self-updater: checks GitHub releases for a newer version.
