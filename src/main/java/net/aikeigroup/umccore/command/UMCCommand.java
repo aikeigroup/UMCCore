@@ -3,6 +3,7 @@ package net.aikeigroup.umccore.command;
 import net.aikeigroup.umccore.UMCCore;
 import net.aikeigroup.umccore.command.subcommands.ActionBarCommand;
 import net.aikeigroup.umccore.command.subcommands.ClearLagCommand;
+import net.aikeigroup.umccore.command.subcommands.DiscordCommand;
 import net.aikeigroup.umccore.command.subcommands.HelpCommand;
 import net.aikeigroup.umccore.command.subcommands.MenuCommand;
 import net.aikeigroup.umccore.command.subcommands.ModuleCommand;
@@ -55,6 +56,8 @@ public final class UMCCommand implements CommandExecutor, TabCompleter {
         register(new MenuCommand());
         // M4 — action bar.
         register(new ActionBarCommand());
+        // M5 — Discord.
+        register(new DiscordCommand());
     }
 
     /** Registers a sub-command under its name and each alias. */

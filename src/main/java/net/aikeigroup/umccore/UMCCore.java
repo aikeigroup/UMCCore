@@ -11,6 +11,7 @@ import net.aikeigroup.umccore.modules.itemstacker.ItemStackerModule;
 import net.aikeigroup.umccore.modules.limiter.MobLimiterModule;
 import net.aikeigroup.umccore.modules.mobstacker.MobStackerModule;
 import net.aikeigroup.umccore.modules.actionbar.ActionBarModule;
+import net.aikeigroup.umccore.modules.discord.DiscordModule;
 import net.aikeigroup.umccore.modules.mobxp.MobXpModule;
 import net.aikeigroup.umccore.modules.performance.PerformanceModule;
 import net.aikeigroup.umccore.modules.ui.UIModule;
@@ -100,7 +101,8 @@ public final class UMCCore extends JavaPlugin {
         modules().register(new UIModule());
         // M4 — animated action bar.
         modules().register(new ActionBarModule());
-        // Discord (M5) module is added next.
+        // M5 — Discord status embed.
+        modules().register(new DiscordModule());
     }
 
     private void registerCommands() {

@@ -3,7 +3,7 @@
 > Status pengerjaan per-milestone & per-fitur. **Selalu update file ini setiap ada
 > perubahan.** Legend: ✅ selesai · 🚧 sedang dikerjakan · ⬜ belum · ⚠️ butuh perhatian.
 
-**Last updated:** 2026-07-25 (M4 selesai)
+**Last updated:** 2026-07-25 (M5 selesai)
 **Target:** Paper 26.2 · Java 21 · Maven · package `net.aikeigroup.umccore`
 
 ---
@@ -70,15 +70,17 @@
 | ✅ | Vault / LuckPerms | Dipakai via placeholder di menu (`%vault_*%`, `%luckperms_*%`), flag deteksi soft di `IntegrationManager`. Wrapper khusus ditunda (belum diperlukan). |
 | ✅ | Subcommand: `actionbar toggle` | Player-only, cek toggle-allowed. |
 
-## Milestone M5 — Discord ⬜
+## Milestone M5 — Discord ✅ (build hijau)
 
-| Status | Item |
-|---|---|
-| ⬜ | DiscordSRV hook (JDA edit message) |
-| ⬜ | Status embed real-time, interval, multi-embed |
-| ⬜ | Dynamic color by TPS |
-| ⬜ | Persist message ID (`data/discord-state.yml`) |
-| ⬜ | Subcommand: `discord update` |
+| Status | Item | Catatan |
+|---|---|---|
+| ✅ | DiscordSRV hook (JDA edit message) | `DiscordSRV.getPlugin().getJda()`, edit `editMessageEmbedsById` (bukan kirim baru); fallback kirim bila message hilang. |
+| ✅ | Status embed real-time, interval, multi-embed | Timer async (network off main-thread), interval min 15s, banyak embed per channel. |
+| ✅ | Dynamic color by TPS | good/warn/bad threshold, hex configurable. |
+| ✅ | Persist message ID (`data/discord-state.yml`) | Edit message yang sama lintas reload/restart. |
+| ✅ | Token & PAPI | `{tps}{mspt}{online}{max}{ram_*}{uptime}{world_entities}{interval}` + `%server_*%`. |
+| ✅ | Subcommand: `discord update` | Force refresh async. |
+| ✅ | Soft-safe | Tanpa DiscordSRV → modul idle + warning, plugin tetap jalan. Dependency `provided` (tidak di-shade). |
 
 ## Milestone M6 — Docs & Polish ⬜
 

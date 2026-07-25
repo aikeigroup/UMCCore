@@ -44,6 +44,12 @@ module:
   # {name} = module, {state} = its current state (active/inactive).
   already: "<yellow>{name}</yellow> <gray>is already {state}.</gray>"
 
+discord:
+  # Shown when /umccore discord is used but the module is disabled.
+  disabled: "<red>The Discord module is disabled (or DiscordSRV is missing).</red>"
+  # Confirmation that an update was queued.
+  updating: "<green>Discord embeds are being updated...</green>"
+
 actionbar:
   # Shown when the module is disabled but /umccore actionbar is used.
   disabled: "<red>The action bar module is disabled.</red>"

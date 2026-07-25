@@ -41,6 +41,10 @@
             <id>opencollab-snapshot</id>
             <url>https://repo.opencollab.dev/maven-snapshots/</url>
         </repository>
+        <repository>
+            <id>discordsrv</id>
+            <url>https://nexus.scarsz.me/content/groups/public/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -87,6 +91,14 @@
             <groupId>org.geysermc.floodgate</groupId>
             <artifactId>api</artifactId>
             <version>2.2.4-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- DiscordSRV (soft, status embed). Bundles its own JDA. -->
+        <dependency>
+            <groupId>com.discordsrv</groupId>
+            <artifactId>discordsrv</artifactId>
+            <version>1.29.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
