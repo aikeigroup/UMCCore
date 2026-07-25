@@ -193,7 +193,9 @@ public final class DiscordModule extends AbstractModule {
                 .orElse(ServerStats.empty());
     }
 
-    private void saveState() {
+    // Synchronized: JDA delivers .queue() callbacks on its own threads, so
+    // multiple embeds can finish sending at once and race on the state file.
+    private synchronized void saveState() {
         try {
             state.save(stateFile);
         } catch (IOException e) {

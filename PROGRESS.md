@@ -3,7 +3,7 @@
 > Status pengerjaan per-milestone & per-fitur. **Selalu update file ini setiap ada
 > perubahan.** Legend: ✅ selesai · 🚧 sedang dikerjakan · ⬜ belum · ⚠️ butuh perhatian.
 
-**Last updated:** 2026-07-25 (M5 selesai)
+**Last updated:** 2026-07-25 (M6 selesai — semua milestone inti selesai)
 **Target:** Paper 26.2 · Java 21 · Maven · package `net.aikeigroup.umccore`
 
 ---
@@ -82,14 +82,28 @@
 | ✅ | Subcommand: `discord update` | Force refresh async. |
 | ✅ | Soft-safe | Tanpa DiscordSRV → modul idle + warning, plugin tetap jalan. Dependency `provided` (tidak di-shade). |
 
-## Milestone M6 — Docs & Polish ⬜
+## Milestone M6 — Docs & Polish ✅ (build hijau)
 
-| Status | Item |
-|---|---|
-| ⬜ | `docs/` lengkap (configuration, commands, menus, discord, placeholders, api, performance-tuning) |
-| ⬜ | README |
-| ⬜ | API publik (`api/`) + Javadoc |
-| ⬜ | Testing beban + optimisasi akhir |
+| Status | Item | Catatan |
+|---|---|---|
+| ✅ | `docs/` lengkap | configuration, commands, menus, discord, placeholders, api, performance-tuning. |
+| ✅ | README | Fitur, instalasi, build, quick start, index docs. |
+| ✅ | API publik (`api/UMCCoreAPI`) + events | `stats()`, `openMenu()`, `isModuleActive()`, `resolve()`; `StackMergeEvent`/`StackKillEvent` didokumentasikan. |
+| ⬜ | Testing beban di server asli | Butuh server Paper 26.2 live — belum dijalankan. |
+
+## Tambahan (di luar rencana awal) ✅
+
+| Status | Item | Catatan |
+|---|---|---|
+| ✅ | GitHub Actions build | `.github/workflows/build.yml` — build tiap push/PR ke main, upload jar artifact. |
+| ✅ | GitHub Actions release | `.github/workflows/release.yml` — tag `v*` → build + GitHub Release + attach jar. |
+| ✅ | Self auto-update module | Cek GitHub Releases, notify admin/console, `auto-download` opsional ke update folder (apply saat restart), `/umccore update [check\|download]`. Dependency-free (regex parse). Bisa di-disable via `modules.update`. |
+
+---
+
+## Sisa / Catatan
+- **Testing runtime di server Paper 26.2 asli** belum dilakukan (environment ini tak menjalankan server). Semua milestone lolos compile + package.
+- Floodgate form path (fallback Bedrock non-Dialog) belum diimplementasi — tidak diperlukan di 26.2 karena Dialog API sudah native lintas platform. Disediakan sebagai opsi masa depan.
 
 ---
 

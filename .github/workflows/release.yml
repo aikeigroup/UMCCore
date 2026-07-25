@@ -1,0 +1,49 @@
+name: Release
+
+# On pushing a version tag like v1.0.0, build the jar and publish a GitHub
+# Release with the jar attached. The self-updater reads these releases.
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag/version to release (e.g. v1.0.1)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
+
+      - name: Determine version
+        id: ver
+        run: |
+          # Use the tag if present, otherwise the manual input.
+          REF="${GITHUB_REF_NAME}"
+          if [ -n "${{ github.event.inputs.tag }}" ]; then REF="${{ github.event.inputs.tag }}"; fi
+          echo "tag=${REF}" >> "$GITHUB_OUTPUT"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.ver.outputs.tag }}
+          name: UMCCore ${{ steps.ver.outputs.tag }}
+          generate_release_notes: true
+          files: target/UMCCore-*.jar

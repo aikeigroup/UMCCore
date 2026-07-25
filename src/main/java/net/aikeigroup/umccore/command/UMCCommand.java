@@ -10,6 +10,7 @@ import net.aikeigroup.umccore.command.subcommands.ModuleCommand;
 import net.aikeigroup.umccore.command.subcommands.PerfCommand;
 import net.aikeigroup.umccore.command.subcommands.ReloadCommand;
 import net.aikeigroup.umccore.command.subcommands.StackCommand;
+import net.aikeigroup.umccore.command.subcommands.UpdateCommand;
 import net.aikeigroup.umccore.command.subcommands.VersionCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -58,6 +59,8 @@ public final class UMCCommand implements CommandExecutor, TabCompleter {
         register(new ActionBarCommand());
         // M5 — Discord.
         register(new DiscordCommand());
+        // M6 — self updater.
+        register(new UpdateCommand());
     }
 
     /** Registers a sub-command under its name and each alias. */

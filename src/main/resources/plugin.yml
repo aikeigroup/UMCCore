@@ -44,6 +44,7 @@ permissions:
       umccore.command.discord: true
       umccore.command.module: true
       umccore.command.debug: true
+      umccore.command.update: true
   umccore.menu.*:
     description: Access to every built-in and custom menu.
     default: op
@@ -107,4 +108,7 @@ permissions:
     default: op
   umccore.command.debug:
     description: Show diagnostic information.
+    default: op
+  umccore.command.update:
+    description: Check for and download plugin updates.
     default: op

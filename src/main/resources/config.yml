@@ -30,6 +30,8 @@ modules:
   discord: true
   # Cross-platform UI (Dialog API + Floodgate form + chest-GUI fallback).
   ui: true
+  # Self-updater: checks GitHub releases for a newer version.
+  update: true
 
 # General plugin behaviour.
 general:
@@ -59,3 +61,17 @@ ui:
   # force chest-GUI everywhere. Individual menus can override with type: DIALOG
   # or type: GUI in their menus/<name>.yml file.
   prefer-dialog: true
+
+# Self-updater. Checks the GitHub Releases of the repository below for a newer
+# version. Requires the 'update' module to be enabled above.
+auto-update:
+  # GitHub repository in owner/name form to check for releases.
+  repository: "aikeigroup/UMCCore"
+  # How often (hours) to check for updates automatically. Minimum 1.
+  check-interval-hours: 6
+  # If true, automatically download a newer jar into the server's update folder
+  # (applied on next restart). If false, only notify — admins run
+  # /umccore update download to fetch it.
+  auto-download: false
+  # Notify online admins (umccore.command.update) when an update is available.
+  notify-admins: true

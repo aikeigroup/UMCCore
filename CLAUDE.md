@@ -41,5 +41,14 @@
 
 ## Milestone (ringkas)
 
-M1 Core ✅ · M2 Performance/Optimisasi · M3 UI System · M4 Integrasi & Action Bar ·
-M5 Discord · M6 Docs & Polish. Detail per-item di `PROGRESS.md`.
+M1 Core ✅ · M2 Performance/Optimisasi ✅ · M3 UI System ✅ · M4 Integrasi & Action Bar ✅ ·
+M5 Discord ✅ · M6 Docs & Polish ✅. Tambahan: GitHub Actions (build+release) ✅ & self
+auto-update ✅. Detail per-item di `PROGRESS.md`.
+
+Sisa: testing runtime di server Paper 26.2 asli (belum dijalankan — butuh server live).
+
+## Rilis
+
+- Versi ada di `pom.xml`. Untuk rilis: bump versi → commit → `git tag vX.Y.Z` → push tag.
+  Workflow `.github/workflows/release.yml` otomatis build + GitHub Release + attach jar.
+- Self-updater membaca GitHub Releases repo `aikeigroup/UMCCore`.

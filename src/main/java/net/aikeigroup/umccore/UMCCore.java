@@ -1,5 +1,6 @@
 package net.aikeigroup.umccore;
 
+import net.aikeigroup.umccore.api.UMCCoreAPI;
 import net.aikeigroup.umccore.command.UMCCommand;
 import net.aikeigroup.umccore.core.ConfigManager;
 import net.aikeigroup.umccore.core.MessageManager;
@@ -15,6 +16,7 @@ import net.aikeigroup.umccore.modules.discord.DiscordModule;
 import net.aikeigroup.umccore.modules.mobxp.MobXpModule;
 import net.aikeigroup.umccore.modules.performance.PerformanceModule;
 import net.aikeigroup.umccore.modules.ui.UIModule;
+import net.aikeigroup.umccore.modules.update.UpdateModule;
 import net.aikeigroup.umccore.ui.ActionExecutor;
 import net.aikeigroup.umccore.ui.MenuService;
 import net.aikeigroup.umccore.util.TextService;
@@ -58,6 +60,9 @@ public final class UMCCore extends JavaPlugin {
         this.textService = new TextService(this);
         this.menuService = new MenuService(this);
         this.actionExecutor = new ActionExecutor(this);
+
+        // 3c. Publish the public API for other plugins.
+        UMCCoreAPI.init(this);
 
         // 4. Module registry + reload orchestrator.
         this.moduleManager = new ModuleManager(this);
@@ -103,6 +108,8 @@ public final class UMCCore extends JavaPlugin {
         modules().register(new ActionBarModule());
         // M5 — Discord status embed.
         modules().register(new DiscordModule());
+        // M6 — self updater.
+        modules().register(new UpdateModule());
     }
 
     private void registerCommands() {
@@ -148,5 +155,14 @@ public final class UMCCore extends JavaPlugin {
 
     public ActionExecutor actionExecutor() {
         return actionExecutor;
+    }
+
+    /**
+     * @return the file name of this plugin's jar on disk (e.g.
+     *         {@code UMCCore-1.0.0.jar}). Used by the updater so the file it
+     *         places in the update folder matches and gets applied on restart.
+     */
+    public String getUpdateJarName() {
+        return getFile().getName();
     }
 }
