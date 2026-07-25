@@ -15,6 +15,11 @@ safety net; mobxp shapes farm output.
   servers to reduce scan cost; lower it for snappier merging.
 - `kill-one-at-a-time` — `true` feels vanilla (one kill = one drop). `false` kills the whole
   stack and multiplies drops/XP.
+- **Protected mobs** — a built-in default blacklist keeps villagers, traders, golems, bosses,
+  mounts (horses/llamas/camels/etc.), and other special mobs from stacking. Named, tamed,
+  leashed, ridden, passenger-carrying, and equipped mobs are also skipped. Set
+  `use-default-blacklist: false` to manage it yourself; `protect-persistent` is `false` by
+  default so bred farm animals still stack. Babies never merge with adults (`match-age`).
 
 ## Item Stacker (`stacker.yml`)
 

@@ -23,11 +23,23 @@ remove:
 
 # Never remove entities matching these protections.
 protect:
+  # Mobs with a name tag / custom name (does NOT protect stacked item drops).
   custom-named: true
+  # Tamed pets (wolves, cats, horses, parrots...).
   tamed: true
+  # Leashed mobs.
   leashed: true
+  # Mobs riding a boat / minecart / another entity.
   in-vehicle: true
+  # Mobs that are carrying passengers (jockeys, ridden horses, etc.).
+  has-passengers: true
+  # Armor stands.
   armor-stands: true
+  # "Persistent" mobs — name-tagged, spawn-egg, or flagged not to despawn.
+  # Also covers bred farm animals, so they survive clearlag.
+  persistent: true
+  # Mobs wearing/holding equipment (armour or hand items).
+  equipped: true
   # Only clean entities in chunks that have no player nearby.
   playerless-chunks-only: false
 

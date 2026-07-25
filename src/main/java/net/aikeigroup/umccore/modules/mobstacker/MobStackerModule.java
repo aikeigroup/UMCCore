@@ -21,6 +21,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Merges nearby same-type mobs into a single entity that represents the whole
@@ -33,6 +34,26 @@ import java.util.Locale;
  */
 public final class MobStackerModule extends AbstractModule {
 
+    /**
+     * Mobs that must never be stacked by default: unique/boss mobs, trading and
+     * utility NPCs, rideable mounts, pets, and other entities where stacking
+     * would break gameplay (villager trades, golem protection, mounts, etc.).
+     * Admins can override via {@code use-default-blacklist: false}.
+     */
+    private static final Set<String> DEFAULT_BLACKLIST = Set.of(
+            // Trading / utility NPCs
+            "villager", "zombie_villager", "wandering_trader",
+            // Golems / helpers
+            "iron_golem", "snow_golem", "allay",
+            // Bosses & unique
+            "ender_dragon", "wither", "elder_guardian", "warden",
+            // Rideable mounts / pack animals
+            "horse", "donkey", "mule", "llama", "trader_llama",
+            "skeleton_horse", "zombie_horse", "camel", "strider", "pig",
+            // Sensitive / special-behaviour mobs
+            "sniffer", "creaking", "shulker", "ravager"
+    );
+
     /** PDC key holding the stack size on a mob. Absence == size 1. */
     private NamespacedKey sizeKey;
 
@@ -43,6 +64,10 @@ public final class MobStackerModule extends AbstractModule {
     private boolean killOneAtATime;
     private List<String> blacklist;
     private List<String> whitelist;
+    private boolean useDefaultBlacklist;
+    private boolean protectEquipped;
+    private boolean protectPersistent;
+    private boolean matchAge;
 
     public MobStackerModule() {
         super("mobstacker");
@@ -64,6 +89,10 @@ public final class MobStackerModule extends AbstractModule {
         killOneAtATime = config().getBoolean("mob-stacker.kill-one-at-a-time", true);
         blacklist = lower(config().getStringList("mob-stacker.blacklist-types"));
         whitelist = lower(config().getStringList("mob-stacker.whitelist-types"));
+        useDefaultBlacklist = config().getBoolean("mob-stacker.use-default-blacklist", true);
+        protectEquipped = config().getBoolean("mob-stacker.protect-equipped", true);
+        protectPersistent = config().getBoolean("mob-stacker.protect-persistent", false);
+        matchAge = config().getBoolean("mob-stacker.match-age", true);
 
         if (!config().getBoolean("mob-stacker.enabled", true)) {
             plugin.getLogger().info("Mob stacker sub-toggle is off; module idle.");
@@ -105,6 +134,9 @@ public final class MobStackerModule extends AbstractModule {
             if (!other.isValid()) continue;
             if (other.getType() != stack.getType()) continue;
             if (!canStack(other)) continue;
+            // Don't mix babies and adults in one stack (keeps breeding/behaviour
+            // sane and avoids a baby stack "growing up" all at once).
+            if (matchAge && !sameAgeGroup(stack, other)) continue;
 
             int otherSize = sizeOf(other);
             int room = maxStackSize > 0 ? (maxStackSize - size) : Integer.MAX_VALUE;
@@ -182,19 +214,62 @@ public final class MobStackerModule extends AbstractModule {
 
     private boolean canStack(Mob mob) {
         String type = mob.getType().name().toLowerCase(Locale.ROOT);
+
+        // Whitelist wins: if set, only listed types stack.
         if (!whitelist.isEmpty() && !whitelist.contains(type)) return false;
+
+        // Blacklists: admin list + the built-in default (villagers, bosses,
+        // mounts, pets, etc.) unless the admin opts out.
         if (blacklist.contains(type)) return false;
+        if (useDefaultBlacklist && DEFAULT_BLACKLIST.contains(type)) return false;
+
+        // Never stack a mob a player is riding or that rides something, or that
+        // carries passengers (e.g. a chicken jockey) — merging would eject them.
+        if (mob.isInsideVehicle() || !mob.getPassengers().isEmpty()) return false;
+
+        // Player-named mobs (name tag) stay individual. Our own stack label is
+        // detected by the size PDC key and is allowed.
         if (config().getBoolean("mob-stacker.protect-named", true) && mob.customName() != null) {
-            // Allow our own stack-name but not player-given names. We detect our
-            // name by presence of the stack-size PDC key.
             if (!mob.getPersistentDataContainer().has(sizeKey, PersistentDataType.INTEGER)) {
                 return false;
             }
         }
+
         if (config().getBoolean("mob-stacker.protect-tamed", true)
                 && mob instanceof Tameable t && t.isTamed()) return false;
         if (config().getBoolean("mob-stacker.protect-leashed", true) && mob.isLeashed()) return false;
+
+        // Persistent mobs (spawn-egg/named/no-despawn) are usually placed
+        // intentionally by players; don't stack them by default.
+        if (protectPersistent && mob.isPersistent()) return false;
+
+        // Mobs wearing/holding gear (armed piglins, equipped zombies, mobs given
+        // items) are typically special — protect them from stacking.
+        if (protectEquipped && hasEquipment(mob)) return false;
+
         return true;
+    }
+
+    /** @return true if both mobs are the same age group (both adult or both baby). */
+    private boolean sameAgeGroup(Mob a, Mob b) {
+        boolean aBaby = a instanceof org.bukkit.entity.Ageable ag && !ag.isAdult();
+        boolean bBaby = b instanceof org.bukkit.entity.Ageable bg && !bg.isAdult();
+        return aBaby == bBaby;
+    }
+
+    /** @return true if the mob has any armour or hand item equipped. */
+    private boolean hasEquipment(Mob mob) {
+        var eq = mob.getEquipment();
+        if (eq == null) {
+            return false;
+        }
+        for (var slot : org.bukkit.inventory.EquipmentSlot.values()) {
+            var item = eq.getItem(slot);
+            if (item != null && !item.getType().isAir()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private int sizeOf(LivingEntity e) {

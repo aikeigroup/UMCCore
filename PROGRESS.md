@@ -101,6 +101,18 @@
 
 ---
 
+## Proteksi stack & clearlag (v1.0.2, dari analisis mob 26.2)
+- **Default blacklist mob stacker** — villager/zombie_villager/wandering_trader (trade rusak),
+  iron_golem/snow_golem/allay, boss (ender_dragon/wither/elder_guardian/warden), mount
+  (horse/donkey/mule/llama/trader_llama/camel/strider/pig/skeleton_horse/zombie_horse),
+  sniffer/creaking/shulker/ravager. Toggle `use-default-blacklist`.
+- **Proteksi stacker tambahan**: mob naik/ditumpangi kendaraan (boat/minecart/jockey), punya
+  passenger, ber-equipment (`protect-equipped`), persistent (`protect-persistent`, default
+  false agar ternak hasil breeding tetap bisa stack), dan `match-age` (baby ≠ adult).
+- **Proteksi clearlag tambahan**: `has-passengers`, `persistent` (termasuk ternak & name-tag),
+  `equipped`. (Sebelumnya sudah ada custom-named/tamed/leashed/in-vehicle/armor-stands.)
+  Mob di boat / diikat / punya penumpang kini aman dari clearlag.
+
 ## Bugfix (post-rilis, dari testing user)
 - **Mob stacker: mob hilang, bukan ter-stack** — snapshot list di `scanAll` bisa berisi entity
   yang sudah di-remove (terserap stack lain); loop lalu merge stack hidup KE entity mati →

@@ -139,6 +139,7 @@ public final class ClearLagModule extends AbstractModule {
 
     private boolean isProtected(Entity e) {
         if (e instanceof Player) return true;
+
         // Custom-name protection is meant for named MOBS/entities the owner wants
         // to keep. It must NOT protect dropped items — the item stacker gives
         // them an "x{amount}" label, which previously made clearlag skip stacked
@@ -146,14 +147,50 @@ public final class ClearLagModule extends AbstractModule {
         if (config().getBoolean("protect.custom-named", true)
                 && !(e instanceof Item)
                 && e.customName() != null) return true;
+
         if (config().getBoolean("protect.tamed", true)
                 && e instanceof Tameable t && t.isTamed()) return true;
+
         if (config().getBoolean("protect.leashed", true)
                 && e instanceof LivingEntity le && le.isLeashed()) return true;
+
+        // A mob riding a boat/minecart/another entity — never clear it.
         if (config().getBoolean("protect.in-vehicle", true)
                 && e.isInsideVehicle()) return true;
+
+        // A mob that is carrying passengers (e.g. a jockey, or a horse a player
+        // set up) — clearing it would eject/kill the riders.
+        if (config().getBoolean("protect.has-passengers", true)
+                && !e.getPassengers().isEmpty()) return true;
+
         if (config().getBoolean("protect.armor-stands", true)
                 && e.getType() == EntityType.ARMOR_STAND) return true;
+
+        // Persistent mobs (name-tagged, spawn-egg, or flagged not to despawn) are
+        // usually placed intentionally by players; keep them by default.
+        if (config().getBoolean("protect.persistent", true)
+                && e instanceof Mob mob && mob.isPersistent()) return true;
+
+        // Mobs wearing/holding equipment (armed piglins, kitted mobs, mobs given
+        // items) are typically special — don't clear them by default.
+        if (config().getBoolean("protect.equipped", true)
+                && e instanceof LivingEntity living && hasEquipment(living)) return true;
+
+        return false;
+    }
+
+    /** @return true if the living entity has any armour or hand item equipped. */
+    private boolean hasEquipment(LivingEntity living) {
+        var eq = living.getEquipment();
+        if (eq == null) {
+            return false;
+        }
+        for (var slot : org.bukkit.inventory.EquipmentSlot.values()) {
+            var item = eq.getItem(slot);
+            if (item != null && !item.getType().isAir()) {
+                return true;
+            }
+        }
         return false;
     }
 
