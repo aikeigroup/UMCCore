@@ -101,6 +101,15 @@
 
 ---
 
+## Throw mob + charge meter + config auto-write (v1.2.0)
+- **Lempar mob** — saat menggendong: tap sneak = drop biasa; tahan sneak = power bar berosilasi
+  (full→min→full) di action bar, lepas = lempar sesuai power saat itu. `throw` config (enabled,
+  tap-max-ms, min/max-power, charge-cycle-ticks). Bar warna hijau→kuning→merah. require-sneak
+  pickup default jadi false (sneak dipakai untuk drop/throw).
+- **Config auto-write** — ConfigManager kini MENULIS key baru ke file .yml di disk (bukan cuma
+  in-memory), lengkap dengan komentar, saat plugin update. Admin bisa lihat & edit opsi baru
+  langsung di file. Log "Updated 'x.yml' with new default options."
+
 ## Spawner limit + stack-aware limiter + merge-toward-player (v1.1.2)
 - **Limit spawner** — `spawner-limit` (limiter.yml): batasi jumlah mob di sekitar spawner (radius,
   max, count-all-types), dicek sebelum limit chunk. Lawan utama grinder farm menumpuk ratusan mob.

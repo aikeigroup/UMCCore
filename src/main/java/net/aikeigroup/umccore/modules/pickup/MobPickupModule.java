@@ -10,15 +10,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDismountEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.util.Vector;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Lets players pick up a mob and carry it on their head, then drop it.
@@ -40,6 +43,26 @@ public final class MobPickupModule extends AbstractModule {
     private double maxHealth;
     private List<String> blacklist;
 
+    // Throw-on-hold-sneak with an oscillating charge meter.
+    private boolean throwEnabled;
+    private int tapMaxMs;         // release under this = drop, not throw
+    private double throwMinPower;
+    private double throwMaxPower;
+    private int chargeCycleTicks;  // ticks for one full->min->full oscillation
+
+    /** Active charge sessions (player holding sneak while carrying a mob). */
+    private final Map<UUID, ChargeSession> charging = new ConcurrentHashMap<>();
+
+    /** Per-player charge state while holding sneak. */
+    private static final class ChargeSession {
+        final long startMs;
+        int ticks;
+        double lastFraction; // 0..1 charge at the latest tick
+        ChargeSession(long startMs) {
+            this.startMs = startMs;
+        }
+    }
+
     public MobPickupModule() {
         super("pickup");
     }
@@ -51,7 +74,9 @@ public final class MobPickupModule extends AbstractModule {
 
     @Override
     protected void enable() {
-        requireSneak = config().getBoolean("require-sneak", true);
+        // Default false: sneak is reserved for the drop/throw control, so
+        // pickup is a plain right-click.
+        requireSneak = config().getBoolean("require-sneak", false);
         allowHostile = config().getBoolean("allow-hostile", true);
         allowPassive = config().getBoolean("allow-passive", true);
         requireEmptyHand = config().getBoolean("require-empty-hand", true);
@@ -60,7 +85,20 @@ public final class MobPickupModule extends AbstractModule {
         blacklist = config().getStringList("blacklist-types").stream()
                 .map(s -> s.toLowerCase(Locale.ROOT)).toList();
 
+        throwEnabled = config().getBoolean("throw.enabled", true);
+        tapMaxMs = Math.max(0, config().getInt("throw.tap-max-ms", 200));
+        throwMinPower = config().getDouble("throw.min-power", 0.6);
+        throwMaxPower = config().getDouble("throw.max-power", 2.4);
+        chargeCycleTicks = Math.max(10, config().getInt("throw.charge-cycle-ticks", 30));
+
         listen(new PickupListener());
+        // Per-tick charge meter animation for players holding sneak to throw.
+        track(scheduler.runTimer(this::chargeTick, 1L, 1L));
+    }
+
+    @Override
+    protected void disable() {
+        charging.clear();
     }
 
     private final class PickupListener implements Listener {
@@ -100,40 +138,97 @@ public final class MobPickupModule extends AbstractModule {
             pickUp(player, mob);
         }
 
-        // Sneak + right-click air/block while carrying a mob drops it.
-        @EventHandler(priority = EventPriority.LOW)
-        public void onInteractAir(PlayerInteractEvent event) {
-            if (event.getHand() != EquipmentSlot.HAND) {
-                return;
-            }
-            if (event.getAction() != Action.RIGHT_CLICK_AIR
-                    && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                return;
-            }
+        // Sneak controls drop/throw while carrying a mob:
+        //   - quick tap sneak (< tap-max-ms)  -> drop the mob in front
+        //   - hold sneak                       -> a power meter oscillates
+        //     (full -> min -> full ...) on the action bar; release to throw the
+        //     mob with the power shown at that instant.
+        @EventHandler
+        public void onToggleSneak(PlayerToggleSneakEvent event) {
             Player player = event.getPlayer();
-            if (requireSneak && !player.isSneaking()) {
+            if (!isCarrying(player)) {
+                charging.remove(player.getUniqueId());
                 return;
             }
-            if (isCarrying(player)) {
-                dropCarried(player);
+            if (event.isSneaking()) {
+                if (!throwEnabled) {
+                    dropCarried(player);
+                    return;
+                }
+                // Begin charging (the per-tick task animates the meter).
+                charging.put(player.getUniqueId(), new ChargeSession(System.currentTimeMillis()));
+            } else {
+                ChargeSession session = charging.remove(player.getUniqueId());
+                if (session == null) {
+                    // Already sneaking at pickup time — ignore this release.
+                    return;
+                }
+                long held = System.currentTimeMillis() - session.startMs;
+                if (!throwEnabled || held < tapMaxMs) {
+                    dropCarried(player);
+                } else {
+                    throwCarried(player, session.lastFraction);
+                }
             }
         }
 
-        // Right-clicking with an occupied head (not on a mob) drops the carried
-        // mob. We also catch dismount to keep state clean.
         @EventHandler
         public void onDismount(EntityDismountEvent event) {
             if (event.getDismounted() instanceof Player player && event.getEntity() instanceof Mob) {
-                // A carried mob left the player's head; nothing to persist.
-                feedback(player, "pickup.dropped");
+                charging.remove(player.getUniqueId());
             }
         }
 
         @EventHandler
         public void onQuit(PlayerQuitEvent event) {
             // Drop anything carried so it isn't lost when the player leaves.
+            charging.remove(event.getPlayer().getUniqueId());
             dropCarried(event.getPlayer());
         }
+    }
+
+    /**
+     * Per-tick charge animation: for each player holding sneak while carrying a
+     * mob, advance an oscillating power fraction and render it as a bar on the
+     * action bar so they can time a throw.
+     */
+    private void chargeTick() {
+        if (charging.isEmpty()) {
+            return;
+        }
+        for (var entry : charging.entrySet()) {
+            Player player = plugin.getServer().getPlayer(entry.getKey());
+            ChargeSession session = entry.getValue();
+            if (player == null || !isCarrying(player)) {
+                charging.remove(entry.getKey());
+                continue;
+            }
+            session.ticks++;
+            // Triangle wave 0..1..0 over chargeCycleTicks: full -> min -> full.
+            double phase = (session.ticks % chargeCycleTicks) / (double) chargeCycleTicks;
+            double fraction = 1.0 - Math.abs(1.0 - 2.0 * phase); // 0..1..0
+            session.lastFraction = fraction;
+            player.sendActionBar(renderChargeBar(fraction));
+        }
+    }
+
+    /** Builds an eye-catching MiniMessage power bar for the given 0..1 charge. */
+    private net.kyori.adventure.text.Component renderChargeBar(double fraction) {
+        int total = 20;
+        int filled = (int) Math.round(fraction * total);
+        String tmpl = plugin.configs().messages().getString("pickup.charge",
+                "<gray>Throw power</gray> <white>[</white>{bar}<white>]</white> <yellow>{percent}%</yellow>");
+        // Colour shifts green -> yellow -> red as power rises, for quick reading.
+        String color = fraction < 0.4 ? "#57f287" : fraction < 0.75 ? "#faa61a" : "#ff4d4d";
+        StringBuilder bar = new StringBuilder();
+        bar.append("<").append(color).append(">");
+        bar.append("|".repeat(Math.max(0, filled)));
+        bar.append("<dark_gray>");
+        bar.append("|".repeat(Math.max(0, total - filled)));
+        String out = tmpl
+                .replace("{bar}", bar.toString())
+                .replace("{percent}", String.valueOf((int) Math.round(fraction * 100)));
+        return Text.mm(out);
     }
 
     // --- Pickup / drop logic ----------------------------------------------
@@ -147,8 +242,7 @@ public final class MobPickupModule extends AbstractModule {
     }
 
     /**
-     * Drops the first mob the player is carrying, placing it where they look.
-     * Called from a companion sneak-interact handler and on quit.
+     * Drops the carried mob gently in front of the player (no launch).
      */
     public void dropCarried(Player player) {
         for (Entity passenger : player.getPassengers()) {
@@ -156,8 +250,35 @@ public final class MobPickupModule extends AbstractModule {
                 player.removePassenger(mob);
                 Location drop = player.getEyeLocation().add(player.getLocation().getDirection());
                 mob.teleport(drop);
+                feedback(player, "pickup.dropped");
             }
         }
+    }
+
+    /**
+     * Throws the carried mob forward with power scaled by {@code fraction}
+     * (0..1) — the value the charge meter showed when the player released sneak.
+     */
+    public void throwCarried(Player player, double fraction) {
+        double power = throwMinPower + (throwMaxPower - throwMinPower) * clamp01(fraction);
+        for (Entity passenger : player.getPassengers()) {
+            if (passenger instanceof Mob mob) {
+                player.removePassenger(mob);
+                Location from = player.getEyeLocation().add(player.getLocation().getDirection());
+                mob.teleport(from);
+                // Launch along the look direction, with a slight upward arc.
+                Vector velocity = player.getLocation().getDirection().normalize()
+                        .multiply(power).add(new Vector(0, 0.35, 0));
+                mob.setVelocity(velocity);
+                player.getWorld().playSound(player.getLocation(),
+                        org.bukkit.Sound.ENTITY_SNOWBALL_THROW, 1f, 1f);
+                feedback(player, "pickup.thrown");
+            }
+        }
+    }
+
+    private static double clamp01(double v) {
+        return Math.max(0.0, Math.min(1.0, v));
     }
 
     private boolean isCarrying(Player player) {

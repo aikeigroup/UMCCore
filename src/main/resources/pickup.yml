@@ -4,15 +4,33 @@
 #  Disable with modules.pickup: false in config.yml.
 #
 #  How to use (in game):
-#   - Sneak + right-click a mob (empty hand) to lift it onto your head.
-#   - Sneak + right-click again (on the mob, or air) to set it down in front.
+#   - Right-click a mob (empty hand) to lift it onto your head.
+#   - While carrying:
+#       * quick tap sneak (shift)  -> drop the mob in front of you
+#       * hold sneak               -> a throw-power bar oscillates on the action
+#                                      bar (full -> low -> full ...); release to
+#                                      throw the mob with that power. Time your
+#                                      release for the distance you want.
 #  Requires permission umccore.pickup.use (hostile mobs also need
 #  umccore.pickup.hostile).
 # ==========================================================================
 
-# Require the player to be sneaking (shift) to pick up / drop. Recommended true
-# so normal right-click interactions (breeding, trading) aren't hijacked.
-require-sneak: true
+# Require sneaking to PICK UP. Default false because sneak is used for the
+# drop/throw control while carrying — with this true you'd throw the moment you
+# pick up. Leave false unless you disable throwing below.
+require-sneak: false
+
+# Throw-on-hold-sneak with an oscillating power meter.
+throw:
+  enabled: true
+  # A sneak released faster than this (ms) counts as a tap = drop, not a throw.
+  tap-max-ms: 200
+  # Throw velocity at the meter's minimum and maximum. Higher = farther.
+  min-power: 0.6
+  max-power: 2.4
+  # Ticks for one full oscillation of the meter (full -> min -> full). Lower =
+  # faster/harder to time. 30 ticks = 1.5s at 20 fps.
+  charge-cycle-ticks: 30
 
 # Require an empty main hand to pick up (so held items still work normally).
 require-empty-hand: true

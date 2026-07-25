@@ -66,15 +66,40 @@ public final class ConfigManager {
         }
 
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        // Keep comments when we rewrite the file to add new options.
+        config.options().parseComments(true);
 
         // Merge in any keys added in newer plugin versions from the jar default,
-        // so upgrades don't silently miss new options.
+        // so upgrades don't silently miss new options — AND write them back to
+        // the file on disk (with their documentation comments) so the admin can
+        // see and edit them, not just have them applied invisibly at runtime.
         try (InputStream in = plugin.getResource(name + ".yml")) {
             if (in != null) {
                 YamlConfiguration defaults = YamlConfiguration.loadConfiguration(
                         new InputStreamReader(in, StandardCharsets.UTF_8));
+
+                boolean added = false;
+                for (String key : defaults.getKeys(true)) {
+                    if (!config.contains(key)) {
+                        config.set(key, defaults.get(key));
+                        added = true;
+                    }
+                }
+
+                // Also pull in the default's comments for context.
                 config.setDefaults(defaults);
                 config.options().copyDefaults(true);
+
+                if (added) {
+                    try {
+                        config.save(file);
+                        plugin.getLogger().info("Updated '" + name
+                                + ".yml' with new default options.");
+                    } catch (IOException e) {
+                        plugin.getLogger().log(Level.WARNING,
+                                "Could not write new options into '" + name + ".yml'", e);
+                    }
+                }
             }
         } catch (IOException e) {
             plugin.getLogger().log(Level.WARNING,

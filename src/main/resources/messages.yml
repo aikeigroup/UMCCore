@@ -8,9 +8,13 @@
 prefix: "<gray>[<gradient:#00c6ff:#0072ff>UMC</gradient>]</gray> "
 
 # Mob pickup action-bar feedback (no prefix; shown on the action bar).
+# All MiniMessage — <bold>, <gradient>, <#hex> etc. work.
 pickup:
-  picked: "<green>Picked up the mob. Sneak + right-click to drop.</green>"
+  picked: "<green>Picked up! <gray>Tap <white>sneak</white> to drop, hold to throw.</gray></green>"
   dropped: "<gray>Dropped the mob.</gray>"
+  thrown: "<gold>Mob thrown!</gold>"
+  # Charge meter while holding sneak. Tokens: {bar} (the bar), {percent}.
+  charge: "<gray>Throw power</gray> <white>[</white>{bar}<white>]</white> <yellow><bold>{percent}%</bold></yellow>"
   not-allowed: "<red>That mob can't be picked up.</red>"
   no-hostile-perm: "<red>You can't pick up hostile mobs.</red>"
   no-mob-perm: "<red>You can't pick up this type of mob.</red>"
