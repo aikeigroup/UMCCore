@@ -39,19 +39,29 @@ rotation:
   # a gentle, non-jarring change.
   transition-frames: 20
 
-# The segments themselves. Each has a base text plus an in-segment animation
-# that runs continuously while the segment is displayed.
+# The segments themselves. Each has a base text plus an in-segment animation.
+#
+# COLOURS: text uses MiniMessage, so full hex/RGB is supported:
+#   <#ff8800>orange</#ff8800>          - a single hex colour
+#   <gradient:#ff0000:#00ff00>hi</gradient>  - a hex gradient
+#   <rainbow>hello</rainbow>            - static rainbow
+# Use animation NONE (or STATIC) to keep YOUR colours exactly as written; the
+# colour animations below (RAINBOW/GRADIENT_SHIFT/PULSE) recolour the text.
+#
+# Motion has built-in pauses (jeda): each colour animation drifts for ~2s then
+# rests ~1.5s, so it never feels frantic.
 segments:
   - id: welcome
+    # This keeps your own hex gradient exactly (animation NONE).
     text: "<gray>Welcome to <gradient:#00c6ff:#0072ff>the server</gradient></gray>"
     # In-segment animation while shown. Options:
-    #   GRADIENT_SHIFT - the gradient scrolls across the text
-    #   RAINBOW        - animated rainbow colors
-    #   SCROLL         - text scrolls horizontally within a window
-    #   WAVE           - vertical character wave via formatting
-    #   PULSE          - brightness pulse
-    #   NONE           - static (still transitions between segments)
-    animation: GRADIENT_SHIFT
+    #   NONE / STATIC  - keep the text's own colours (hex/gradient) unchanged
+    #   GRADIENT_SHIFT - a gradient gently drifts across the text
+    #   RAINBOW        - slow rainbow hue cycle
+    #   PULSE          - gentle brightness pulse
+    #   SCROLL         - text scrolls slowly within a window
+    #   WAVE           - a soft highlight sweeps across the characters
+    animation: NONE
     # Optional permission to see this segment; empty = everyone.
     permission: ""
 
@@ -61,8 +71,8 @@ segments:
     permission: ""
 
   - id: tip
-    text: "<yellow>Tip: open the menu with /umccore menu main</yellow>"
-    animation: SCROLL
+    text: "<#ffcc00>Tip: open the menu with /umccore menu main</#ffcc00>"
+    animation: NONE
     permission: ""
 
 # Scroll animation window width (characters) for SCROLL segments.

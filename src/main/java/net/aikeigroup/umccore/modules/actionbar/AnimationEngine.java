@@ -39,16 +39,37 @@ public final class AnimationEngine {
         if (plain.isEmpty()) {
             return Component.empty();
         }
+        // "Eased" frame: advances during a MOVE window then holds still during a
+        // PAUSE window, so the motion has calm pauses (jeda) instead of running
+        // non-stop. Colour animations use this; NONE keeps the user's own text
+        // (hex/gradients included) untouched.
+        double eased = easedFrame(frame, MOVE_FRAMES, PAUSE_FRAMES);
         return switch (animation) {
             case NONE -> Text.mm(miniMessageText);
-            // Speeds are hue-degrees per frame. At ~20 fps these are kept low so
-            // the motion reads as smooth and calm, not strobing.
-            case RAINBOW -> Text.mm(perCharHue(plain, frame, 0, 360, 1.6));
-            case GRADIENT_SHIFT -> Text.mm(perCharHue(plain, frame, 190, 70, 1.4));
-            case PULSE -> Text.mm(pulse(plain, frame));
+            // Speeds are hue-degrees per eased-frame; kept low for a gentle drift.
+            case RAINBOW -> Text.mm(perCharHue(plain, eased, 0, 360, 1.4));
+            case GRADIENT_SHIFT -> Text.mm(perCharHue(plain, eased, 190, 70, 1.2));
+            case PULSE -> Text.mm(pulse(plain, eased));
             case SCROLL -> Text.mm(scroll(plain, frame, 40));
-            case WAVE -> Text.mm(wave(plain, frame));
+            case WAVE -> Text.mm(wave(plain, eased));
         };
+    }
+
+    // Motion cadence: move for MOVE_FRAMES, then hold for PAUSE_FRAMES. At 20 fps
+    // that is ~2s of gentle motion followed by ~1.5s of stillness.
+    private static final int MOVE_FRAMES = 40;
+    private static final int PAUSE_FRAMES = 30;
+
+    /**
+     * Maps the raw frame counter to a monotonically increasing value that
+     * advances during the move window and stays flat during the pause window —
+     * giving animations a natural "move, then rest" rhythm.
+     */
+    private static double easedFrame(long frame, int movePeriod, int pausePeriod) {
+        long cycle = movePeriod + pausePeriod;
+        long cycles = frame / cycle;
+        long pos = frame % cycle;
+        return cycles * (double) movePeriod + Math.min(pos, movePeriod);
     }
 
     /**
@@ -65,21 +86,33 @@ public final class AnimationEngine {
                                              Transition transition, double progress, long frame) {
         String from = Text.plain(fromText);
         String to = Text.plain(toText);
+        // Each transition returns COMPLETE MiniMessage. typewriter/slide return
+        // plain text and colour it themselves with a calm static gradient;
+        // fade/wave already embed their own colour tags. We must NOT run the
+        // result through perCharHue again — doing so escaped those tags and
+        // produced broken colour output.
         String out = switch (transition) {
-            case TYPEWRITER -> typewriter(from, to, progress);
-            case SLIDE -> slide(from, to, progress);
+            case TYPEWRITER -> tint(typewriter(from, to, progress));
+            case SLIDE -> tint(slide(from, to, progress));
             case FADE -> fade(from, to, progress);
             case WAVE -> waveWipe(from, to, progress);
         };
-        // Give the transition gentle motion colour so it always looks alive.
-        return Text.mm(perCharHue(out, frame, 200, 40, 1.2));
+        return Text.mm(out);
+    }
+
+    /** Wraps already-escaped plain text in a calm, static two-colour gradient. */
+    private static String tint(String escaped) {
+        if (escaped.isEmpty()) {
+            return escaped;
+        }
+        return "<gradient:#7fd8ff:#4aa8ff>" + escaped + "</gradient>";
     }
 
     // --- Segment animations ------------------------------------------------
 
-    private static String pulse(String plain, long frame) {
+    private static String pulse(String plain, double frame) {
         // Brightness oscillates between ~40% and 100% of white. Slower divisor
-        // = gentler pulse (a full breath every ~3s at 20 fps).
+        // = gentler pulse.
         double t = (Math.sin(frame / 10.0) + 1) / 2; // 0..1
         int v = (int) (110 + t * 145);               // 110..255
         String hex = hex(v, v, v);
@@ -90,21 +123,20 @@ public final class AnimationEngine {
         String padded = plain + "   •   ";
         int len = padded.length();
         int width = Math.min(window, len);
-        // Advance one character every 2 frames so scrolling reads smoothly
-        // instead of racing past at 20 chars/second.
-        int offset = (int) ((frame / 2) % len);
+        // Advance one character every 3 frames so scrolling reads slowly and
+        // calmly instead of racing past.
+        int offset = (int) ((frame / 3) % len);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < width; i++) {
             sb.append(padded.charAt((offset + i) % len));
         }
-        return perCharHue(sb.toString(), frame, 190, 60, 1.4);
+        return perCharHue(sb.toString(), frame, 190, 60, 1.2);
     }
 
-    private static String wave(String plain, long frame) {
+    private static String wave(String plain, double frame) {
         // A bright highlight travels across the text (bold) while the rest is dim.
-        // Advance every 2 frames for a calm sweep.
         int len = plain.length();
-        int pos = (int) ((frame / 2) % len);
+        int pos = (int) (((long) (frame / 2)) % Math.max(1, len));
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < len; i++) {
             char c = plain.charAt(i);
@@ -173,7 +205,7 @@ public final class AnimationEngine {
     // --- Colour helpers ----------------------------------------------------
 
     /** Colours each character with a hue that moves with the frame counter. */
-    private static String perCharHue(String plain, long frame, double baseHue,
+    private static String perCharHue(String plain, double frame, double baseHue,
                                      double span, double speed) {
         StringBuilder sb = new StringBuilder();
         int len = Math.max(1, plain.length());

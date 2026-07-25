@@ -101,6 +101,17 @@
 
 ---
 
+## Action bar fix (v1.0.3)
+- **Bug warna** — `renderTransition` membungkus SEMUA hasil transisi dengan `perCharHue`,
+  padahal `FADE`/`WAVE` sudah punya tag MiniMessage sendiri → tag-nya ke-escape → markup rusak
+  (muncul saat default diubah ke FADE). Fix: tiap transisi kembalikan MiniMessage lengkap
+  sendiri; typewriter/slide dibungkus gradient statis via `tint()`, fade/wave tidak dibungkus ulang.
+- **Kurang jeda / terlalu dinamis** — tambah `easedFrame` (gerak ~2s lalu diam ~1.5s) untuk
+  animasi warna, scroll diperlambat (tiap 3 frame), default segment jadi `NONE`.
+- **Support hex RGB** — animation `NONE`/`STATIC` mempertahankan warna teks sendiri persis
+  (`<#ff8800>`, `<gradient:#a:#b>`, `<rainbow>`). Fallback nilai animasi tak dikenal → `NONE`
+  (dulu ke GRADIENT_SHIFT yang menimpa warna user). Contoh config pakai hex.
+
 ## Proteksi stack & clearlag (v1.0.2, dari analisis mob 26.2)
 - **Default blacklist mob stacker** — villager/zombie_villager/wandering_trader (trade rusak),
   iron_golem/snow_golem/allay, boss (ender_dragon/wither/elder_guardian/warden), mount

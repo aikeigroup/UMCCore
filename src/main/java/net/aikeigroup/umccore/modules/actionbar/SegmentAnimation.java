@@ -4,10 +4,14 @@ import java.util.Locale;
 
 /**
  * Continuous animation applied to a segment while it is displayed.
- * Every type produces a new frame each tick — none are static.
  */
 public enum SegmentAnimation {
-    /** No colour motion, but still re-sent each frame and still transitions. */
+    /**
+     * No colour motion — the segment's own MiniMessage is shown as-is, so any
+     * hex/RGB colours or gradients you write (e.g. {@code <#ff8800>} or
+     * {@code <gradient:#ff0000:#00ff00>}) are preserved exactly. Still fully
+     * animated between segments via the configured transition.
+     */
     NONE,
     /** Full-spectrum hue cycle across characters. */
     RAINBOW,
@@ -20,12 +24,19 @@ public enum SegmentAnimation {
     /** A bright highlight travels across the characters. */
     WAVE;
 
+    /**
+     * Parses an animation name. {@code STATIC} is accepted as an alias for
+     * {@link #NONE}. Unknown values fall back to {@code NONE} so the segment's
+     * own colours (including hex) are kept rather than being overridden.
+     */
     public static SegmentAnimation from(String raw) {
-        if (raw == null) return GRADIENT_SHIFT;
+        if (raw == null) return NONE;
+        String v = raw.trim().toUpperCase(Locale.ROOT);
+        if (v.equals("STATIC")) return NONE;
         try {
-            return valueOf(raw.trim().toUpperCase(Locale.ROOT));
+            return valueOf(v);
         } catch (IllegalArgumentException e) {
-            return GRADIENT_SHIFT;
+            return NONE;
         }
     }
 }
