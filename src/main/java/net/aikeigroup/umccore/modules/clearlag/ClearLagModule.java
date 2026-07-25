@@ -28,6 +28,13 @@ public final class ClearLagModule extends AbstractModule {
     private List<Integer> warnAt;
     private int secondsUntilClean;
 
+    /**
+     * The mob stacker's PDC key ({@code umccore:stack_size}). A mob carrying it
+     * only has a custom name because it is a stack label — not because a player
+     * name-tagged it — so the custom-name protection must NOT apply to it.
+     */
+    private org.bukkit.NamespacedKey stackKey;
+
     public ClearLagModule() {
         super("clearlag");
     }
@@ -37,6 +44,7 @@ public final class ClearLagModule extends AbstractModule {
         intervalSeconds = Math.max(10, config().getInt("interval-seconds", 300));
         warnAt = config().getIntegerList("warn-at-seconds");
         secondsUntilClean = intervalSeconds;
+        stackKey = new org.bukkit.NamespacedKey(plugin, "stack_size");
 
         // One-second heartbeat drives both the countdown and the cleanup.
         track(scheduler.runTimer(this::tick, 20L, 20L));
@@ -141,11 +149,14 @@ public final class ClearLagModule extends AbstractModule {
         if (e instanceof Player) return true;
 
         // Custom-name protection is meant for named MOBS/entities the owner wants
-        // to keep. It must NOT protect dropped items — the item stacker gives
-        // them an "x{amount}" label, which previously made clearlag skip stacked
-        // item drops entirely. So exclude Item entities from this rule.
+        // to keep. It must NOT protect:
+        //   - dropped items (the item stacker gives them an "x{amount}" label)
+        //   - stacked mobs (the mob stacker gives them a "{type} x{amount}" label)
+        // Both carry the stacker's PDC key, so their name is a stack label, not a
+        // player-given name tag. Excluding them lets clearlag clear stacks.
         if (config().getBoolean("protect.custom-named", true)
                 && !(e instanceof Item)
+                && !isStackLabel(e)
                 && e.customName() != null) return true;
 
         if (config().getBoolean("protect.tamed", true)
@@ -177,6 +188,16 @@ public final class ClearLagModule extends AbstractModule {
                 && e instanceof LivingEntity living && hasEquipment(living)) return true;
 
         return false;
+    }
+
+    /**
+     * @return true if the entity's custom name is a stacker label (it carries
+     *         the mob stacker's {@code stack_size} PDC key), i.e. its name is
+     *         not a player-given name tag.
+     */
+    private boolean isStackLabel(Entity e) {
+        return e.getPersistentDataContainer()
+                .has(stackKey, org.bukkit.persistence.PersistentDataType.INTEGER);
     }
 
     /** @return true if the living entity has any armour or hand item equipped. */

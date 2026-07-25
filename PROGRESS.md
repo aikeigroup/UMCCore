@@ -101,6 +101,14 @@
 
 ---
 
+## ClearLagg vs mob stack (v1.0.4)
+- **Mob ter-stack tidak ter-clear** — mob stack punya custom name ("{type} x{amount}"), dan
+  `protect.custom-named` melindungi semua entity bernama → stack tak pernah kehapus (sama seperti
+  bug item stack sebelumnya). Fix: clearlag deteksi label stacker via PDC key `stack_size`
+  (helper `isStackLabel`) dan mengecualikannya dari proteksi custom-name. Sekarang stack ikut
+  terhapus sesuai toggle kategori (`remove.hostile-mobs`/`passive-mobs`), bukan diproteksi karena
+  nama. Item & mob berlabel stacker sama-sama dikecualikan.
+
 ## Action bar fix (v1.0.3)
 - **Bug warna** — `renderTransition` membungkus SEMUA hasil transisi dengan `perCharHue`,
   padahal `FADE`/`WAVE` sudah punya tag MiniMessage sendiri → tag-nya ke-escape → markup rusak
