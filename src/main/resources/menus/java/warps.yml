@@ -1,49 +1,66 @@
 # ==========================================================================
-#  Menu: warps  (menus/warps.yml)
-#  A warp list. Each button teleports to a location. Give per-warp permission
-#  with umccore.warp.<name> if you want to restrict individual warps.
-#  TELEPORT format: world,x,y,z[,yaw,pitch]
+#  Menu: warps  —  JAVA  (menus/java/warps.yml)
+#  Daftar warp. Tiap tombol teleport ke satu lokasi lalu menutup menu.
+#  Batasi warp dengan permission umccore.warp.<nama>.
+#  Format TELEPORT: world,x,y,z[,yaw,pitch]
+#  Design system & palet: lihat header main.yml.
 # ==========================================================================
 
-title: "<aqua><bold>Warps</bold></aqua>"
+title: "<gradient:#4dd0e1:#18ffff><bold>DAFTAR WARP</bold></gradient>"
+kind: MENU
 type: AUTO
 rows: 3
 
+body:
+  - "<#90a4ae>Ketuk tujuan untuk langsung teleport ke sana."
+
 buttons:
   spawn:
-    label: "<green>Spawn</green>"
-    description:
-      - "<gray>The main hub</gray>"
+    label: "<gradient:#33d17a:#4dd0e1><bold>Spawn</bold></gradient>"
+    description: [ "<#90a4ae>Hub utama server</#90a4ae>" ]
     icon: BEACON
     slot: 10
     permission: umccore.warp.spawn
     actions:
       - "TELEPORT:world,0.5,100,0.5"
-      - "MESSAGE:<green>Warped to spawn.</green>"
+      - "MESSAGE:<#33d17a>✔ Teleport ke <white>Spawn<#33d17a>."
+      - "SOUND:ENTITY_ENDERMAN_TELEPORT"
       - "CLOSE"
   shop:
-    label: "<gold>Shop</gold>"
-    description:
-      - "<gray>Buy and sell</gray>"
+    label: "<#ffb300><bold>Shop</bold></#ffb300>"
+    description: [ "<#90a4ae>Area jual-beli</#90a4ae>" ]
     icon: EMERALD
-    slot: 12
+    slot: 11
     permission: umccore.warp.shop
     actions:
       - "TELEPORT:world,50.5,100,50.5"
+      - "MESSAGE:<#ffb300>✔ Teleport ke <white>Shop<#ffb300>."
+      - "SOUND:ENTITY_ENDERMAN_TELEPORT"
+      - "CLOSE"
+  crate:
+    label: "<#b388ff><bold>Area Crate</bold></#b388ff>"
+    description: [ "<#90a4ae>Buka crate & gacha hadiah</#90a4ae>" ]
+    icon: ENDER_CHEST
+    slot: 13
+    permission: umccore.warp.crate
+    actions:
+      - "TELEPORT:world,25.5,100,-40.5"
+      - "MESSAGE:<#b388ff>✔ Teleport ke <white>Area Crate<#b388ff>."
+      - "SOUND:ENTITY_ENDERMAN_TELEPORT"
       - "CLOSE"
   pvp:
-    label: "<red>PvP Arena</red>"
-    description:
-      - "<gray>Fight other players</gray>"
+    label: "<#ef5350><bold>Arena PvP</bold></#ef5350>"
+    description: [ "<#90a4ae>Bertarung dengan pemain lain</#90a4ae>" ]
     icon: DIAMOND_SWORD
     slot: 14
     permission: umccore.warp.pvp
     actions:
       - "TELEPORT:world,-100.5,80,-100.5"
+      - "MESSAGE:<#ef5350>⚔ Memasuki <white>Arena PvP<#ef5350>. Hati-hati!"
+      - "SOUND:ENTITY_ENDERMAN_TELEPORT"
       - "CLOSE"
   back:
-    label: "<gray>Back</gray>"
+    label: "<#90a4ae>« Kembali</#90a4ae>"
     icon: ARROW
     slot: 22
-    actions:
-      - "OPEN_MENU:main"
+    actions: [ "OPEN_MENU:main" ]

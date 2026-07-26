@@ -1,236 +1,231 @@
 # ==========================================================================
-#  Menu: guide  (menus/guide.yml)
-#  UNNESMC — Panduan Server (multi-halaman).
-#  Buka: /guide  atau  /umccore menu guide     Reload: /umccore reload
+#  Menu: guide  —  JAVA  (menus/java/guide.yml)
+#  UNNESMC — Panduan Server (multi-halaman). Buka: /guide atau
+#  /umccore menu guide.  Render sebagai Dialog native; body ber-ikon dipakai
+#  agar tiap poin punya gambar item. Tombol « Prev / Next » otomatis.
 #
-#  Menu ini render sebagai Dialog native (Java + Bedrock via Geyser).
-#  Semua teks mendukung PlaceholderAPI (%player_name% dll) + warna & / MiniMessage.
-#  Tombol « Prev / Next » ditambahkan otomatis antar-halaman.
+#  Catatan: emoji dihindari (jadi kotak putus di font Java) — diganti ikon item
+#  pada baris body & simbol « ✦ pada tombol. Konten & command tidak diubah.
+#  Design system & palet: lihat header main.yml.
 # ==========================================================================
 
-title: '&8» &b&lPanduan UNNESMC'
+title: "<gradient:#33d17a:#4dd0e1><bold>PANDUAN UNNESMC</bold></gradient>"
 kind: MENU
 type: AUTO
 rows: 6
 
 # ---- HALAMAN 0 — Selamat datang / daftar isi ------------------------------
 body:
-  - '&7Halo &b%player_name%&7, selamat datang di'
-  - '&b&lUNNESMC &7— &fUniversitas Negeri Semarang Minecraft Community&7.'
-  - '&7Wadah mahasiswa UNNES & pencinta Minecraft untuk mabar, bersantai, dan refreshing di sela tugas kuliah. Pilih topik di bawah, atau tekan &eNext »&7.'
+  - "<white>Halo <gradient:#33d17a:#4dd0e1><bold>%player_name%</bold></gradient><white>, selamat datang di"
+  - "<gradient:#33d17a:#4dd0e1><bold>UNNES Minecraft Community</bold></gradient><#90a4ae> — wadah mahasiswa UNNES & pencinta Minecraft untuk mabar, bersantai, dan refreshing di sela tugas kuliah."
   - icon: COMPASS
-    text: '&fIP Java: &a play.unnesmc.my.id   &7•  &fBedrock: &a play.unnesmc.my.id &8: &a19132'
-  - head: '%player_name%'
-    text: '&7Butuh bantuan? Ketik &b/guide&7 kapan saja untuk buka panduan ini.'
+    text: "<white>Java <#90a4ae>play.unnesmc.my.id  <#546e7a>•  <white>Bedrock <#90a4ae>...:19132"
+  - head: "%player_name%"
+    text: "<#90a4ae>Butuh bantuan? Ketik <#4dd0e1>/guide</#4dd0e1> kapan saja untuk buka panduan ini."
 
 buttons:
   about:
-    label: '&b&l🏝 Gamemode & Fitur'
-    description: [ '&7Skyblock, Survival, cross-platform' ]
+    label: "<#4dd0e1><bold>Gamemode & Fitur</bold></#4dd0e1>"
+    description: [ "<#90a4ae>Skyblock, Survival, cross-platform</#90a4ae>" ]
     icon: BEACON
-    actions: [ 'PAGE:1' ]
+    actions: [ "PAGE:1" ]
   start:
-    label: '&a&l🚀 Cara Mulai'
-    description: [ '&7Langkah pertama & masuk survival' ]
+    label: "<gradient:#33d17a:#4dd0e1><bold>Cara Mulai</bold></gradient>"
+    description: [ "<#90a4ae>Langkah pertama & masuk survival</#90a4ae>" ]
     icon: GRASS_BLOCK
-    actions: [ 'PAGE:2' ]
+    actions: [ "PAGE:2" ]
   features:
-    label: '&e&l🛠 Fitur & Command'
-    description: [ '&7Daftar fitur utama server' ]
+    label: "<#ffb300><bold>Fitur & Command</bold></#ffb300>"
+    description: [ "<#90a4ae>Daftar fitur utama server</#90a4ae>" ]
     icon: NETHER_STAR
-    actions: [ 'PAGE:3' ]
+    actions: [ "PAGE:3" ]
   economy:
-    label: '&6&l💰 Ekonomi & Gacha'
-    description: [ '&7Shop, bank, auction, crate' ]
+    label: "<#ffd54f><bold>Ekonomi & Gacha</bold></#ffd54f>"
+    description: [ "<#90a4ae>Shop, bank, auction, crate</#90a4ae>" ]
     icon: GOLD_INGOT
-    actions: [ 'PAGE:4' ]
+    actions: [ "PAGE:4" ]
   rank:
-    label: '&d&l🎓 Rank Paket Plus'
-    description: [ '&7Benefit member & cara beli' ]
+    label: "<#b388ff><bold>Rank Paket Plus</bold></#b388ff>"
+    description: [ "<#90a4ae>Benefit member & cara beli</#90a4ae>" ]
     icon: DIAMOND
-    actions: [ 'PAGE:5' ]
+    actions: [ "PAGE:5" ]
   rules:
-    label: '&c&l📜 Peraturan'
-    description: [ '&7Wajib dibaca semua pemain' ]
+    label: "<#ef5350><bold>Peraturan</bold></#ef5350>"
+    description: [ "<#90a4ae>Wajib dibaca semua pemain</#90a4ae>" ]
     icon: WRITABLE_BOOK
-    actions: [ 'PAGE:6' ]
+    actions: [ "PAGE:6" ]
   discord:
-    label: '&9&l💬 Discord'
-    description: [ '&7Gabung komunitas UNNESMC' ]
+    label: "<#7c9cff><bold>Gabung Discord</bold></#7c9cff>"
+    description: [ "<#90a4ae>dc.unnesmc.my.id</#90a4ae>" ]
     icon: PAINTING
-    actions: [ 'OPEN_URL:https://dc.unnesmc.my.id' ]
+    actions: [ "OPEN_URL:https://dc.unnesmc.my.id" ]
   close:
-    label: '&7Tutup'
+    label: "<#ef5350>Tutup</#ef5350>"
     icon: BARRIER
-    actions: [ 'CLOSE' ]
+    actions: [ "CLOSE" ]
 
 # ---- HALAMAN LAIN ---------------------------------------------------------
 pages:
   # HALAMAN 1 — Gamemode & fitur unggulan
-  - title: '&b&lGamemode & Fitur Unggulan'
+  - title: "<gradient:#4dd0e1:#18ffff><bold>GAMEMODE & FITUR UNGGULAN</bold></gradient>"
     body:
-      - '&7UNNESMC punya beberapa dunia untuk gaya main berbeda:'
+      - "<#90a4ae>UNNESMC punya beberapa dunia untuk gaya main berbeda:"
       - icon: SNOW_BLOCK
-        text: '&b🏝 Skyblock (Slimefun) &8— &7bertahan hidup di angkasa. Mulai dari pulau kecil, pakai teknologi & sihir Slimefun bangun pulau melayang canggih.'
+        text: "<#4dd0e1><bold>Skyblock (Slimefun)</bold></#4dd0e1> <#546e7a>—</#546e7a> <#90a4ae>bertahan hidup di angkasa. Mulai dari pulau kecil, pakai teknologi & sihir Slimefun bangun pulau melayang canggih."
       - icon: DIAMOND_SWORD
-        text: '&a⚔ Survival (Slimefun + Custom Enchant) &8— &7alam liar penuh tantangan. Mesin otomasi & teknologi Slimefun tanpa mod, plus enchant unik melampaui vanilla.'
+        text: "<#33d17a><bold>Survival (Slimefun + Custom Enchant)</bold></#33d17a> <#546e7a>—</#546e7a> <#90a4ae>alam liar penuh tantangan. Mesin otomasi tanpa mod, plus enchant unik melampaui vanilla."
       - icon: EMERALD
-        text: '&6🛒 Shop & Gacha &8— &7jual-beli hasil farming/teknologi di Shop, uji hoki di Gacha/Crate untuk item langka.'
+        text: "<#ffb300><bold>Shop & Gacha</bold></#ffb300> <#546e7a>—</#546e7a> <#90a4ae>jual-beli hasil farming di Shop, uji hoki di Gacha/Crate untuk item langka."
       - icon: BEACON
-        text: '&d🌐 Cross-platform &8— &7main bareng dari PC, HP (PE), Console, & Tablet. Java: &f25565&7, Bedrock: &f19132&7.'
-      - '&7Ajak teman se-kampus & tunjukkan kreativitasmu! Lanjut ke &eCara Mulai »'
+        text: "<#b388ff><bold>Cross-platform</bold></#b388ff> <#546e7a>—</#546e7a> <#90a4ae>main bareng dari PC, HP, Console & Tablet. Java 25565, Bedrock 19132."
     buttons:
       - id: next
-        label: '&a&lCara Mulai »'
+        label: "<gradient:#33d17a:#4dd0e1><bold>Lanjut: Cara Mulai »</bold></gradient>"
         icon: GRASS_BLOCK
-        actions: [ 'PAGE:2' ]
+        actions: [ "PAGE:2" ]
       - id: home
-        label: '&7« Daftar Isi'
+        label: "<#90a4ae>« Daftar Isi</#90a4ae>"
         icon: ARROW
-        actions: [ 'PAGE:0' ]
+        actions: [ "PAGE:0" ]
 
   # HALAMAN 2 — Cara mulai / survival
-  - title: '&a&lCara Mulai Bermain'
+  - title: "<gradient:#33d17a:#4dd0e1><bold>CARA MULAI BERMAIN</bold></gradient>"
     body:
-      - '&7Ikuti langkah ini untuk mulai petualangan survival-mu:'
+      - "<#90a4ae>Ikuti langkah ini untuk mulai petualangan survival-mu:"
       - icon: ENDER_PEARL
-        text: '&a1. &f/rtp &7— teleport acak untuk masuk & mulai &lworld survival&7.'
+        text: "<#33d17a><bold>1.</bold></#33d17a> <white>/rtp</white> <#90a4ae>— teleport acak untuk masuk & mulai world survival."
       - icon: VILLAGER_SPAWN_EGG
-        text: '&a2. &f/warp reso &7— ke &lWorld Resource&7. Bicara ke NPC untuk dipindah ke area farming resource.'
+        text: "<#33d17a><bold>2.</bold></#33d17a> <white>/warp reso</white> <#90a4ae>— ke World Resource. Bicara ke NPC untuk area farming."
       - icon: IRON_NUGGET
-        text: '&a3. Claim lahanmu &7(RedProtect). Ambil wand dengan &f/rp wand &7(iron nugget), klik 2 titik. Bisa juga claim dengan &lpagar/fence&7.'
+        text: "<#33d17a><bold>3.</bold></#33d17a> <#90a4ae>Claim lahanmu (RedProtect): <white>/rp wand</white> lalu klik 2 titik. Bisa juga pakai pagar."
       - icon: LEAD
-        text: '&a4. Angkat hewan! &7Shift + klik kanan pada sheep, cow, pig, chicken, atau villager untuk menggendongnya.'
-      - '&7Sudah siap? Cek fitur & command di halaman berikutnya. &eNext »'
+        text: "<#33d17a><bold>4.</bold></#33d17a> <#90a4ae>Angkat hewan! Shift + klik kanan pada sheep, cow, pig, chicken, atau villager."
     buttons:
       - id: rtp
-        label: '&a&lMulai Survival (/rtp)'
-        description: [ '&7Teleport & masuk world survival' ]
+        label: "<gradient:#33d17a:#4dd0e1><bold>Mulai Survival (/rtp)</bold></gradient>"
+        description: [ "<#90a4ae>Teleport & masuk world survival</#90a4ae>" ]
         icon: GRASS_BLOCK
-        actions: [ 'RUN_COMMAND:/rtp', 'CLOSE' ]
+        actions: [ "RUN_COMMAND:/rtp", "CLOSE" ]
       - id: reso
-        label: '&2World Resource (/warp reso)'
+        label: "<#8d6e63><bold>World Resource (/warp reso)</bold></#8d6e63>"
         icon: DIRT_PATH
-        actions: [ 'RUN_COMMAND:/warp reso', 'CLOSE' ]
+        actions: [ "RUN_COMMAND:/warp reso", "CLOSE" ]
       - id: home
-        label: '&7« Daftar Isi'
+        label: "<#90a4ae>« Daftar Isi</#90a4ae>"
         icon: ARROW
-        actions: [ 'PAGE:0' ]
+        actions: [ "PAGE:0" ]
 
   # HALAMAN 3 — Fitur & command
-  - title: '&e&lFitur & Command Penting'
+  - title: "<gradient:#ffb300:#ffd54f><bold>FITUR & COMMAND PENTING</bold></gradient>"
     body:
-      - '&7Command utama yang sering dipakai di UNNESMC:'
+      - "<#90a4ae>Command utama yang sering dipakai di UNNESMC:"
       - icon: DIAMOND_PICKAXE
-        text: '&e/rtp &8• &7masuk/pindah acak world survival'
+        text: "<#ffb300>/rtp</#ffb300> <#546e7a>•</#546e7a> <#90a4ae>masuk/pindah acak world survival"
       - icon: OAK_FENCE
-        text: '&e/rp wand &8• &7alat claim RedProtect (iron nugget)'
+        text: "<#ffb300>/rp wand</#ffb300> <#546e7a>•</#546e7a> <#90a4ae>alat claim RedProtect (iron nugget)"
       - icon: WHEAT
-        text: '&e/jobs &8• &7ambil pekerjaan untuk cari uang'
+        text: "<#ffb300>/jobs</#ffb300> <#546e7a>•</#546e7a> <#90a4ae>ambil pekerjaan untuk cari uang"
       - icon: PAPER
-        text: '&e/vote &8• &7vote server → dapat &lVote Key&7 untuk gacha'
+        text: "<#ffb300>/vote</#ffb300> <#546e7a>•</#546e7a> <#90a4ae>vote server → dapat Vote Key untuk gacha"
       - icon: SLIME_BALL
-        text: '&e/sf &8• &7buka panduan Slimefun'
-      - icon: LEAD
-        text: '&7Angkat mob: &fShift + klik kanan &7pada sheep/cow/pig/chicken/villager.'
+        text: "<#ffb300>/sf</#ffb300> <#546e7a>•</#546e7a> <#90a4ae>buka panduan Slimefun"
     buttons:
       - id: vote
-        label: '&b&lVote Sekarang'
-        description: [ '&7vote.unnesmc.my.id — dapat Vote Key' ]
+        label: "<gradient:#33d17a:#4dd0e1><bold>Vote Sekarang</bold></gradient>"
+        description: [ "<#90a4ae>vote.unnesmc.my.id — dapat Vote Key</#90a4ae>" ]
         icon: PAPER
-        actions: [ 'OPEN_URL:https://vote.unnesmc.my.id' ]
+        actions: [ "OPEN_URL:https://vote.unnesmc.my.id" ]
       - id: jobs
-        label: '&6Buka Jobs (/jobs)'
+        label: "<#ffb300><bold>Buka Jobs (/jobs)</bold></#ffb300>"
         icon: IRON_PICKAXE
-        actions: [ 'RUN_COMMAND:/jobs', 'CLOSE' ]
+        actions: [ "RUN_COMMAND:/jobs", "CLOSE" ]
       - id: home
-        label: '&7« Daftar Isi'
+        label: "<#90a4ae>« Daftar Isi</#90a4ae>"
         icon: ARROW
-        actions: [ 'PAGE:0' ]
+        actions: [ "PAGE:0" ]
 
   # HALAMAN 4 — Ekonomi & gacha
-  - title: '&6&lEkonomi, Shop & Gacha'
+  - title: "<gradient:#ffd54f:#ff8f00><bold>EKONOMI, SHOP & GACHA</bold></gradient>"
     body:
-      - '&7Sistem ekonomi & belanja di UNNESMC:'
+      - "<#90a4ae>Sistem ekonomi & belanja di UNNESMC:"
       - icon: EMERALD
-        text: '&6/shop &8• &7toko server  &8|  &6/cshop &8• &7player shop (chest shop)'
+        text: "<#ffb300>/shop</#ffb300> <#90a4ae>toko server  <#546e7a>|</#546e7a>  <#ffb300>/cshop</#ffb300> <#90a4ae>player shop (chest shop)"
       - icon: GOLD_INGOT
-        text: '&6/bank &8• &7simpan uang  &8|  &6/ah &8• &7auction house (lelang antar pemain)'
+        text: "<#ffb300>/bank</#ffb300> <#90a4ae>simpan uang  <#546e7a>|</#546e7a>  <#ffb300>/ah</#ffb300> <#90a4ae>auction house (lelang)"
       - icon: CHEST_MINECART
-        text: '&6/bpass &8• &7BattlePass  &8|  &6/rewards &8• &7hadiah  &8|  &6/daily &8• &7harian'
+        text: "<#ffb300>/bpass</#ffb300> <#90a4ae>BattlePass  <#546e7a>|</#546e7a>  <#ffb300>/rewards</#ffb300> <#90a4ae>hadiah  <#546e7a>|</#546e7a>  <#ffb300>/daily</#ffb300> <#90a4ae>harian"
       - icon: ENDER_CHEST
-        text: '&6Gacha/Crate: &7tempat crate di &f/warp crate&7, beli key di &f/key&7. Vote untuk key gratis: &f/vote&7.'
+        text: "<#b388ff><bold>Gacha/Crate:</bold></#b388ff> <#90a4ae>tempat crate di <white>/warp crate</white>, beli key di <white>/key</white>. Vote untuk key gratis: <white>/vote</white>."
     buttons:
       - id: shop
-        label: '&a&lBuka Shop (/shop)'
+        label: "<gradient:#33d17a:#4dd0e1><bold>Buka Shop (/shop)</bold></gradient>"
         icon: EMERALD
-        actions: [ 'RUN_COMMAND:/shop', 'CLOSE' ]
+        actions: [ "RUN_COMMAND:/shop", "CLOSE" ]
       - id: crate
-        label: '&d&lArea Crate (/warp crate)'
+        label: "<#b388ff><bold>Area Crate (/warp crate)</bold></#b388ff>"
         icon: ENDER_CHEST
-        actions: [ 'RUN_COMMAND:/warp crate', 'CLOSE' ]
+        actions: [ "RUN_COMMAND:/warp crate", "CLOSE" ]
       - id: key
-        label: '&eBeli Key (/key)'
+        label: "<#ffd54f><bold>Beli Key (/key)</bold></#ffd54f>"
         icon: TRIPWIRE_HOOK
-        actions: [ 'RUN_COMMAND:/key', 'CLOSE' ]
+        actions: [ "RUN_COMMAND:/key", "CLOSE" ]
       - id: home
-        label: '&7« Daftar Isi'
+        label: "<#90a4ae>« Daftar Isi</#90a4ae>"
         icon: ARROW
-        actions: [ 'PAGE:0' ]
+        actions: [ "PAGE:0" ]
 
   # HALAMAN 5 — Rank Paket Plus Mahasiswa
-  - title: '&d&l🎓 Paket Plus Mahasiswa'
+  - title: "<gradient:#b388ff:#7c4dff><bold>PAKET PLUS MAHASISWA</bold></gradient>"
     body:
-      - '&7Dukung UNNESMC & tingkatkan pengalaman bermainmu! &fHanya &aRp 10.000 / bulan&7.'
+      - "<#90a4ae>Dukung UNNESMC & tingkatkan pengalaman bermainmu! <white>Hanya <#33d17a><bold>Rp 10.000 / bulan</bold></#33d17a><white>."
       - icon: EXPERIENCE_BOTTLE
-        text: '&d🎟 &fBattlePass Premium &7— akses tier premium, hadiah lebih melimpah.'
+        text: "<#b388ff><bold>BattlePass Premium</bold></#b388ff> <#90a4ae>— akses tier premium, hadiah lebih melimpah."
       - icon: CHEST
-        text: '&d🎁 &fDailyRewards Premium &7— klaim hadiah harian &l2x lipat&7.'
+        text: "<#b388ff><bold>DailyRewards Premium</bold></#b388ff> <#90a4ae>— klaim hadiah harian 2x lipat."
       - icon: FEATHER
-        text: '&d🕊 &f/fly upgrade &7— durasi &l5 menit&7, cooldown &l2 jam&7. Enak buat building.'
+        text: "<#b388ff><bold>/fly upgrade</bold></#b388ff> <#90a4ae>— durasi 5 menit, cooldown 2 jam. Enak buat building."
       - icon: SHULKER_BOX
-        text: '&d📦 &f+2 slot /vaults &7— amankan barang dari clear lag.'
+        text: "<#b388ff><bold>+2 slot /vaults</bold></#b388ff> <#90a4ae>— amankan barang dari clear lag."
       - icon: CRAFTING_TABLE
-        text: '&d🛠 &f/craft &7& &f/ec &7— crafting & ender chest portabel di mana saja.'
+        text: "<#b388ff><bold>/craft & /ec</bold></#b388ff> <#90a4ae>— crafting & ender chest portabel di mana saja."
       - icon: NAME_TAG
-        text: '&d✍ &f/iname &7— ganti nama item (support warna RGB & magic).'
+        text: "<#b388ff><bold>/iname</bold></#b388ff> <#90a4ae>— ganti nama item (support warna RGB & magic)."
       - icon: CLOCK
-        text: '&d🌤 &f/ptime &7& &f/pweather &7— atur waktu & cuaca pribadi.'
-      - '&7Cara beli: &fkunjungi Discord kami &7→ &bdc.unnesmc.my.id'
+        text: "<#b388ff><bold>/ptime & /pweather</bold></#b388ff> <#90a4ae>— atur waktu & cuaca pribadi."
     buttons:
       - id: buy
-        label: '&a&lBeli via Discord'
-        description: [ '&7dc.unnesmc.my.id' ]
+        label: "<gradient:#33d17a:#4dd0e1><bold>Beli via Discord</bold></gradient>"
+        description: [ "<#90a4ae>dc.unnesmc.my.id</#90a4ae>" ]
         icon: DIAMOND
-        actions: [ 'OPEN_URL:https://dc.unnesmc.my.id' ]
+        actions: [ "OPEN_URL:https://dc.unnesmc.my.id" ]
       - id: home
-        label: '&7« Daftar Isi'
+        label: "<#90a4ae>« Daftar Isi</#90a4ae>"
         icon: ARROW
-        actions: [ 'PAGE:0' ]
+        actions: [ "PAGE:0" ]
 
   # HALAMAN 6 — Peraturan
-  - title: '&c&lPeraturan UNNESMC'
+  - title: "<gradient:#ef5350:#ff8a80><bold>PERATURAN UNNESMC</bold></gradient>"
     body:
-      - '&c1. &7Hormati semua pemain. Dilarang toxic, SARA, atau pelecehan.'
-      - '&c2. &7Dilarang cheat, hack, x-ray, atau exploit bug.'
-      - '&c3. &7Dilarang griefing & mencuri di lahan orang lain. Claim lahanmu (&f/rp wand&7).'
-      - '&c4. &7Dilarang scam / menipu transaksi antar pemain.'
-      - '&c5. &7Gunakan bahasa sopan di chat. Iklan server lain = larangan.'
+      - "<#ef5350><bold>1.</bold></#ef5350> <#90a4ae>Hormati semua pemain. Dilarang toxic, SARA, atau pelecehan."
+      - "<#ef5350><bold>2.</bold></#ef5350> <#90a4ae>Dilarang cheat, hack, x-ray, atau exploit bug."
+      - "<#ef5350><bold>3.</bold></#ef5350> <#90a4ae>Dilarang griefing & mencuri di lahan orang lain. Claim lahanmu (/rp wand)."
+      - "<#ef5350><bold>4.</bold></#ef5350> <#90a4ae>Dilarang scam / menipu transaksi antar pemain."
+      - "<#ef5350><bold>5.</bold></#ef5350> <#90a4ae>Gunakan bahasa sopan di chat. Iklan server lain = larangan."
       - icon: BARRIER
-        text: '&4Pelanggaran berat = ban permanen tanpa peringatan. Report ke staff via Discord.'
+        text: "<#ef5350><bold>Pelanggaran berat = ban permanen tanpa peringatan. Report ke staff via Discord.</bold></#ef5350>"
     buttons:
       - id: agree
-        label: '&a&lSaya Mengerti'
+        label: "<gradient:#33d17a:#4dd0e1><bold>Saya Mengerti</bold></gradient>"
         icon: EMERALD
         actions:
-          - 'MESSAGE:&a[UNNESMC] &7Terima kasih sudah membaca peraturan. Selamat bermain!'
-          - 'SOUND:ENTITY_PLAYER_LEVELUP'
-          - 'PAGE:0'
+          - "MESSAGE:<#33d17a>[UNNESMC] </#33d17a><#90a4ae>Terima kasih sudah membaca peraturan. Selamat bermain!"
+          - "SOUND:ENTITY_PLAYER_LEVELUP"
+          - "PAGE:0"
       - id: discord
-        label: '&9Discord (/report)'
+        label: "<#7c9cff><bold>Discord (/report)</bold></#7c9cff>"
         icon: PAINTING
-        actions: [ 'OPEN_URL:https://dc.unnesmc.my.id' ]
+        actions: [ "OPEN_URL:https://dc.unnesmc.my.id" ]
       - id: home
-        label: '&7« Daftar Isi'
+        label: "<#90a4ae>« Daftar Isi</#90a4ae>"
         icon: ARROW
-        actions: [ 'PAGE:0' ]
+        actions: [ "PAGE:0" ]

@@ -1,45 +1,42 @@
 # ==========================================================================
-#  Menu: data  (menus/data.yml)
-#  Player profile / data view. Uses PlaceholderAPI for per-player values.
-#  Balance requires Vault; rank requires LuckPerms/Vault. Missing = shows raw.
+#  Menu: data (Profil)  —  JAVA  (menus/java/data.yml)
+#  Kartu profil pemain. Nilai per-pemain via PlaceholderAPI (soft):
+#    Rank → LuckPerms, Saldo → Vault, Waktu main → statistic, Ping/Level → player.
+#  Kepala pemain dipakai sebagai "foto profil" di baris body ber-ikon.
+#  Design system & palet: lihat header main.yml.
 # ==========================================================================
 
-title: "<light_purple><bold>Your Data</bold></light_purple>"
+title: "<gradient:#b388ff:#7c4dff><bold>PROFIL KAMU</bold></gradient>"
+kind: MENU
 type: AUTO
 rows: 3
 
+body:
+  - head: "%player_name%"
+    text: "<gradient:#b388ff:#e1bee7><bold>%player_name%</bold></gradient>  <#90a4ae>•  <#ffb300>%luckperms_primary_group_name%"
+  - icon: EMERALD
+    text: "<white>Saldo  <#33d17a>%vault_eco_balance_formatted%"
+  - icon: CLOCK
+    text: "<white>Waktu Main  <#4dd0e1>%statistic_time_played%"
+  - icon: EXPERIENCE_BOTTLE
+    text: "<white>Level  <#b388ff>%player_level%   <white>Ping <#ff80ab>%player_ping% <#546e7a>ms"
+
 buttons:
-  name:
-    label: "<white>Name: <yellow>%player_name%</yellow></white>"
+  refresh:
+    label: "<#b388ff><bold>Muat Ulang</bold></#b388ff>"
+    description: [ "<#90a4ae>Perbarui data profil</#90a4ae>" ]
     icon: PLAYER_HEAD
-    slot: 10
-    actions:
-      - "CLOSE"
-  rank:
-    label: "<white>Rank: <gold>%luckperms_primary_group_name%</gold></white>"
-    description:
-      - "<gray>Your primary group</gray>"
-    icon: NAME_TAG
-    slot: 12
-    actions:
-      - "CLOSE"
-  balance:
-    label: "<white>Balance: <green>%vault_eco_balance_formatted%</green></white>"
-    description:
-      - "<gray>Requires Vault economy</gray>"
-    icon: GOLD_INGOT
-    slot: 14
-    actions:
-      - "CLOSE"
-  playtime:
-    label: "<white>Playtime: <aqua>%statistic_time_played%</aqua></white>"
+    slot: 11
+    actions: [ "OPEN_MENU:data" ]
+  stats:
+    label: "<#4dd0e1><bold>Statistik Server</bold></#4dd0e1>"
+    description: [ "<#90a4ae>Lihat kondisi server</#90a4ae>" ]
     icon: CLOCK
-    slot: 16
-    actions:
-      - "CLOSE"
+    slot: 13
+    permission: umccore.menu.stats
+    actions: [ "OPEN_MENU:stats" ]
   back:
-    label: "<gray>Back</gray>"
+    label: "<#90a4ae>« Kembali</#90a4ae>"
     icon: ARROW
-    slot: 22
-    actions:
-      - "OPEN_MENU:main"
+    slot: 15
+    actions: [ "OPEN_MENU:main" ]

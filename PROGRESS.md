@@ -3,7 +3,7 @@
 > Status pengerjaan per-milestone & per-fitur. **Selalu update file ini setiap ada
 > perubahan.** Legend: ✅ selesai · 🚧 sedang dikerjakan · ⬜ belum · ⚠️ butuh perhatian.
 
-**Last updated:** 2026-07-26 (v1.2.8 — rombak total UI Bedrock: design system konsisten + ikon native + panel stats live + profil)
+**Last updated:** 2026-07-26 (v1.2.9 — rombak total UI Java (Dialog): design system selaras + body ikon + stats/profil live)
 **Target:** Paper 26.2 · Java 25 · Maven · package `net.aikeigroup.umccore`
 
 ---
@@ -102,6 +102,28 @@ dari path Dialog Java. Lihat bagian v1.2.6 di atas.
 | ✅ | Self auto-update module | Cek GitHub Releases, notify admin/console, `auto-download` opsional ke update folder (apply saat restart), `/umccore update [check\|download]`. Dependency-free (regex parse). Bisa di-disable via `modules.update`. |
 
 ---
+
+## Rombak total UI Java (Dialog) — selaras dengan Bedrock (v1.2.9)
+- **Masalah**: menu Java masih tampilan lama (stats/profil per-tombol polos, tak pakai
+  placeholder baru), emoji (🏝🚀💰) jadi kotak putus di font Java, gaya beda dari Bedrock.
+- **Design system Java** (didokumentasi di header `menus/java/main.yml`, dipakai konsisten di 7
+  menu): palet selaras Bedrock (brand gradient `#00c6ff→#0072ff`, hijau `#33d17a`, biru `#4dd0e1`,
+  emas `#ffb300`, ungu `#b388ff`, merah `#ef5350`, abu `#90a4ae`), memanfaatkan keunggulan Dialog:
+  **MiniMessage penuh** (gradient/hex langsung) + **baris body ber-ikon** (item & kepala pemain).
+  **Tanpa emoji** (diganti ikon item + simbol « ✔ ⚔).
+- **stats.yml Java** kini panel LIVE: verdict kondisi + bar TPS/RAM + angka berwarna dinamis
+  (memakai placeholder presentasi `%umccore_health/tps_colored/mspt_colored/ram_percent/*_bar%`
+  yang ditambahkan di v1.2.8 — berlaku lintas platform).
+- **data.yml Java** jadi kartu profil kaya (kepala pemain + rank/saldo/waktu-main/level/ping).
+  Hub `main.yml` ditambah tombol **Profil** & **Tag Fakultas** + baris body (sapaan, kepala
+  pemain, IP server). `shortcut`/`warps` disamakan (ikon, suara teleport, warp `crate` baru).
+- **guide.yml & tagfakultas.yml Java** dirombak presentasinya (emoji dibuang, palet baru, tombol
+  kembali) — **konten UNNESMC & seluruh logika/command tag identik** (unset→set permission,
+  title, sound, `/tags`, `tag set <f>` delay). Slot chest-fallback tetap valid.
+- **Verifikasi menyeluruh**: `mvn package` hijau; 14 YAML (java+bedrock) lolos parse; **44 material
+  ikon divalidasi terhadap Paper 26.2 API** (semua ada); tak ada emoji tersisa; slot chest dalam
+  rentang (main rows:6, lainnya rows:3). ChestMenuRenderer aman (slot invalid dilewati, material
+  invalid → STONE). Belum diuji di server live (butuh Paper 26.2 + client).
 
 ## Rombak total UI Bedrock + placeholder presentasi (v1.2.8)
 - **Masalah**: UI Bedrock lama tak konsisten — ikon tombol pakai avatar `mc-heads.net`

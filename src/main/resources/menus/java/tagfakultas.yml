@@ -1,275 +1,275 @@
 # ==========================================================================
-#  Menu: tagfakultas  (menus/tagfakultas.yml)
-#  UNNESMC — Pemilihan Tag Fakultas (converted from DeluxeMenus).
-#  Buka: /umccore menu tagfakultas    Reload: /umccore reload
+#  Menu: tagfakultas  —  JAVA  (menus/java/tagfakultas.yml)
+#  UNNESMC — Pemilihan Tag Fakultas. Buka: /tagfakultas atau
+#  /umccore menu tagfakultas.  Render sebagai Dialog native; slot/filler hanya
+#  untuk fallback chest-GUI.
 #
-#  Catatan konversi dari DeluxeMenus:
-#   - [console] cmd            -> "CONSOLE_COMMAND:cmd"
-#   - [player]  cmd            -> "RUN_COMMAND:cmd"
-#   - [message] teks           -> "MESSAGE:teks"
-#   - [title] a;b;in;stay;out  -> "TITLE:a;b;in;stay;out"
-#   - [sound] KEY              -> "SOUND:KEY"
-#   - [close]                  -> "CLOSE"
-#   - <delay=100>              -> tetap didukung (100 tick = 5 detik)
-#   - Kode warna & (legacy) tetap dipakai apa adanya — UMCCore mengonversinya
-#     ke MiniMessage otomatis. (MiniMessage juga boleh, mis. <green>.)
-#
-#  Menu ini render sebagai Dialog native (Java + Bedrock via Geyser). Grid
-#  slot/filler hanya berlaku pada fallback chest-GUI.
+#  Tiap tombol: unset semua permission tag fakultas lain → set milik sendiri →
+#  pesan + title + suara, lalu /tags & /tag set <f> (delay agar CLOSE dulu).
+#  Logika & command TIDAK diubah dari versi sebelumnya. Warna judul & pola
+#  disamakan dengan design system (lihat header main.yml).
 # ==========================================================================
 
-title: '&8> &b&lPilih Tag Fakultas'
+title: "<gradient:#4dd0e1:#18ffff><bold>PILIH TAG FAKULTAS</bold></gradient>"
 kind: MENU
 type: AUTO
 rows: 3
 
-# Filler dekoratif (hanya chest-GUI fallback). Dialog tak punya grid slot.
+# Filler dekoratif (chest-GUI fallback saja). Dialog tak punya grid slot.
 filler:
   icon: GRAY_STAINED_GLASS_PANE
-  slots:
-    - '0-8'
-    - '18-26'
+  slots: [ "0-8", "18-26" ]
+
+body:
+  - "<#90a4ae>Pilih fakultasmu untuk memakai tag-nya di nama."
+  - "<#546e7a>Jika tag belum muncul, jalankan <#4dd0e1>/tags</#4dd0e1><#546e7a>."
 
 buttons:
   fipp:
-    label: '&a&lFIPP'
+    label: "<green><bold>FIPP</bold></green>"
     icon: NAME_TAG
     slot: 9
     description:
-      - '&7Fakultas Ilmu Pendidikan dan Psikologi'
-      - ''
-      - '&7Preview Tag: &f[&a&lFIPP&f]'
-      - ''
-      - '&eKlik untuk memilih dan memakai tag ini!'
+      - "<#90a4ae>Fakultas Ilmu Pendidikan dan Psikologi</#90a4ae>"
+      - ""
+      - "<#90a4ae>Preview Tag: <white>[<green><bold>FIPP</bold></green><white>]"
+      - ""
+      - "<#ffd54f>Klik untuk memilih dan memakai tag ini!</#ffd54f>"
     actions:
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fisip'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fmipa'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.ft'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fik'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.feb'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fh'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fk'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission set supremetags.tag.fipp true'
-      - 'MESSAGE:&8[&bUNNES&8] &aBerhasil memilih tag &f[&a&lFIPP&f]&a!'
-      - 'MESSAGE:&8[&e!&8] &eJika tag belum muncul/terpasang, silahkan jalankan command &b/tags'
-      - 'TITLE:&bSelamat Datang!;&fdi &a&lFIPP;10;60;10'
-      - 'SOUND:ENTITY_PLAYER_LEVELUP'
-      - 'CLOSE'
-      - 'RUN_COMMAND:tag set fipp<delay=100>'
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fisip"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fmipa"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.ft"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fik"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.feb"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fh"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fk"
+      - "CONSOLE_COMMAND:lp user %player_name% permission set supremetags.tag.fipp true"
+      - "MESSAGE:<gray>[<aqua>UNNES</aqua>] <green>Berhasil memilih tag <white>[<green><bold>FIPP</bold></green><white>]<green>!"
+      - "MESSAGE:<gray>[<yellow>!</yellow>] <yellow>Jika tag belum terpasang, jalankan <aqua>/tags</aqua>"
+      - "TITLE:<aqua>Selamat Datang!;<white>di <green><bold>FIPP;10;60;10"
+      - "SOUND:ENTITY_PLAYER_LEVELUP"
+      - "CLOSE"
+      - "RUN_COMMAND:tag set fipp<delay=100>"
 
   fbs:
-    label: '&d&lFBS'
+    label: "<light_purple><bold>FBS</bold></light_purple>"
     icon: NAME_TAG
     slot: 10
     description:
-      - '&7Fakultas Bahasa dan Seni'
-      - ''
-      - '&7Preview Tag: &f[&d&lFBS&f]'
-      - ''
-      - '&eKlik untuk memilih dan memakai tag ini!'
+      - "<#90a4ae>Fakultas Bahasa dan Seni</#90a4ae>"
+      - ""
+      - "<#90a4ae>Preview Tag: <white>[<light_purple><bold>FBS</bold></light_purple><white>]"
+      - ""
+      - "<#ffd54f>Klik untuk memilih dan memakai tag ini!</#ffd54f>"
     actions:
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fisip'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fmipa'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.ft'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fik'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.feb'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fh'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fk'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission set supremetags.tag.fbs true'
-      - 'MESSAGE:&8[&bUNNES&8] &aBerhasil memilih tag &f[&d&lFBS&f]&a!'
-      - 'MESSAGE:&8[&e!&8] &eJika tag belum muncul/terpasang, silahkan jalankan command &b/tags'
-      - 'TITLE:&bSelamat Datang!;&fdi &d&lFBS;10;60;10'
-      - 'SOUND:ENTITY_PLAYER_LEVELUP'
-      - 'CLOSE'
-      - 'RUN_COMMAND:tag set fbs<delay=100>'
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fisip"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fmipa"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.ft"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fik"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.feb"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fh"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fk"
+      - "CONSOLE_COMMAND:lp user %player_name% permission set supremetags.tag.fbs true"
+      - "MESSAGE:<gray>[<aqua>UNNES</aqua>] <green>Berhasil memilih tag <white>[<light_purple><bold>FBS</bold></light_purple><white>]<green>!"
+      - "MESSAGE:<gray>[<yellow>!</yellow>] <yellow>Jika tag belum terpasang, jalankan <aqua>/tags</aqua>"
+      - "TITLE:<aqua>Selamat Datang!;<white>di <light_purple><bold>FBS;10;60;10"
+      - "SOUND:ENTITY_PLAYER_LEVELUP"
+      - "CLOSE"
+      - "RUN_COMMAND:tag set fbs<delay=100>"
 
   fisip:
-    label: '&c&lFISIP'
+    label: "<red><bold>FISIP</bold></red>"
     icon: NAME_TAG
     slot: 11
     description:
-      - '&7Fakultas Ilmu Sosial dan Politik'
-      - ''
-      - '&7Preview Tag: &f[&c&lFISIP&f]'
-      - ''
-      - '&eKlik untuk memilih dan memakai tag ini!'
+      - "<#90a4ae>Fakultas Ilmu Sosial dan Politik</#90a4ae>"
+      - ""
+      - "<#90a4ae>Preview Tag: <white>[<red><bold>FISIP</bold></red><white>]"
+      - ""
+      - "<#ffd54f>Klik untuk memilih dan memakai tag ini!</#ffd54f>"
     actions:
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fmipa'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.ft'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fik'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.feb'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fh'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fk'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission set supremetags.tag.fisip true'
-      - 'MESSAGE:&8[&bUNNES&8] &aBerhasil memilih tag &f[&c&lFISIP&f]&a!'
-      - 'MESSAGE:&8[&e!&8] &eJika tag belum muncul/terpasang, silahkan jalankan command &b/tags'
-      - 'TITLE:&bSelamat Datang!;&fdi &c&lFISIP;10;60;10'
-      - 'SOUND:ENTITY_PLAYER_LEVELUP'
-      - 'CLOSE'
-      - 'RUN_COMMAND:tag set fisip<delay=100>'
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fmipa"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.ft"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fik"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.feb"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fh"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fk"
+      - "CONSOLE_COMMAND:lp user %player_name% permission set supremetags.tag.fisip true"
+      - "MESSAGE:<gray>[<aqua>UNNES</aqua>] <green>Berhasil memilih tag <white>[<red><bold>FISIP</bold></red><white>]<green>!"
+      - "MESSAGE:<gray>[<yellow>!</yellow>] <yellow>Jika tag belum terpasang, jalankan <aqua>/tags</aqua>"
+      - "TITLE:<aqua>Selamat Datang!;<white>di <red><bold>FISIP;10;60;10"
+      - "SOUND:ENTITY_PLAYER_LEVELUP"
+      - "CLOSE"
+      - "RUN_COMMAND:tag set fisip<delay=100>"
 
   fmipa:
-    label: '&b&lFMIPA'
+    label: "<aqua><bold>FMIPA</bold></aqua>"
     icon: NAME_TAG
     slot: 12
     description:
-      - '&7Fakultas Matematika dan IPA'
-      - ''
-      - '&7Preview Tag: &f[&b&lFMIPA&f]'
-      - ''
-      - '&eKlik untuk memilih dan memakai tag ini!'
+      - "<#90a4ae>Fakultas Matematika dan IPA</#90a4ae>"
+      - ""
+      - "<#90a4ae>Preview Tag: <white>[<aqua><bold>FMIPA</bold></aqua><white>]"
+      - ""
+      - "<#ffd54f>Klik untuk memilih dan memakai tag ini!</#ffd54f>"
     actions:
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fisip'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.ft'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fik'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.feb'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fh'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fk'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission set supremetags.tag.fmipa true'
-      - 'MESSAGE:&8[&bUNNES&8] &aBerhasil memilih tag &f[&b&lFMIPA&f]&a!'
-      - 'MESSAGE:&8[&e!&8] &eJika tag belum muncul/terpasang, silahkan jalankan command &b/tags'
-      - 'TITLE:&bSelamat Datang!;&fdi &b&lFMIPA;10;60;10'
-      - 'SOUND:ENTITY_PLAYER_LEVELUP'
-      - 'CLOSE'
-      - 'RUN_COMMAND:tag set fmipa<delay=100>'
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fisip"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.ft"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fik"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.feb"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fh"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fk"
+      - "CONSOLE_COMMAND:lp user %player_name% permission set supremetags.tag.fmipa true"
+      - "MESSAGE:<gray>[<aqua>UNNES</aqua>] <green>Berhasil memilih tag <white>[<aqua><bold>FMIPA</bold></aqua><white>]<green>!"
+      - "MESSAGE:<gray>[<yellow>!</yellow>] <yellow>Jika tag belum terpasang, jalankan <aqua>/tags</aqua>"
+      - "TITLE:<aqua>Selamat Datang!;<white>di <aqua><bold>FMIPA;10;60;10"
+      - "SOUND:ENTITY_PLAYER_LEVELUP"
+      - "CLOSE"
+      - "RUN_COMMAND:tag set fmipa<delay=100>"
 
   ft:
-    label: '&6&lFT'
+    label: "<gold><bold>FT</bold></gold>"
     icon: NAME_TAG
     slot: 13
     description:
-      - '&7Fakultas Teknik'
-      - ''
-      - '&7Preview Tag: &f[&6&lFT&f]'
-      - ''
-      - '&eKlik untuk memilih dan memakai tag ini!'
+      - "<#90a4ae>Fakultas Teknik</#90a4ae>"
+      - ""
+      - "<#90a4ae>Preview Tag: <white>[<gold><bold>FT</bold></gold><white>]"
+      - ""
+      - "<#ffd54f>Klik untuk memilih dan memakai tag ini!</#ffd54f>"
     actions:
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fisip'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fmipa'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fik'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.feb'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fh'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fk'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission set supremetags.tag.ft true'
-      - 'MESSAGE:&8[&bUNNES&8] &aBerhasil memilih tag &f[&6&lFT&f]&a!'
-      - 'MESSAGE:&8[&e!&8] &eJika tag belum muncul/terpasang, silahkan jalankan command &b/tags'
-      - 'TITLE:&bSelamat Datang!;&fdi &6&lFT;10;60;10'
-      - 'SOUND:ENTITY_PLAYER_LEVELUP'
-      - 'CLOSE'
-      - 'RUN_COMMAND:tag set ft<delay=100>'
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fisip"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fmipa"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fik"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.feb"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fh"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fk"
+      - "CONSOLE_COMMAND:lp user %player_name% permission set supremetags.tag.ft true"
+      - "MESSAGE:<gray>[<aqua>UNNES</aqua>] <green>Berhasil memilih tag <white>[<gold><bold>FT</bold></gold><white>]<green>!"
+      - "MESSAGE:<gray>[<yellow>!</yellow>] <yellow>Jika tag belum terpasang, jalankan <aqua>/tags</aqua>"
+      - "TITLE:<aqua>Selamat Datang!;<white>di <gold><bold>FT;10;60;10"
+      - "SOUND:ENTITY_PLAYER_LEVELUP"
+      - "CLOSE"
+      - "RUN_COMMAND:tag set ft<delay=100>"
 
   fik:
-    label: '&f&lFIK'
+    label: "<white><bold>FIK</bold></white>"
     icon: NAME_TAG
     slot: 14
     description:
-      - '&7Fakultas Ilmu Keolahragaan'
-      - ''
-      - '&7Preview Tag: &f[&f&lFIK&f]'
-      - ''
-      - '&eKlik untuk memilih dan memakai tag ini!'
+      - "<#90a4ae>Fakultas Ilmu Keolahragaan</#90a4ae>"
+      - ""
+      - "<#90a4ae>Preview Tag: <white>[<white><bold>FIK</bold></white><white>]"
+      - ""
+      - "<#ffd54f>Klik untuk memilih dan memakai tag ini!</#ffd54f>"
     actions:
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fisip'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fmipa'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.ft'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.feb'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fh'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fk'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission set supremetags.tag.fik true'
-      - 'MESSAGE:&8[&bUNNES&8] &aBerhasil memilih tag &f[&f&lFIK&f]&a!'
-      - 'MESSAGE:&8[&e!&8] &eJika tag belum muncul/terpasang, silahkan jalankan command &b/tags'
-      - 'TITLE:&bSelamat Datang!;&fdi &f&lFIK;10;60;10'
-      - 'SOUND:ENTITY_PLAYER_LEVELUP'
-      - 'CLOSE'
-      - 'RUN_COMMAND:tag set fik<delay=100>'
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fisip"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fmipa"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.ft"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.feb"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fh"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fk"
+      - "CONSOLE_COMMAND:lp user %player_name% permission set supremetags.tag.fik true"
+      - "MESSAGE:<gray>[<aqua>UNNES</aqua>] <green>Berhasil memilih tag <white>[<white><bold>FIK</bold></white><white>]<green>!"
+      - "MESSAGE:<gray>[<yellow>!</yellow>] <yellow>Jika tag belum terpasang, jalankan <aqua>/tags</aqua>"
+      - "TITLE:<aqua>Selamat Datang!;<white>di <white><bold>FIK;10;60;10"
+      - "SOUND:ENTITY_PLAYER_LEVELUP"
+      - "CLOSE"
+      - "RUN_COMMAND:tag set fik<delay=100>"
 
   feb:
-    label: '&9&lFEB'
+    label: "<blue><bold>FEB</bold></blue>"
     icon: NAME_TAG
     slot: 15
     description:
-      - '&7Fakultas Ekonomika dan Bisnis'
-      - ''
-      - '&7Preview Tag: &f[&9&lFEB&f]'
-      - ''
-      - '&eKlik untuk memilih dan memakai tag ini!'
+      - "<#90a4ae>Fakultas Ekonomika dan Bisnis</#90a4ae>"
+      - ""
+      - "<#90a4ae>Preview Tag: <white>[<blue><bold>FEB</bold></blue><white>]"
+      - ""
+      - "<#ffd54f>Klik untuk memilih dan memakai tag ini!</#ffd54f>"
     actions:
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fisip'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fmipa'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.ft'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fik'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fh'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fk'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission set supremetags.tag.feb true'
-      - 'MESSAGE:&8[&bUNNES&8] &aBerhasil memilih tag &f[&9&lFEB&f]&a!'
-      - 'MESSAGE:&8[&e!&8] &eJika tag belum muncul/terpasang, silahkan jalankan command &b/tags'
-      - 'TITLE:&bSelamat Datang!;&fdi &9&lFEB;10;60;10'
-      - 'SOUND:ENTITY_PLAYER_LEVELUP'
-      - 'CLOSE'
-      - 'RUN_COMMAND:tag set feb<delay=100>'
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fisip"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fmipa"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.ft"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fik"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fh"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fk"
+      - "CONSOLE_COMMAND:lp user %player_name% permission set supremetags.tag.feb true"
+      - "MESSAGE:<gray>[<aqua>UNNES</aqua>] <green>Berhasil memilih tag <white>[<blue><bold>FEB</bold></blue><white>]<green>!"
+      - "MESSAGE:<gray>[<yellow>!</yellow>] <yellow>Jika tag belum terpasang, jalankan <aqua>/tags</aqua>"
+      - "TITLE:<aqua>Selamat Datang!;<white>di <blue><bold>FEB;10;60;10"
+      - "SOUND:ENTITY_PLAYER_LEVELUP"
+      - "CLOSE"
+      - "RUN_COMMAND:tag set feb<delay=100>"
 
   fh:
-    label: '&4&lFH'
+    label: "<dark_red><bold>FH</bold></dark_red>"
     icon: NAME_TAG
     slot: 16
     description:
-      - '&7Fakultas Hukum'
-      - ''
-      - '&7Preview Tag: &f[&4&lFH&f]'
-      - ''
-      - '&eKlik untuk memilih dan memakai tag ini!'
+      - "<#90a4ae>Fakultas Hukum</#90a4ae>"
+      - ""
+      - "<#90a4ae>Preview Tag: <white>[<dark_red><bold>FH</bold></dark_red><white>]"
+      - ""
+      - "<#ffd54f>Klik untuk memilih dan memakai tag ini!</#ffd54f>"
     actions:
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fisip'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fmipa'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.ft'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fik'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.feb'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fk'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission set supremetags.tag.fh true'
-      - 'MESSAGE:&8[&bUNNES&8] &aBerhasil memilih tag &f[&4&lFH&f]&a!'
-      - 'MESSAGE:&8[&e!&8] &eJika tag belum muncul/terpasang, silahkan jalankan command &b/tags'
-      - 'TITLE:&bSelamat Datang!;&fdi &4&lFH;10;60;10'
-      - 'SOUND:ENTITY_PLAYER_LEVELUP'
-      - 'CLOSE'
-      - 'RUN_COMMAND:tag set fh<delay=100>'
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fisip"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fmipa"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.ft"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fik"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.feb"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fk"
+      - "CONSOLE_COMMAND:lp user %player_name% permission set supremetags.tag.fh true"
+      - "MESSAGE:<gray>[<aqua>UNNES</aqua>] <green>Berhasil memilih tag <white>[<dark_red><bold>FH</bold></dark_red><white>]<green>!"
+      - "MESSAGE:<gray>[<yellow>!</yellow>] <yellow>Jika tag belum terpasang, jalankan <aqua>/tags</aqua>"
+      - "TITLE:<aqua>Selamat Datang!;<white>di <dark_red><bold>FH;10;60;10"
+      - "SOUND:ENTITY_PLAYER_LEVELUP"
+      - "CLOSE"
+      - "RUN_COMMAND:tag set fh<delay=100>"
 
   fk:
-    label: '&2&lFK'
+    label: "<dark_green><bold>FK</bold></dark_green>"
     icon: NAME_TAG
     slot: 17
     description:
-      - '&7Fakultas Kedokteran'
-      - ''
-      - '&7Preview Tag: &f[&2&lFK&f]'
-      - ''
-      - '&eKlik untuk memilih dan memakai tag ini!'
+      - "<#90a4ae>Fakultas Kedokteran</#90a4ae>"
+      - ""
+      - "<#90a4ae>Preview Tag: <white>[<dark_green><bold>FK</bold></dark_green><white>]"
+      - ""
+      - "<#ffd54f>Klik untuk memilih dan memakai tag ini!</#ffd54f>"
     actions:
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fisip'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fmipa'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.ft'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fik'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.feb'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fh'
-      - 'CONSOLE_COMMAND:lp user %player_name% permission set supremetags.tag.fk true'
-      - 'MESSAGE:&8[&bUNNES&8] &aBerhasil memilih tag &f[&2&lFK&f]&a!'
-      - 'MESSAGE:&8[&e!&8] &eJika tag belum muncul/terpasang, silahkan jalankan command &b/tags'
-      - 'TITLE:&bSelamat Datang!;&fdi &2&lFK;10;60;10'
-      - 'SOUND:ENTITY_PLAYER_LEVELUP'
-      - 'CLOSE'
-      - 'RUN_COMMAND:tag set fk<delay=100>'
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fisip"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fmipa"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.ft"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fik"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.feb"
+      - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fh"
+      - "CONSOLE_COMMAND:lp user %player_name% permission set supremetags.tag.fk true"
+      - "MESSAGE:<gray>[<aqua>UNNES</aqua>] <green>Berhasil memilih tag <white>[<dark_green><bold>FK</bold></dark_green><white>]<green>!"
+      - "MESSAGE:<gray>[<yellow>!</yellow>] <yellow>Jika tag belum terpasang, jalankan <aqua>/tags</aqua>"
+      - "TITLE:<aqua>Selamat Datang!;<white>di <dark_green><bold>FK;10;60;10"
+      - "SOUND:ENTITY_PLAYER_LEVELUP"
+      - "CLOSE"
+      - "RUN_COMMAND:tag set fk<delay=100>"
+
+  back:
+    label: "<#90a4ae>« Kembali</#90a4ae>"
+    icon: ARROW
+    slot: 22
+    actions: [ "OPEN_MENU:main" ]

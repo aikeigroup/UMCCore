@@ -1,47 +1,45 @@
 # ==========================================================================
-#  Menu: stats  (menus/stats.yml)
-#  Shows live server & player stats. Uses UMCCore + PlaceholderAPI tokens.
-#  UMCCore placeholders: %umccore_tps% %umccore_mspt% %umccore_online%
-#    %umccore_max_players% %umccore_ram_used% %umccore_ram_max%
-#    %umccore_uptime% %umccore_entities% %umccore_chunks%
+#  Menu: stats  —  JAVA  (menus/java/stats.yml)
+#  Panel kondisi server LIVE. Angka, bar & verdict berubah warna sesuai
+#  kesehatan server (dihitung expansion UMCCore) — dipasang di baris body
+#  ber-ikon supaya rapi dan mudah dibaca di Dialog.
+#
+#  Placeholder presentasi (keluaran MiniMessage berwarna):
+#    %umccore_health% %umccore_tps_colored% %umccore_tps_bar%
+#    %umccore_mspt_colored% %umccore_ram_percent% %umccore_ram_bar%
+#  Mentah: %umccore_online% %umccore_max_players% %umccore_ram_used%
+#    %umccore_ram_max% %umccore_entities% %umccore_chunks% %umccore_uptime%
+#  Design system & palet: lihat header main.yml.
 # ==========================================================================
 
-title: "<green><bold>Server Stats</bold></green>"
+title: "<gradient:#4dd0e1:#00c6ff><bold>STATISTIK SERVER</bold></gradient>"
+kind: MENU
 type: AUTO
 rows: 3
 
+body:
+  - icon: NETHER_STAR
+    text: "<white>Kondisi Server  <bold>%umccore_health%</bold>"
+  - icon: CLOCK
+    text: "<white>TPS  %umccore_tps_bar%  <bold>%umccore_tps_colored%</bold> <#546e7a>/ 20"
+  - icon: REPEATER
+    text: "<white>MSPT  <bold>%umccore_mspt_colored%</bold> <#546e7a>ms  (makin kecil makin baik)"
+  - icon: MINECART
+    text: "<white>RAM  %umccore_ram_bar%  %umccore_ram_percent%% <#546e7a>(%umccore_ram_used%/%umccore_ram_max% MB)"
+  - icon: PLAYER_HEAD
+    text: "<white>Pemain  <#4dd0e1>%umccore_online%<#546e7a>/%umccore_max_players%   <white>Uptime <#4dd0e1>%umccore_uptime%"
+  - icon: ARMOR_STAND
+    text: "<white>Entity  <#4dd0e1>%umccore_entities%   <white>Chunk <#4dd0e1>%umccore_chunks%"
+
 buttons:
-  tps:
-    label: "<white>TPS: <green>%umccore_tps%</green></white>"
-    description:
-      - "<gray>Ticks per second (20 = perfect)</gray>"
+  refresh:
+    label: "<gradient:#33d17a:#4dd0e1><bold>Muat Ulang</bold></gradient>"
+    description: [ "<#90a4ae>Perbarui angka statistik</#90a4ae>" ]
     icon: CLOCK
-    slot: 10
-    actions:
-      - "CLOSE"
-  mspt:
-    label: "<white>MSPT: <aqua>%umccore_mspt% ms</aqua></white>"
-    description:
-      - "<gray>Milliseconds per tick (lower is better)</gray>"
-    icon: REPEATER
-    slot: 12
-    actions:
-      - "CLOSE"
-  players:
-    label: "<white>Online: <yellow>%umccore_online%/%umccore_max_players%</yellow></white>"
-    icon: PLAYER_HEAD
-    slot: 14
-    actions:
-      - "CLOSE"
-  ram:
-    label: "<white>RAM: <light_purple>%umccore_ram_used%/%umccore_ram_max% MB</light_purple></white>"
-    icon: MINECART
-    slot: 16
-    actions:
-      - "CLOSE"
+    slot: 11
+    actions: [ "OPEN_MENU:stats" ]
   back:
-    label: "<gray>Back</gray>"
+    label: "<#90a4ae>« Kembali</#90a4ae>"
     icon: ARROW
-    slot: 22
-    actions:
-      - "OPEN_MENU:main"
+    slot: 15
+    actions: [ "OPEN_MENU:main" ]

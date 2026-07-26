@@ -1,41 +1,50 @@
 # ==========================================================================
-#  Menu: shortcut  (menus/shortcut.yml)
-#  Quick action buttons. Example commands — edit to fit your server.
-#  RUN_COMMAND runs as the player; use CONSOLE_COMMAND for admin actions.
+#  Menu: shortcut (Aksi Cepat)  —  JAVA  (menus/java/shortcut.yml)
+#  Tombol aksi cepat. RUN_COMMAND jalan sebagai pemain; sesuaikan command &
+#  URL dengan server-mu. Design system & palet: lihat header main.yml.
 # ==========================================================================
 
-title: "<yellow><bold>Shortcuts</bold></yellow>"
+title: "<gradient:#ffb300:#ff8f00><bold>AKSI CEPAT</bold></gradient>"
+kind: MENU
 type: AUTO
 rows: 3
 
+body:
+  - "<#90a4ae>Ketuk salah satu aksi di bawah untuk menjalankannya."
+
 buttons:
   spawn:
-    label: "<green>Spawn</green>"
-    description:
-      - "<gray>Teleport to spawn</gray>"
+    label: "<gradient:#33d17a:#4dd0e1><bold>Kembali ke Spawn</bold></gradient>"
+    description: [ "<#90a4ae>Teleport ke hub utama</#90a4ae>" ]
     icon: RED_BED
+    slot: 10
+    actions: [ "RUN_COMMAND:/spawn", "CLOSE" ]
+  rtp:
+    label: "<#4dd0e1><bold>Jelajah Acak</bold></#4dd0e1>"
+    description: [ "<#90a4ae>Masuk / pindah world survival (/rtp)</#90a4ae>" ]
+    icon: FILLED_MAP
     slot: 11
-    actions:
-      - "RUN_COMMAND:/spawn"
-  discord:
-    label: "<blue>Discord</blue>"
-    description:
-      - "<gray>Show the Discord invite</gray>"
-    icon: PAPER
-    slot: 13
-    actions:
-      - "MESSAGE:<blue>Join our Discord: <underlined>https://discord.gg/example</underlined></blue>"
+    actions: [ "RUN_COMMAND:/rtp", "CLOSE" ]
+  shop:
+    label: "<#ffb300><bold>Buka Toko</bold></#ffb300>"
+    description: [ "<#90a4ae>Jual-beli barang (/shop)</#90a4ae>" ]
+    icon: EMERALD
+    slot: 12
+    actions: [ "RUN_COMMAND:/shop", "CLOSE" ]
   vote:
-    label: "<gold>Vote</gold>"
-    description:
-      - "<gray>Support the server</gray>"
+    label: "<#ffd54f><bold>Vote Server</bold></#ffd54f>"
+    description: [ "<#90a4ae>Dukung server & dapat Vote Key</#90a4ae>" ]
     icon: SUNFLOWER
-    slot: 15
-    actions:
-      - "RUN_COMMAND:/vote"
+    slot: 14
+    actions: [ "OPEN_URL:https://vote.unnesmc.my.id" ]
+  discord:
+    label: "<#7c9cff><bold>Gabung Discord</bold></#7c9cff>"
+    description: [ "<#90a4ae>Komunitas & info UNNESMC</#90a4ae>" ]
+    icon: PAINTING
+    slot: 16
+    actions: [ "OPEN_URL:https://dc.unnesmc.my.id" ]
   back:
-    label: "<gray>Back</gray>"
+    label: "<#90a4ae>« Kembali</#90a4ae>"
     icon: ARROW
     slot: 22
-    actions:
-      - "OPEN_MENU:main"
+    actions: [ "OPEN_MENU:main" ]

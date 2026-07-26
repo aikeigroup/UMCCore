@@ -1,65 +1,92 @@
 # ==========================================================================
-#  Menu: main  (menus/main.yml)
-#  The hub menu that links to the others. Every option is documented.
-#  Reload with /umccore reload after editing.
+#  Menu: main  —  JAVA  (menus/java/main.yml)
+#  Hub navigasi untuk pemain Java. Dirender sebagai DIALOG native (26.2);
+#  fallback chest-GUI memakai icon/slot/rows di bawah.
+#
+#  ── DESIGN SYSTEM UMCCORE JAVA (dipakai konsisten di SEMUA menu java) ──
+#  Java Dialog merender MiniMessage penuh (gradient/hex/rainbow) langsung, dan
+#  mendukung BARIS BODY BER-IKON (item / kepala pemain) — dipakai untuk header
+#  & info yang enak dibaca. Palet selaras dengan Bedrock:
+#    Brand gradient #00c6ff→#0072ff  judul     Hijau #33d17a  positif/utama
+#    Biru  #4dd0e1  info/nav          Emas  #ffb300  ekonomi/sorot
+#    Ungu  #b388ff  profil/premium    Merah #ef5350  bahaya/tutup
+#    Abu   #90a4ae  teks sekunder
+#  ATURAN:
+#    - TANPA emoji (jadi kotak putus di font Java) → pakai ikon item + simbol « ✦.
+#    - Body: header brand → deskripsi → baris ikon info. Tombol: label bold + tooltip.
+#    - Chest fallback: rows 6, slot valid 0..53, filler kaca biar rapi.
+#  Menu id yang tak ada di folder ini otomatis pakai versi Bedrock.
 # ==========================================================================
 
-# MiniMessage title shown at the top of the dialog / as the GUI title.
-title: "<gradient:#00c6ff:#0072ff><bold>Main Menu</bold></gradient>"
-
-# Render strategy: AUTO (router decides), DIALOG (force native form), GUI (force chest).
+title: "<gradient:#00c6ff:#0072ff><bold>MENU UTAMA</bold></gradient>"
+kind: MENU
 type: AUTO
+rows: 6
 
-# Chest-GUI row count (1-6), used only when this menu renders as a chest.
-rows: 3
+# Filler dekoratif (chest-GUI fallback saja).
+filler:
+  icon: CYAN_STAINED_GLASS_PANE
+  slots: [ "0-9", "45-53" ]
 
-# Buttons. Each key is the button id. Placeholders (PAPI) work in label/description.
+# Baris body kaya: sapaan + kepala pemain + info IP server.
+body:
+  - "<white>Halo <gradient:#33d17a:#4dd0e1><bold>%player_name%</bold></gradient><white>! Selamat datang di server."
+  - head: "%player_name%"
+    text: "<#90a4ae>Pilih menu di bawah untuk mulai menjelajah."
+  - icon: COMPASS
+    text: "<white>Java <#90a4ae>play.unnesmc.my.id  <#546e7a>•  <white>Bedrock <#90a4ae>...:19132"
+
 buttons:
-  stats:
-    # Button text.
-    label: "<green><bold>Server Stats</bold></green>"
-    # Tooltip (dialog) / lore (GUI) lines.
-    description:
-      - "<gray>View live server performance</gray>"
-    # Material icon for chest-GUI rendering.
-    icon: CLOCK
-    # Chest slot (0-based). -1 = auto-place.
-    slot: 11
-    # Permission to see/use this button (empty = everyone).
-    permission: umccore.menu.stats
-    # Actions run on click, in order. See docs/menus.md for all action types.
-    actions:
-      - "OPEN_MENU:stats"
-  shortcut:
-    label: "<yellow><bold>Shortcuts</bold></yellow>"
-    description:
-      - "<gray>Quick actions</gray>"
-    icon: COMPASS
-    slot: 13
-    permission: umccore.menu.shortcut
-    actions:
-      - "OPEN_MENU:shortcut"
-  warps:
-    label: "<aqua><bold>Warps</bold></aqua>"
-    description:
-      - "<gray>Teleport to server locations</gray>"
-    icon: ENDER_PEARL
-    slot: 15
-    permission: umccore.menu.warps
-    actions:
-      - "OPEN_MENU:warps"
   guide:
-    label: "<light_purple><bold>Panduan</bold></light_purple>"
-    description:
-      - "<gray>Buka panduan server (/guide)</gray>"
+    label: "<gradient:#33d17a:#4dd0e1><bold>Panduan Server</bold></gradient>"
+    description: [ "<#90a4ae>Cara mulai, fitur & aturan main</#90a4ae>" ]
     icon: KNOWLEDGE_BOOK
-    slot: 4
+    slot: 20
     permission: umccore.menu.guide
-    actions:
-      - "OPEN_MENU:guide"
-  close:
-    label: "<red>Close</red>"
-    icon: BARRIER
+    actions: [ "OPEN_MENU:guide" ]
+  profile:
+    label: "<#b388ff><bold>Profil Kamu</bold></#b388ff>"
+    description: [ "<#90a4ae>Rank, saldo, waktu main & ping</#90a4ae>" ]
+    icon: PLAYER_HEAD
+    slot: 21
+    permission: umccore.menu.data
+    actions: [ "OPEN_MENU:data" ]
+  stats:
+    label: "<#4dd0e1><bold>Statistik Server</bold></#4dd0e1>"
+    description: [ "<#90a4ae>TPS, RAM & kondisi server real-time</#90a4ae>" ]
+    icon: CLOCK
     slot: 22
-    actions:
-      - "CLOSE"
+    permission: umccore.menu.stats
+    actions: [ "OPEN_MENU:stats" ]
+  warps:
+    label: "<aqua><bold>Daftar Warp</bold></aqua>"
+    description: [ "<#90a4ae>Teleport cepat ke lokasi server</#90a4ae>" ]
+    icon: ENDER_PEARL
+    slot: 23
+    permission: umccore.menu.warps
+    actions: [ "OPEN_MENU:warps" ]
+  shortcut:
+    label: "<#ffb300><bold>Aksi Cepat</bold></#ffb300>"
+    description: [ "<#90a4ae>Spawn, vote & Discord satu klik</#90a4ae>" ]
+    icon: NETHER_STAR
+    slot: 24
+    permission: umccore.menu.shortcut
+    actions: [ "OPEN_MENU:shortcut" ]
+  tagfakultas:
+    label: "<#ff80ab><bold>Tag Fakultas</bold></#ff80ab>"
+    description: [ "<#90a4ae>Pasang tag fakultasmu di nama</#90a4ae>" ]
+    icon: NAME_TAG
+    slot: 30
+    permission: umccore.menu.tagfakultas
+    actions: [ "OPEN_MENU:tagfakultas" ]
+  discord:
+    label: "<#7c9cff><bold>Gabung Discord</bold></#7c9cff>"
+    description: [ "<#90a4ae>dc.unnesmc.my.id</#90a4ae>" ]
+    icon: PAINTING
+    slot: 32
+    actions: [ "OPEN_URL:https://dc.unnesmc.my.id" ]
+  close:
+    label: "<#ef5350>Tutup</#ef5350>"
+    icon: BARRIER
+    slot: 49
+    actions: [ "CLOSE" ]
