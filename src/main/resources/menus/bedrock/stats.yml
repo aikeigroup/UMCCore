@@ -1,29 +1,45 @@
 # ==========================================================================
-#  Menu: stats  —  BEDROCK variant  (menus/bedrock/stats.yml)
-#  Statistik server untuk pemain Bedrock. Di form Bedrock, info paling enak
-#  ditaruh di BODY (paragraf) — bukan sebagai tombol satu-satu seperti di Java.
-#  Tombol hanya untuk aksi (refresh / tutup / kembali).
+#  Menu: stats  —  BEDROCK  (menus/bedrock/stats.yml)
+#  Panel kondisi server LIVE untuk pemain Bedrock. Angka + bar + verdict
+#  berubah warna sesuai kesehatan server (hijau/emas/merah), dihitung oleh
+#  expansion UMCCore — jadi pemain langsung paham tanpa harus tahu artinya.
 #
-#  Placeholder UMCCore: %umccore_tps% %umccore_mspt% %umccore_online%
-#    %umccore_max_players% %umccore_ram_used% %umccore_ram_max% %umccore_entities%
+#  Placeholder presentasi (keluaran berwarna, aman ditempel di body):
+#    %umccore_health%       Sehat / Waspada / Berat  (verdict berwarna)
+#    %umccore_tps_colored%  TPS diwarnai sesuai nilai
+#    %umccore_tps_bar%      bar 10 segmen kesehatan TPS
+#    %umccore_mspt_colored% MSPT diwarnai (makin kecil makin baik)
+#    %umccore_ram_percent%  persen RAM terpakai
+#    %umccore_ram_bar%      bar 10 segmen pemakaian RAM
+#  Placeholder mentah: %umccore_online% %umccore_max_players%
+#    %umccore_ram_used% %umccore_ram_max% %umccore_entities%
+#    %umccore_chunks% %umccore_uptime%
+#  Design system & palet: lihat header main.yml.
 # ==========================================================================
 
-title: "<gradient:#69f0ae:#00e5ff><bold>STATISTIK SERVER</bold></gradient>"
+title: "<gradient:#40c4ff:#18ffff><bold>STATISTIK SERVER</bold></gradient>"
 kind: MENU
 type: AUTO
 
 body:
-  - "<#69f0ae><bold>TPS</bold></#69f0ae> <white>%umccore_tps% <gray>(20 = sempurna)"
-  - "<#40c4ff><bold>MSPT</bold></#40c4ff> <white>%umccore_mspt% ms <gray>(makin kecil makin baik)"
-  - "<#ffd740><bold>Online</bold></#ffd740> <white>%umccore_online% / %umccore_max_players%"
-  - "<#e040fb><bold>RAM</bold></#e040fb> <white>%umccore_ram_used% / %umccore_ram_max% MB"
-  - "<#ff8a65><bold>Entity</bold></#ff8a65> <white>%umccore_entities%"
+  - "<#37474f>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
+  - "<#b0bec5>Kondisi</#b0bec5>  <bold>%umccore_health%</bold>"
+  - ""
+  - "<#b0bec5>TPS</#b0bec5>   %umccore_tps_bar%  <bold>%umccore_tps_colored%</bold> <#607d8b>/ 20"
+  - "<#b0bec5>MSPT</#b0bec5>  <bold>%umccore_mspt_colored%</bold> <#607d8b>ms"
+  - "<#b0bec5>RAM</#b0bec5>   %umccore_ram_bar%  <white>%umccore_ram_percent%%</white> <#607d8b>(%umccore_ram_used%/%umccore_ram_max% MB)"
+  - "<#37474f>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
+  - "<#b0bec5>Pemain</#b0bec5>  <white>%umccore_online%<#607d8b>/%umccore_max_players%"
+  - "<#b0bec5>Entity</#b0bec5>  <white>%umccore_entities%   <#b0bec5>Chunk</#b0bec5> <white>%umccore_chunks%"
+  - "<#b0bec5>Uptime</#b0bec5>  <white>%umccore_uptime%"
+  - "<#37474f>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
 
 buttons:
   refresh:
-    label: "<#69f0ae><bold>🔄 Muat Ulang</bold>"
-    description: [ "Perbarui angka statistik" ]
+    label: "<#69f0ae><bold>Muat Ulang</bold>"
+    description: [ "<#b0bec5>Perbarui angka statistik" ]
+    image: "path:textures/ui/refresh"
     actions: [ "OPEN_MENU:stats" ]
   back:
-    label: "<#b0bec5>« Kembali ke Menu"
+    label: "<#90a4ae>« Kembali"
     actions: [ "OPEN_MENU:main" ]

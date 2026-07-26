@@ -1,52 +1,77 @@
 # ==========================================================================
-#  Menu: main  —  BEDROCK variant  (menus/bedrock/main.yml)
-#  Ditampilkan ke pemain Bedrock (HP/Console/Tablet) sebagai FORM NATIVE
-#  (Cumulus SimpleForm via Floodgate) — bukan Dialog Java yang diterjemahkan.
+#  Menu: main  —  BEDROCK  (menus/bedrock/main.yml)
+#  Hub utama untuk pemain Bedrock (HP / Console / Tablet). Dirender sebagai
+#  FORM NATIVE (Cumulus SimpleForm via Floodgate), bukan Dialog Java.
 #
-#  Beda dari versi Java:
-#   - Tiap tombol jadi baris besar yang enak disentuh, boleh punya GAMBAR
-#     (image: head:<nama>  /  url:<link png>).
-#   - Tak ada grid slot/filler (form Bedrock tidak punya slot).
-#   - Warna dibuat TERANG & kontras di atas panel gelap form Bedrock.
+#  ── DESIGN SYSTEM UMCCORE BEDROCK (dipakai konsisten di SEMUA menu bedrock) ──
+#  Palet (warna TERANG, karena panel form Bedrock gelap):
+#    Brand  gradient #43e97b→#38f9d7   judul utama
+#    Hijau  #69f0ae   positif / "sehat" / aksi utama
+#    Biru   #40c4ff   info / navigasi
+#    Emas   #ffd740   ekonomi / sorotan
+#    Ungu   #b388ff   profil / premium
+#    Merah  #ff5252   bahaya / tutup
+#    Abu    #90a4ae   teks sekunder / tombol kembali
+#    Garis  #37474f   divider  ▬▬▬
+#
+#  IKON TOMBOL — pakai texture NATIVE client Bedrock (image: "path:...").
+#    Muncul INSTAN, tajam, tanpa internet (beda dari avatar mc-heads lama).
+#    Tombol KONTEN punya ikon; tombol UTILITAS (kembali/tutup) polos + simbol.
+#
+#  ATURAN:
+#    - Tanpa emoji (render tak konsisten di Bedrock) → pakai ikon + simbol « » ✖.
+#    - Judul: gradient brand + bold. Body: divider → sapaan → hint.
+#    - Tombol: <warna><bold>NAMA  lalu description sebagai baris konteks.
 #  Menu id yang tak ada di folder ini otomatis pakai versi Java.
 # ==========================================================================
 
-# Judul form (MiniMessage → dikonversi ke warna Bedrock otomatis).
-title: "<gradient:#38f9d7:#43e97b><bold>MENU UTAMA</bold></gradient>"
+title: "<gradient:#43e97b:#38f9d7><bold>MENU UTAMA</bold></gradient>"
 kind: MENU
 type: AUTO
 
-# Teks di atas tombol (body). Muncul sebagai paragraf di form.
 body:
-  - "<white>Halo <yellow><bold>%player_name%</bold></yellow><white>! Pilih menu di bawah."
-  - "<#b9f6ca>Ketuk salah satu tombol untuk lanjut.</#b9f6ca>"
+  - "<#37474f>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
+  - "<white>Halo, <#69f0ae><bold>%player_name%</bold></#69f0ae><white>!"
+  - "<#b0bec5>Selamat datang di <#38f9d7>UNNESMC</#38f9d7>. Pilih menu di bawah."
+  - "<#37474f>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
 
 buttons:
   guide:
-    label: "<white><bold>📖 Panduan Server</bold>"
-    description: [ "Info lengkap cara main" ]
-    # Gambar tombol Bedrock: wajah kepala pemain (berlaku Java & Bedrock).
-    image: "head:%player_name%"
+    label: "<#69f0ae><bold>Panduan Server</bold>"
+    description: [ "<#b0bec5>Cara mulai, fitur & aturan main" ]
+    image: "path:textures/items/book_writable"
     permission: umccore.menu.guide
     actions: [ "OPEN_MENU:guide" ]
+  profile:
+    label: "<#b388ff><bold>Profil Kamu</bold>"
+    description: [ "<#b0bec5>Rank, saldo, waktu main & ping" ]
+    image: "path:textures/ui/icon_steve"
+    permission: umccore.menu.data
+    actions: [ "OPEN_MENU:data" ]
   stats:
-    label: "<#69f0ae><bold>📊 Statistik Server</bold>"
-    description: [ "TPS, RAM, pemain online" ]
-    image: "url:https://mc-heads.net/avatar/MHF_Clock/64"
+    label: "<#40c4ff><bold>Statistik Server</bold>"
+    description: [ "<#b0bec5>TPS, RAM & kondisi server real-time" ]
+    image: "path:textures/items/nether_star"
     permission: umccore.menu.stats
     actions: [ "OPEN_MENU:stats" ]
   warps:
-    label: "<#40c4ff><bold>🌐 Daftar Warp</bold>"
-    description: [ "Teleport ke lokasi server" ]
-    image: "url:https://mc-heads.net/avatar/MHF_EnderPearl/64"
+    label: "<#18ffff><bold>Daftar Warp</bold>"
+    description: [ "<#b0bec5>Teleport cepat ke lokasi server" ]
+    image: "path:textures/items/ender_pearl"
     permission: umccore.menu.warps
     actions: [ "OPEN_MENU:warps" ]
   shortcut:
-    label: "<#ffd740><bold>⚡ Aksi Cepat</bold>"
-    description: [ "Spawn, vote, discord" ]
-    image: "url:https://mc-heads.net/avatar/MHF_Compass/64"
+    label: "<#ffd740><bold>Aksi Cepat</bold>"
+    description: [ "<#b0bec5>Spawn, vote & Discord dalam satu ketuk" ]
+    image: "path:textures/items/fireworks"
     permission: umccore.menu.shortcut
     actions: [ "OPEN_MENU:shortcut" ]
+  tagfakultas:
+    label: "<#ff80ab><bold>Tag Fakultas</bold>"
+    description: [ "<#b0bec5>Pasang tag fakultasmu di nama" ]
+    image: "path:textures/items/name_tag"
+    permission: umccore.menu.tagfakultas
+    actions: [ "OPEN_MENU:tagfakultas" ]
   close:
-    label: "<#ff5252><bold>✖ Tutup</bold>"
+    label: "<#ff5252>✖ Tutup"
     actions: [ "CLOSE" ]

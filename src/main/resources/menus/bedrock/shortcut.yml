@@ -1,7 +1,8 @@
 # ==========================================================================
-#  Menu: shortcut  —  BEDROCK variant  (menus/bedrock/shortcut.yml)
-#  Aksi cepat untuk pemain Bedrock. Tombol besar enak disentuh, tiap tombol
-#  langsung menjalankan command. Edit sesuai server-mu.
+#  Menu: shortcut (Aksi Cepat)  —  BEDROCK  (menus/bedrock/shortcut.yml)
+#  Tombol besar sekali-ketuk untuk aksi yang paling sering dipakai.
+#  Sesuaikan command & URL dengan server-mu.
+#  Design system & palet: lihat header main.yml.
 # ==========================================================================
 
 title: "<gradient:#ffd740:#ff8f00><bold>AKSI CEPAT</bold></gradient>"
@@ -9,22 +10,36 @@ kind: MENU
 type: AUTO
 
 body:
-  - "<white>Ketuk tombol untuk menjalankan aksi."
+  - "<#37474f>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
+  - "<#b0bec5>Ketuk salah satu aksi di bawah."
+  - "<#37474f>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
 
 buttons:
   spawn:
-    label: "<#69f0ae><bold>🏠 Spawn</bold>"
-    description: [ "Teleport ke spawn" ]
-    image: "url:https://mc-heads.net/avatar/MHF_Villager/64"
+    label: "<#69f0ae><bold>Kembali ke Spawn</bold>"
+    description: [ "<#b0bec5>Teleport ke hub utama" ]
+    image: "path:textures/items/ender_pearl"
     actions: [ "RUN_COMMAND:/spawn", "CLOSE" ]
+  rtp:
+    label: "<#40c4ff><bold>Jelajah Acak</bold>"
+    description: [ "<#b0bec5>Masuk / pindah world survival (/rtp)" ]
+    image: "path:textures/items/map_filled"
+    actions: [ "RUN_COMMAND:/rtp", "CLOSE" ]
+  shop:
+    label: "<#ffd740><bold>Buka Toko</bold>"
+    description: [ "<#b0bec5>Jual-beli barang (/shop)" ]
+    image: "path:textures/items/emerald"
+    actions: [ "RUN_COMMAND:/shop", "CLOSE" ]
   vote:
-    label: "<#ffd740><bold>🗳 Vote</bold>"
-    description: [ "Dukung server, dapat key" ]
+    label: "<#ffab40><bold>Vote Server</bold>"
+    description: [ "<#b0bec5>Dukung server & dapat Vote Key" ]
+    image: "path:textures/items/nether_star"
     actions: [ "OPEN_URL:https://vote.unnesmc.my.id" ]
   discord:
-    label: "<#7c9cff><bold>💬 Discord</bold>"
-    description: [ "Gabung komunitas" ]
+    label: "<#7c9cff><bold>Gabung Discord</bold>"
+    description: [ "<#b0bec5>Komunitas & info UNNESMC" ]
+    image: "path:textures/items/book_enchanted"
     actions: [ "OPEN_URL:https://dc.unnesmc.my.id" ]
   back:
-    label: "<#b0bec5>« Kembali ke Menu"
+    label: "<#90a4ae>« Kembali"
     actions: [ "OPEN_MENU:main" ]

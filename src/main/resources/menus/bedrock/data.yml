@@ -1,23 +1,41 @@
 # ==========================================================================
-#  Menu: data  —  BEDROCK variant  (menus/bedrock/data.yml)
-#  Profil pemain untuk Bedrock. Nilai per-pemain lewat PlaceholderAPI.
-#  Balance butuh Vault; rank butuh LuckPerms/Vault (kalau tak ada → mentah).
+#  Menu: data (Profil)  —  BEDROCK  (menus/bedrock/data.yml)
+#  Kartu profil pemain untuk Bedrock. Semua nilai per-pemain via PlaceholderAPI.
+#  Beberapa butuh plugin lain (soft): kalau tak ada, placeholder tampil mentah.
+#    Rank       → LuckPerms  (%luckperms_primary_group_name%)
+#    Saldo      → Vault      (%vault_eco_balance_formatted%)
+#    Waktu main → statistic  (%statistic_time_played%)
+#    Ping/Level/Health → server/player expansion PAPI
+#  Design system & palet: lihat header main.yml.
 # ==========================================================================
 
-title: "<gradient:#e040fb:#7c4dff><bold>DATA KAMU</bold></gradient>"
+title: "<gradient:#b388ff:#7c4dff><bold>PROFIL KAMU</bold></gradient>"
 kind: MENU
 type: AUTO
 
 body:
-  - "<#e1bee7><bold>Nama</bold></#e1bee7> <white>%player_name%"
-  - "<#ffd740><bold>Rank</bold></#ffd740> <white>%luckperms_primary_group_name%"
-  - "<#69f0ae><bold>Saldo</bold></#69f0ae> <white>%vault_eco_balance_formatted%"
-  - "<#40c4ff><bold>Waktu Main</bold></#40c4ff> <white>%statistic_time_played%"
+  - "<#37474f>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
+  - "<white><bold>%player_name%</bold>"
+  - "<#b0bec5>Rank</#b0bec5>  <#ffd740>%luckperms_primary_group_name%"
+  - "<#37474f>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
+  - "<#69f0ae>◆ Saldo</#69f0ae>  <white>%vault_eco_balance_formatted%"
+  - "<#40c4ff>◆ Waktu Main</#40c4ff>  <white>%statistic_time_played%"
+  - "<#b388ff>◆ Level</#b388ff>  <white>%player_level%"
+  - "<#ff80ab>◆ Ping</#ff80ab>  <white>%player_ping% <#607d8b>ms"
+  - "<#37474f>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
 
 buttons:
   refresh:
-    label: "<#e040fb><bold>🔄 Muat Ulang</bold>"
+    label: "<#b388ff><bold>Muat Ulang</bold>"
+    description: [ "<#b0bec5>Perbarui data profil" ]
+    image: "path:textures/ui/refresh"
     actions: [ "OPEN_MENU:data" ]
+  stats:
+    label: "<#40c4ff><bold>Statistik Server</bold>"
+    description: [ "<#b0bec5>Lihat kondisi server" ]
+    image: "path:textures/items/nether_star"
+    permission: umccore.menu.stats
+    actions: [ "OPEN_MENU:stats" ]
   back:
-    label: "<#b0bec5>« Kembali ke Menu"
+    label: "<#90a4ae>« Kembali"
     actions: [ "OPEN_MENU:main" ]

@@ -3,7 +3,7 @@
 > Status pengerjaan per-milestone & per-fitur. **Selalu update file ini setiap ada
 > perubahan.** Legend: ✅ selesai · 🚧 sedang dikerjakan · ⬜ belum · ⚠️ butuh perhatian.
 
-**Last updated:** 2026-07-26 (v1.2.7 — fix dupe: mob ter-stack ambil item drop → item ke-dupe)
+**Last updated:** 2026-07-26 (v1.2.8 — rombak total UI Bedrock: design system konsisten + ikon native + panel stats live + profil)
 **Target:** Paper 26.2 · Java 25 · Maven · package `net.aikeigroup.umccore`
 
 ---
@@ -102,6 +102,32 @@ dari path Dialog Java. Lihat bagian v1.2.6 di atas.
 | ✅ | Self auto-update module | Cek GitHub Releases, notify admin/console, `auto-download` opsional ke update folder (apply saat restart), `/umccore update [check\|download]`. Dependency-free (regex parse). Bisa di-disable via `modules.update`. |
 
 ---
+
+## Rombak total UI Bedrock + placeholder presentasi (v1.2.8)
+- **Masalah**: UI Bedrock lama tak konsisten — ikon tombol pakai avatar `mc-heads.net`
+  (URL, lambat/pixelated/butuh internet), emoji render tak konsisten di Bedrock, gaya tiap
+  menu beda-beda, informasi cramped.
+- **Design system baru** (didokumentasi di header `menus/bedrock/main.yml`, dipakai konsisten
+  di 7 menu): palet warna terang tetap (hijau `#69f0ae`/biru `#40c4ff`/emas `#ffd740`/ungu
+  `#b388ff`/merah `#ff5252`/abu `#90a4ae`), judul gradient brand, body ber-divider `▬▬▬`,
+  tombol `<warna><bold>NAMA</bold>` + baris deskripsi konteks, tombol kembali/tutup pakai
+  simbol `«`/`✖` (bukan emoji). **Tanpa emoji** agar konsisten lintas device Bedrock.
+- **Ikon tombol NATIVE** — semua ikon diganti ke texture client Bedrock (`image: "path:textures/
+  items/..."`, mis. `nether_star`, `ender_pearl`, `emerald`, `name_tag`, `book_writable`, dan
+  `textures/ui/refresh|confirm`). Muncul **instan & tajam tanpa internet**. Renderer sudah
+  mendukung `path:` → `FormImage.Type.PATH` (tak ada perubahan Java untuk ikon). Sengaja
+  hindari texture blok (chest/grass) karena tak tersedia sebagai form-image datar di Bedrock.
+- **Fitur baru — panel STATS live berwarna**: `stats.yml` kini menampilkan verdict kondisi
+  (Sehat/Waspada/Berat), bar 10-segmen untuk TPS & RAM, dan angka yang berubah warna sesuai
+  kesehatan server. Ditopang placeholder baru di `UMCCoreExpansion` (additive, backward-compat):
+  `%umccore_tps_colored%` `%umccore_mspt_colored%` `%umccore_ram_percent%` `%umccore_tps_bar%`
+  `%umccore_ram_bar%` `%umccore_health%`.
+- **Fitur baru — menu PROFIL kaya** (`data.yml`): kartu profil rapi (rank/saldo/waktu-main/
+  level/ping) dengan divider & ikon; ditambahkan tombol **Profil** di hub `main.yml`
+  (permission `umccore.menu.data`, sudah terdaftar di plugin.yml). Warp `crate` baru ditambah.
+- Semua 7 YAML lolos parse; `mvn package` hijau → `UMCCore-1.2.8.jar`. **Belum diuji di device
+  Bedrock asli** (butuh server Geyser live) — perubahan murni presentasi + placeholder additive,
+  logika aksi/permission tag identik dengan v1.2.6.
 
 ## Fix dupe: mob stack ambil item drop (v1.2.7)
 - **Bug**: mob yang sudah ter-stack (size > 1) memungut item drop di tanah → item jadi held

@@ -17,6 +17,23 @@ module's live snapshot.
 | `%umccore_entities%` | Total entities across worlds |
 | `%umccore_chunks%` | Total loaded chunks |
 
+### Presentation helpers (return MiniMessage)
+
+These return **coloured MiniMessage** meant to be embedded inside other MiniMessage text
+(e.g. a menu body). They power the Bedrock live stats panel (`menus/bedrock/stats.yml`).
+
+| Placeholder | Meaning |
+|---|---|
+| `%umccore_tps_colored%` | TPS value tinted green/amber/red by health |
+| `%umccore_mspt_colored%` | MSPT value tinted (lower is better) |
+| `%umccore_ram_percent%` | Used heap as a whole-number percentage |
+| `%umccore_tps_bar%` | 10-segment progress bar for TPS, coloured by health |
+| `%umccore_ram_bar%` | 10-segment progress bar for RAM usage, coloured by health |
+| `%umccore_health%` | One-word verdict — `Sehat` / `Waspada` / `Berat` — coloured by TPS+MSPT |
+
+Health thresholds: TPS ≥18.5 & MSPT ≤35 → green; TPS ≥15 & MSPT ≤50 → amber; else red.
+RAM: <75% green, <90% amber, else red.
+
 ## Using other plugins' placeholders
 
 UMCCore resolves **any** PlaceholderAPI placeholder inside its own text — menus, action bar

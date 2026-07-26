@@ -1,42 +1,61 @@
 # ==========================================================================
-#  Menu: warps  —  BEDROCK variant  (menus/bedrock/warps.yml)
-#  Daftar warp untuk pemain Bedrock. Tiap tombol teleport ke satu lokasi.
+#  Menu: warps  —  BEDROCK  (menus/bedrock/warps.yml)
+#  Daftar warp. Tiap tombol teleport ke satu lokasi lalu menutup form.
 #  Batasi warp tertentu dengan permission umccore.warp.<nama>.
 #  Format TELEPORT: world,x,y,z[,yaw,pitch]
+#  Design system & palet: lihat header main.yml.
 # ==========================================================================
 
-title: "<gradient:#40c4ff:#18ffff><bold>DAFTAR WARP</bold></gradient>"
+title: "<gradient:#18ffff:#40c4ff><bold>DAFTAR WARP</bold></gradient>"
 kind: MENU
 type: AUTO
 
 body:
-  - "<white>Ketuk tujuan untuk langsung teleport."
+  - "<#37474f>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
+  - "<#b0bec5>Ketuk tujuan untuk langsung teleport."
+  - "<#37474f>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
 
 buttons:
   spawn:
-    label: "<#69f0ae><bold>🏠 Spawn</bold>"
-    description: [ "Hub utama server" ]
-    image: "url:https://mc-heads.net/avatar/MHF_Beacon/64"
+    label: "<#69f0ae><bold>Spawn</bold>"
+    description: [ "<#b0bec5>Hub utama server" ]
+    image: "path:textures/items/ender_pearl"
     permission: umccore.warp.spawn
     actions:
       - "TELEPORT:world,0.5,100,0.5"
-      - "MESSAGE:<green>Warp ke spawn."
+      - "MESSAGE:<#69f0ae>✔ Teleport ke <white>Spawn<#69f0ae>."
+      - "SOUND:ENTITY_ENDERMAN_TELEPORT"
       - "CLOSE"
   shop:
-    label: "<#ffd740><bold>🛒 Shop</bold>"
-    description: [ "Beli & jual" ]
-    image: "url:https://mc-heads.net/avatar/MHF_Present2/64"
+    label: "<#ffd740><bold>Shop</bold>"
+    description: [ "<#b0bec5>Area jual-beli" ]
+    image: "path:textures/items/emerald"
     permission: umccore.warp.shop
     actions:
       - "TELEPORT:world,50.5,100,50.5"
+      - "MESSAGE:<#ffd740>✔ Teleport ke <white>Shop<#ffd740>."
+      - "SOUND:ENTITY_ENDERMAN_TELEPORT"
+      - "CLOSE"
+  crate:
+    label: "<#e040fb><bold>Area Crate</bold>"
+    description: [ "<#b0bec5>Buka crate & gacha hadiah" ]
+    image: "path:textures/items/fireworks"
+    permission: umccore.warp.crate
+    actions:
+      - "TELEPORT:world,25.5,100,-40.5"
+      - "MESSAGE:<#e040fb>✔ Teleport ke <white>Area Crate<#e040fb>."
+      - "SOUND:ENTITY_ENDERMAN_TELEPORT"
       - "CLOSE"
   pvp:
-    label: "<#ff5252><bold>⚔ Arena PvP</bold>"
-    description: [ "Bertarung dengan pemain lain" ]
+    label: "<#ff5252><bold>Arena PvP</bold>"
+    description: [ "<#b0bec5>Bertarung dengan pemain lain" ]
+    image: "path:textures/items/iron_sword"
     permission: umccore.warp.pvp
     actions:
       - "TELEPORT:world,-100.5,80,-100.5"
+      - "MESSAGE:<#ff5252>⚔ Memasuki <white>Arena PvP<#ff5252>. Hati-hati!"
+      - "SOUND:ENTITY_ENDERMAN_TELEPORT"
       - "CLOSE"
   back:
-    label: "<#b0bec5>« Kembali ke Menu"
+    label: "<#90a4ae>« Kembali"
     actions: [ "OPEN_MENU:main" ]

@@ -1,11 +1,12 @@
 # ==========================================================================
-#  Menu: tagfakultas  —  BEDROCK variant  (menus/bedrock/tagfakultas.yml)
+#  Menu: tagfakultas  —  BEDROCK  (menus/bedrock/tagfakultas.yml)
 #  Pemilihan Tag Fakultas untuk pemain Bedrock (Cumulus SimpleForm).
 #  Buka: /umccore menu tagfakultas  atau  /tagfakultas
 #
-#  KONTRAS: warna fakultas gelap di versi Java (&4 FH, &2 FK) diganti versi
-#  TERANG di sini agar terbaca di panel gelap form Bedrock. Logika set/unset
-#  permission + /tags + title identik dengan versi Java.
+#  Tiap tombol: unset semua permission tag fakultas lain → set milik sendiri →
+#  pesan + title + suara, lalu /tags & /tag set <f> (delay agar CLOSE dulu).
+#  Warna fakultas dibuat TERANG (kontras di panel gelap form Bedrock).
+#  Design system & palet: lihat header main.yml.
 # ==========================================================================
 
 title: "<gradient:#64ffda:#18ffff><bold>PILIH TAG FAKULTAS</bold></gradient>"
@@ -13,14 +14,16 @@ kind: MENU
 type: AUTO
 
 body:
-  - "<white>Ketuk fakultasmu untuk memakai tag-nya."
-  - "<gray>Jika tag belum muncul, jalankan</gray> <#ffd740>/tags</#ffd740><gray>.</gray>"
+  - "<#37474f>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
+  - "<#b0bec5>Ketuk fakultasmu untuk memakai tag-nya."
+  - "<#607d8b>Jika tag belum muncul, jalankan <#ffd740>/tags</#ffd740><#607d8b>."
+  - "<#37474f>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
 
 buttons:
   fipp:
     label: "<#69f0ae><bold>FIPP</bold>"
-    description: [ "Ilmu Pendidikan & Psikologi" ]
-    image: "url:https://mc-heads.net/avatar/MHF_Exclamation/64"
+    description: [ "<#b0bec5>Ilmu Pendidikan & Psikologi" ]
+    image: "path:textures/items/name_tag"
     actions:
       - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs"
       - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fisip"
@@ -38,7 +41,8 @@ buttons:
       - "RUN_COMMAND:tag set fipp<delay=100>"
   fbs:
     label: "<#e040fb><bold>FBS</bold>"
-    description: [ "Bahasa & Seni" ]
+    description: [ "<#b0bec5>Bahasa & Seni" ]
+    image: "path:textures/items/name_tag"
     actions:
       - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp"
       - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fisip"
@@ -56,7 +60,8 @@ buttons:
       - "RUN_COMMAND:tag set fbs<delay=100>"
   fisip:
     label: "<#ff5252><bold>FISIP</bold>"
-    description: [ "Ilmu Sosial & Politik" ]
+    description: [ "<#b0bec5>Ilmu Sosial & Politik" ]
+    image: "path:textures/items/name_tag"
     actions:
       - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp"
       - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs"
@@ -74,7 +79,8 @@ buttons:
       - "RUN_COMMAND:tag set fisip<delay=100>"
   fmipa:
     label: "<#40c4ff><bold>FMIPA</bold>"
-    description: [ "Matematika & IPA" ]
+    description: [ "<#b0bec5>Matematika & IPA" ]
+    image: "path:textures/items/name_tag"
     actions:
       - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp"
       - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs"
@@ -91,8 +97,9 @@ buttons:
       - "CLOSE"
       - "RUN_COMMAND:tag set fmipa<delay=100>"
   ft:
-    label: "<#ffb300><bold>FT</bold>"
-    description: [ "Teknik" ]
+    label: "<#ffab40><bold>FT</bold>"
+    description: [ "<#b0bec5>Teknik" ]
+    image: "path:textures/items/name_tag"
     actions:
       - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp"
       - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs"
@@ -110,7 +117,8 @@ buttons:
       - "RUN_COMMAND:tag set ft<delay=100>"
   fik:
     label: "<#eceff1><bold>FIK</bold>"
-    description: [ "Ilmu Keolahragaan" ]
+    description: [ "<#b0bec5>Ilmu Keolahragaan" ]
+    image: "path:textures/items/name_tag"
     actions:
       - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp"
       - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs"
@@ -128,7 +136,8 @@ buttons:
       - "RUN_COMMAND:tag set fik<delay=100>"
   feb:
     label: "<#448aff><bold>FEB</bold>"
-    description: [ "Ekonomika & Bisnis" ]
+    description: [ "<#b0bec5>Ekonomika & Bisnis" ]
+    image: "path:textures/items/name_tag"
     actions:
       - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp"
       - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs"
@@ -147,7 +156,8 @@ buttons:
   fh:
     # Java pakai &4 (merah gelap) — diganti terang agar terbaca di Bedrock.
     label: "<#ff8a80><bold>FH</bold>"
-    description: [ "Hukum" ]
+    description: [ "<#b0bec5>Hukum" ]
+    image: "path:textures/items/name_tag"
     actions:
       - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp"
       - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs"
@@ -166,7 +176,8 @@ buttons:
   fk:
     # Java pakai &2 (hijau gelap) — diganti terang agar terbaca di Bedrock.
     label: "<#69f0ae><bold>FK</bold>"
-    description: [ "Kedokteran" ]
+    description: [ "<#b0bec5>Kedokteran" ]
+    image: "path:textures/items/name_tag"
     actions:
       - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fipp"
       - "CONSOLE_COMMAND:lp user %player_name% permission unset supremetags.tag.fbs"
@@ -182,6 +193,6 @@ buttons:
       - "SOUND:ENTITY_PLAYER_LEVELUP"
       - "CLOSE"
       - "RUN_COMMAND:tag set fk<delay=100>"
-  close:
-    label: "<#ff5252>✖ Tutup"
-    actions: [ "CLOSE" ]
+  back:
+    label: "<#90a4ae>« Kembali"
+    actions: [ "OPEN_MENU:main" ]
