@@ -1,0 +1,29 @@
+# ==========================================================================
+#  Menu: stats  —  BEDROCK variant  (menus/bedrock/stats.yml)
+#  Statistik server untuk pemain Bedrock. Di form Bedrock, info paling enak
+#  ditaruh di BODY (paragraf) — bukan sebagai tombol satu-satu seperti di Java.
+#  Tombol hanya untuk aksi (refresh / tutup / kembali).
+#
+#  Placeholder UMCCore: %umccore_tps% %umccore_mspt% %umccore_online%
+#    %umccore_max_players% %umccore_ram_used% %umccore_ram_max% %umccore_entities%
+# ==========================================================================
+
+title: "<gradient:#69f0ae:#00e5ff><bold>STATISTIK SERVER</bold></gradient>"
+kind: MENU
+type: AUTO
+
+body:
+  - "<#69f0ae><bold>TPS</bold></#69f0ae> <white>%umccore_tps% <gray>(20 = sempurna)"
+  - "<#40c4ff><bold>MSPT</bold></#40c4ff> <white>%umccore_mspt% ms <gray>(makin kecil makin baik)"
+  - "<#ffd740><bold>Online</bold></#ffd740> <white>%umccore_online% / %umccore_max_players%"
+  - "<#e040fb><bold>RAM</bold></#e040fb> <white>%umccore_ram_used% / %umccore_ram_max% MB"
+  - "<#ff8a65><bold>Entity</bold></#ff8a65> <white>%umccore_entities%"
+
+buttons:
+  refresh:
+    label: "<#69f0ae><bold>🔄 Muat Ulang</bold>"
+    description: [ "Perbarui angka statistik" ]
+    actions: [ "OPEN_MENU:stats" ]
+  back:
+    label: "<#b0bec5>« Kembali ke Menu"
+    actions: [ "OPEN_MENU:main" ]

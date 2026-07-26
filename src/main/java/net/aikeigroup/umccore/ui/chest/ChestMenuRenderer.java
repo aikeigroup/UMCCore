@@ -130,8 +130,7 @@ public final class ChestMenuRenderer {
         if (slot < 0 || slot >= inv.getSize()) {
             return;
         }
-        MenuButton nav = new MenuButton("__nav" + targetPage, label, List.of(), icon,
-                null, -1, slot, -1, "",
+        MenuButton nav = MenuButton.simple("__nav" + targetPage, label, icon,
                 List.of(net.aikeigroup.umccore.ui.model.MenuAction.parse("PAGE:" + targetPage)));
         inv.setItem(slot, buildItem(player, nav));
         holder.slotButtons.put(slot, nav);

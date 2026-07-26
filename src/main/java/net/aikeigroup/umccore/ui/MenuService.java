@@ -1,42 +1,54 @@
 package net.aikeigroup.umccore.ui;
 
 import net.aikeigroup.umccore.UMCCore;
+import net.aikeigroup.umccore.ui.bedrock.BedrockFormRenderer;
 import net.aikeigroup.umccore.ui.chest.ChestMenuRenderer;
 import net.aikeigroup.umccore.ui.dialog.DialogMenuRenderer;
 import net.aikeigroup.umccore.ui.model.MenuDefinition;
+import net.aikeigroup.umccore.ui.model.Platform;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
 /**
  * Central entry point for opening menus. Owns the loaded {@link MenuDefinition}s
- * and routes each open request to the right renderer.
+ * (kept separate per {@link Platform}) and routes each open request to the right
+ * renderer for the player's platform.
  *
- * <p>Routing order for {@code AUTO} menus:</p>
- * <ol>
- *   <li>Dialog API — used when available (server supports it and config allows).</li>
- *   <li>Chest-GUI — fallback otherwise.</li>
- * </ol>
+ * <p>Routing:</p>
+ * <ul>
+ *   <li><b>Bedrock</b> players (detected via Floodgate) get the native
+ *       {@link BedrockFormRenderer} — a real Cumulus form, not a translated Java
+ *       dialog. Their menu definition is looked up in the {@code bedrock} set
+ *       first, falling back to the {@code java} set if that id only exists once.</li>
+ *   <li><b>Java</b> players get the native Dialog API when available/allowed,
+ *       else the chest-GUI. Their definition comes from the {@code java} set.</li>
+ * </ul>
  *
- * <p>A menu may force one path via its {@code type:} (DIALOG/GUI). Bedrock
- * players are handled transparently: the Dialog API is translated to a native
- * Bedrock form by Geyser, so the same DIALOG path serves both platforms.</p>
+ * <p>Keeping the two definition sets apart is what lets a guide be laid out
+ * differently for each client without one platform's quirks bleeding into the
+ * other.</p>
  */
 public final class MenuService {
 
     private final UMCCore plugin;
     private final DialogMenuRenderer dialogRenderer;
     private final ChestMenuRenderer chestRenderer;
+    private final BedrockFormRenderer bedrockRenderer;
 
-    private final Map<String, MenuDefinition> menus = new LinkedHashMap<>();
+    /** Loaded menus, split by the platform they were authored for. */
+    private final Map<Platform, Map<String, MenuDefinition>> menus = new EnumMap<>(Platform.class);
     private final boolean dialogSupported;
 
     /** Per-player navigation history ("menuId:page") for the BACK action. */
@@ -46,7 +58,10 @@ public final class MenuService {
         this.plugin = plugin;
         this.dialogRenderer = new DialogMenuRenderer(plugin);
         this.chestRenderer = new ChestMenuRenderer(plugin);
+        this.bedrockRenderer = new BedrockFormRenderer(plugin);
         this.dialogSupported = detectDialogSupport();
+        menus.put(Platform.JAVA, new LinkedHashMap<>());
+        menus.put(Platform.BEDROCK, new LinkedHashMap<>());
     }
 
     /** @return the chest renderer (the UI module registers its click listener). */
@@ -55,19 +70,61 @@ public final class MenuService {
     }
 
     /** Replaces the loaded menu set (called by the loader on enable/reload). */
-    public void setMenus(Map<String, MenuDefinition> loaded) {
-        menus.clear();
-        for (Map.Entry<String, MenuDefinition> e : loaded.entrySet()) {
-            menus.put(e.getKey().toLowerCase(Locale.ROOT), e.getValue());
+    public void setMenus(Map<Platform, Map<String, MenuDefinition>> loaded) {
+        for (Platform p : Platform.values()) {
+            Map<String, MenuDefinition> target = menus.get(p);
+            target.clear();
+            Map<String, MenuDefinition> src = loaded.get(p);
+            if (src != null) {
+                for (Map.Entry<String, MenuDefinition> e : src.entrySet()) {
+                    target.put(e.getKey().toLowerCase(Locale.ROOT), e.getValue());
+                }
+            }
         }
     }
 
-    public Collection<MenuDefinition> menus() {
-        return Collections.unmodifiableCollection(menus.values());
+    /** @return the platform UMCCore should render for this player. */
+    public Platform platformOf(Player player) {
+        return plugin.integrations().isBedrock(player.getUniqueId())
+                ? Platform.BEDROCK : Platform.JAVA;
     }
 
+    /**
+     * Resolves a menu id for a platform, falling back to the other platform's
+     * definition when this platform doesn't define that id — so admins only
+     * duplicate a menu when they actually want it to differ.
+     */
+    private MenuDefinition resolve(String id, Platform platform) {
+        String key = id.toLowerCase(Locale.ROOT);
+        MenuDefinition def = menus.get(platform).get(key);
+        if (def != null) {
+            return def;
+        }
+        Platform other = platform == Platform.JAVA ? Platform.BEDROCK : Platform.JAVA;
+        return menus.get(other).get(key);
+    }
+
+    /** @return every distinct menu id across both platforms (for tab-completion). */
+    public Collection<String> ids() {
+        Set<String> ids = new LinkedHashSet<>();
+        ids.addAll(menus.get(Platform.JAVA).keySet());
+        ids.addAll(menus.get(Platform.BEDROCK).keySet());
+        return Collections.unmodifiableSet(ids);
+    }
+
+    /** @return the Java-side menu definitions (used by the API/other callers). */
+    public Collection<MenuDefinition> menus() {
+        Set<MenuDefinition> all = new LinkedHashSet<>();
+        all.addAll(menus.get(Platform.JAVA).values());
+        all.addAll(menus.get(Platform.BEDROCK).values());
+        return Collections.unmodifiableSet(all);
+    }
+
+    /** @return true if either platform defines this menu id. */
     public boolean has(String id) {
-        return menus.containsKey(id.toLowerCase(Locale.ROOT));
+        String key = id.toLowerCase(Locale.ROOT);
+        return menus.get(Platform.JAVA).containsKey(key)
+                || menus.get(Platform.BEDROCK).containsKey(key);
     }
 
     /**
@@ -93,7 +150,8 @@ public final class MenuService {
      * menu is remembered for BACK (true for cross-menu jumps, false for paging).
      */
     public boolean open(Player player, String id, int page, boolean pushHistory) {
-        MenuDefinition menu = menus.get(id.toLowerCase(Locale.ROOT));
+        Platform platform = platformOf(player);
+        MenuDefinition menu = resolve(id, platform);
         if (menu == null) {
             plugin.messages().send(player, "menu.unknown", "name", id);
             return false;
@@ -107,7 +165,7 @@ public final class MenuService {
             history.computeIfAbsent(player.getUniqueId(), k -> new ArrayDeque<>())
                     .push(menu.id() + ":" + clamped);
         }
-        render(player, menu, clamped);
+        render(player, menu, clamped, platform);
         return true;
     }
 
@@ -135,7 +193,20 @@ public final class MenuService {
         history.remove(uuid);
     }
 
-    private void render(Player player, MenuDefinition menu, int page) {
+    private void render(Player player, MenuDefinition menu, int page, Platform platform) {
+        // Bedrock players always get the native form path.
+        if (platform == Platform.BEDROCK) {
+            try {
+                bedrockRenderer.open(player, menu, page);
+                return;
+            } catch (Throwable t) {
+                // A Bedrock form failure (Floodgate missing at runtime, etc.)
+                // drops through to the Java path as a safety net.
+                plugin.getLogger().warning("Bedrock form failed for menu '" + menu.id()
+                        + "', falling back to Java rendering: " + t.getMessage());
+            }
+        }
+
         MenuDefinition.Renderer choice = menu.renderer();
         boolean useDialog = switch (choice) {
             case DIALOG -> dialogSupported;

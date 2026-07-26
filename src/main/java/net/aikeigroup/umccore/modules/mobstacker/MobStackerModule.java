@@ -17,6 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.persistence.PersistentDataType;
@@ -131,6 +132,7 @@ public final class MobStackerModule extends AbstractModule {
         unstackToolMax = config().getInt("mob-stacker.unstack-tool.max-per-use", 64);
 
         listen(new DeathListener());
+        listen(new PickupListener());
         listen(new BreedListener());
         listen(new WoolRegrowListener());
         if (splitOnInteract || unstackToolEnabled) {
@@ -345,6 +347,28 @@ public final class MobStackerModule extends AbstractModule {
                 }
                 drops.clear();
                 drops.addAll(multiplied);
+            }
+        }
+    }
+
+    // --- Item pickup handling ---------------------------------------------
+
+    /**
+     * Stops a stacked mob (size &gt; 1) from picking up ground items.
+     *
+     * <p>A stack is one entity standing in for N mobs. If the representative
+     * picks up an item it becomes that entity's held equipment — and then a
+     * whole-stack death multiplies {@code event.getDrops()} by the stack size,
+     * duplicating the single picked-up item ×N. (It also splits the stack's
+     * state oddly: only 1 of N would "carry" the item.) Blocking pickup for
+     * stacks removes the dupe at the source while leaving unstacked mobs
+     * (size ≤ 1) to pick up items exactly like vanilla.</p>
+     */
+    private final class PickupListener implements Listener {
+        @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+        public void onPickup(EntityPickupItemEvent event) {
+            if (event.getEntity() instanceof Mob mob && sizeOf(mob) > 1) {
+                event.setCancelled(true);
             }
         }
     }

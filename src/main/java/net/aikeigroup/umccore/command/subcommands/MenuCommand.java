@@ -2,7 +2,6 @@ package net.aikeigroup.umccore.command.subcommands;
 
 import net.aikeigroup.umccore.UMCCore;
 import net.aikeigroup.umccore.command.SubCommand;
-import net.aikeigroup.umccore.ui.model.MenuDefinition;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -43,9 +42,9 @@ public final class MenuCommand implements SubCommand {
     public List<String> complete(UMCCore plugin, CommandSender sender, String[] args) {
         if (args.length == 1) {
             List<String> names = new ArrayList<>();
-            for (MenuDefinition menu : plugin.menuService().menus()) {
-                if (sender.hasPermission(menu.permission())) {
-                    names.add(menu.id());
+            for (String id : plugin.menuService().ids()) {
+                if (sender.hasPermission("umccore.menu." + id)) {
+                    names.add(id);
                 }
             }
             return names;

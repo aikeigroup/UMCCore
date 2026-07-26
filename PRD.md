@@ -210,16 +210,24 @@ Contoh tipe animasi: `SCROLL`, `TYPEWRITER`, `GRADIENT_SHIFT`, `RAINBOW`, `FRAME
 
 **Inti fitur UI.** Tujuan: menu yang **aman di Java** dan **ramah Bedrock (Geyser)**.
 
-#### Strategi Rendering (MenuService router):
+#### Strategi Rendering (MenuService router) — **UI dipisah per-platform (v1.2.6):**
 
-1. **Dialog API** (fitur "display", native sejak 1.21.6 — tersedia penuh di **26.2**) — *primary*.
-   - Dialog server-side native yang render sebagai form di **kedua** Java & Bedrock (via Geyser translation).
-   - Mendukung: tombol (buttons/actions), body text, input (text field, boolean toggle, dropdown/selector, slider), multi-action.
-   - Ini adalah cara paling "friendly untuk Bedrock" tanpa perlu Floodgate form API terpisah.
-2. **Bedrock Form** (fallback opsional via Floodgate API) di sisi Bedrock bila Dialog tidak tersedia — SimpleForm/ModalForm/CustomForm.
-3. **Chest-GUI** (fallback) untuk client Java versi lama / bila Dialog gagal atau di-disable via config.
+Definisi menu **dipisah per platform** (`menus/java/` & `menus/bedrock/`) karena Java & Bedrock
+punya primitif UI sangat berbeda; auto-translate Dialog→Bedrock lewat Geyser tampil kacau. Router
+mendeteksi platform pemain (Floodgate) lalu render **native** di masing-masing:
 
-Router otomatis memilih berdasarkan: versi server, platform pemain (Java/Bedrock via Floodgate detection), dan konfigurasi. Pada target 26.2, Dialog API adalah jalur utama; chest-GUI tetap disediakan sebagai jaring pengaman.
+1. **Java → Dialog API** (native 26.2) — *primary*. Render sebagai layar Java asli. Fallback
+   **chest-GUI** bila Dialog gagal / di-disable (`type: GUI`) / server lama. Mendukung body text,
+   input (text/boolean/number/single-option), multi-action, paging.
+2. **Bedrock → Cumulus form** (via Floodgate `sendForm`) — *native, bukan translasi*. `MENU`→
+   SimpleForm (tombol besar sentuh + gambar tombol `image:` + paging), `NOTICE`→SimpleForm 1 tombol,
+   `CONFIRM`→ModalForm (ya/tidak), menu ber-`inputs`→CustomForm (toggle/slider/dropdown/input).
+3. **Fallback lintas-platform**: satu id cukup ada di salah satu folder; kalau platform pemain tak
+   punya file id itu → pakai definisi platform lain (tak wajib duplikasi).
+
+Skema YAML sama persis di kedua folder; renderer menyesuaikan tiap field ke platform. `type:`
+(AUTO/DIALOG/GUI) hanya memengaruhi sisi Java. Kontras warna jadi tanggung jawab admin: folder
+`bedrock/` pakai warna terang (panel form gelap), `java/` boleh warna gelap (chest terang).
 
 #### Menu fleksibel (guide/tutorial/help):
 
@@ -340,12 +348,13 @@ UMCCore/
 ├── actionbar.yml        # daftar animasi action bar
 ├── discord.yml          # embed config (multi-embed)
 ├── votelog.yml          # embed vote log (NuVotifier + DiscordSRV, anti-dupe)
-├── menus/               # folder definisi menu custom
-│   ├── main.yml
-│   ├── stats.yml
-│   ├── shortcut.yml
-│   ├── data.yml
-│   └── warps.yml
+├── menus/               # definisi menu custom — DIPISAH PER PLATFORM (v1.2.6)
+│   ├── java/            # ditampilkan ke pemain Java (Dialog / chest-GUI)
+│   │   ├── main.yml  stats.yml  shortcut.yml  data.yml  warps.yml
+│   │   ├── guide.yml  tagfakultas.yml
+│   └── bedrock/         # ditampilkan ke pemain Bedrock (Cumulus form native)
+│       ├── main.yml  stats.yml  shortcut.yml  data.yml  warps.yml
+│       └── guide.yml  tagfakultas.yml
 └── data/                # state persist (discord message id, dll)
 ```
 

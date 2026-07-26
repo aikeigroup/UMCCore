@@ -1,0 +1,23 @@
+# ==========================================================================
+#  Menu: data  —  BEDROCK variant  (menus/bedrock/data.yml)
+#  Profil pemain untuk Bedrock. Nilai per-pemain lewat PlaceholderAPI.
+#  Balance butuh Vault; rank butuh LuckPerms/Vault (kalau tak ada → mentah).
+# ==========================================================================
+
+title: "<gradient:#e040fb:#7c4dff><bold>DATA KAMU</bold></gradient>"
+kind: MENU
+type: AUTO
+
+body:
+  - "<#e1bee7><bold>Nama</bold></#e1bee7> <white>%player_name%"
+  - "<#ffd740><bold>Rank</bold></#ffd740> <white>%luckperms_primary_group_name%"
+  - "<#69f0ae><bold>Saldo</bold></#69f0ae> <white>%vault_eco_balance_formatted%"
+  - "<#40c4ff><bold>Waktu Main</bold></#40c4ff> <white>%statistic_time_played%"
+
+buttons:
+  refresh:
+    label: "<#e040fb><bold>🔄 Muat Ulang</bold>"
+    actions: [ "OPEN_MENU:data" ]
+  back:
+    label: "<#b0bec5>« Kembali ke Menu"
+    actions: [ "OPEN_MENU:main" ]

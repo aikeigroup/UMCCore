@@ -93,4 +93,26 @@ public final class IntegrationManager {
     public boolean hasVotifier() {
         return votifier;
     }
+
+    /**
+     * Detects whether a given player is a Bedrock Edition client (connected via
+     * Geyser/Floodgate). Used to route the UI to the native Bedrock form path.
+     *
+     * <p>Soft: if Floodgate isn't installed this always returns {@code false},
+     * so the plugin treats everyone as Java and nothing breaks.</p>
+     *
+     * @param uuid the player's UUID
+     * @return true if the player is on Bedrock via Floodgate
+     */
+    public boolean isBedrock(java.util.UUID uuid) {
+        if (!floodgate || uuid == null) {
+            return false;
+        }
+        try {
+            return org.geysermc.floodgate.api.FloodgateApi.getInstance().isFloodgatePlayer(uuid);
+        } catch (Throwable t) {
+            // Floodgate classes not actually loadable at runtime — treat as Java.
+            return false;
+        }
+    }
 }

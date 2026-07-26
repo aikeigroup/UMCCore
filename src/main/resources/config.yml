@@ -59,11 +59,21 @@ integrations:
     prefer-for-meta: true
 
 # Cross-platform UI behaviour.
+#
+# Menu definitions are split PER-PLATFORM so Java and Bedrock can look totally
+# different (they have very different UI primitives):
+#   plugins/UMCCore/menus/java/     -> shown to Java players (Dialog / chest-GUI)
+#   plugins/UMCCore/menus/bedrock/  -> shown to Bedrock players via Geyser/Floodgate
+#                                      as NATIVE touch forms (not translated dialogs)
+# A menu id only needs to exist in one folder: if a player's platform has no file
+# for that id, UMCCore falls back to the other platform's copy — so you only
+# duplicate a menu when you actually want it to differ. Upgrading from an older
+# version automatically moves your old flat menus/*.yml into menus/java/.
 ui:
-  # When true, AUTO menus use the native Dialog API (renders as a form on both
-  # Java and Bedrock via Geyser) whenever the server supports it. Set false to
-  # force chest-GUI everywhere. Individual menus can override with type: DIALOG
-  # or type: GUI in their menus/<name>.yml file.
+  # When true, AUTO menus shown to JAVA players use the native Dialog API
+  # whenever the server supports it. Set false to force chest-GUI for Java.
+  # (Bedrock players always use native Cumulus forms and ignore this.)
+  # Individual menus can override with type: DIALOG or type: GUI.
   prefer-dialog: true
 
   # Register extra commands that open a menu directly (like DeluxeMenus'

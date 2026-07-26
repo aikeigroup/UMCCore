@@ -89,6 +89,34 @@ public final class Text {
     }
 
     /**
+     * Serializes a component to a legacy string using the section sign
+     * ({@code §}). This is the colour format Bedrock's Geyser forms understand,
+     * so all text sent to a Cumulus form is converted through here — that is how
+     * gradients/hex authored in MiniMessage still show up coloured (and readable)
+     * on the Bedrock form's dark background.
+     *
+     * @param component the component to serialize
+     * @return a {@code §}-coded legacy string
+     */
+    public static String legacy(Component component) {
+        if (component == null) {
+            return "";
+        }
+        return LegacyComponentSerializer.legacySection().serialize(component);
+    }
+
+    /**
+     * Convenience: parse a MiniMessage string then return its {@code §}-coded
+     * legacy form for Bedrock forms.
+     *
+     * @param input the raw MiniMessage string
+     * @return a {@code §}-coded legacy string
+     */
+    public static String legacy(String input) {
+        return legacy(mm(input));
+    }
+
+    /**
      * @return the shared MiniMessage instance
      */
     public static MiniMessage miniMessage() {

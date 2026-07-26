@@ -1,0 +1,52 @@
+# ==========================================================================
+#  Menu: main  —  BEDROCK variant  (menus/bedrock/main.yml)
+#  Ditampilkan ke pemain Bedrock (HP/Console/Tablet) sebagai FORM NATIVE
+#  (Cumulus SimpleForm via Floodgate) — bukan Dialog Java yang diterjemahkan.
+#
+#  Beda dari versi Java:
+#   - Tiap tombol jadi baris besar yang enak disentuh, boleh punya GAMBAR
+#     (image: head:<nama>  /  url:<link png>).
+#   - Tak ada grid slot/filler (form Bedrock tidak punya slot).
+#   - Warna dibuat TERANG & kontras di atas panel gelap form Bedrock.
+#  Menu id yang tak ada di folder ini otomatis pakai versi Java.
+# ==========================================================================
+
+# Judul form (MiniMessage → dikonversi ke warna Bedrock otomatis).
+title: "<gradient:#38f9d7:#43e97b><bold>MENU UTAMA</bold></gradient>"
+kind: MENU
+type: AUTO
+
+# Teks di atas tombol (body). Muncul sebagai paragraf di form.
+body:
+  - "<white>Halo <yellow><bold>%player_name%</bold></yellow><white>! Pilih menu di bawah."
+  - "<#b9f6ca>Ketuk salah satu tombol untuk lanjut.</#b9f6ca>"
+
+buttons:
+  guide:
+    label: "<white><bold>📖 Panduan Server</bold>"
+    description: [ "Info lengkap cara main" ]
+    # Gambar tombol Bedrock: wajah kepala pemain (berlaku Java & Bedrock).
+    image: "head:%player_name%"
+    permission: umccore.menu.guide
+    actions: [ "OPEN_MENU:guide" ]
+  stats:
+    label: "<#69f0ae><bold>📊 Statistik Server</bold>"
+    description: [ "TPS, RAM, pemain online" ]
+    image: "url:https://mc-heads.net/avatar/MHF_Clock/64"
+    permission: umccore.menu.stats
+    actions: [ "OPEN_MENU:stats" ]
+  warps:
+    label: "<#40c4ff><bold>🌐 Daftar Warp</bold>"
+    description: [ "Teleport ke lokasi server" ]
+    image: "url:https://mc-heads.net/avatar/MHF_EnderPearl/64"
+    permission: umccore.menu.warps
+    actions: [ "OPEN_MENU:warps" ]
+  shortcut:
+    label: "<#ffd740><bold>⚡ Aksi Cepat</bold>"
+    description: [ "Spawn, vote, discord" ]
+    image: "url:https://mc-heads.net/avatar/MHF_Compass/64"
+    permission: umccore.menu.shortcut
+    actions: [ "OPEN_MENU:shortcut" ]
+  close:
+    label: "<#ff5252><bold>✖ Tutup</bold>"
+    actions: [ "CLOSE" ]

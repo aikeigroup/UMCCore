@@ -3,7 +3,7 @@
 > Status pengerjaan per-milestone & per-fitur. **Selalu update file ini setiap ada
 > perubahan.** Legend: ✅ selesai · 🚧 sedang dikerjakan · ⬜ belum · ⚠️ butuh perhatian.
 
-**Last updated:** 2026-07-26 (v1.2.5 — guide UNNESMC + command /guide + first-join)
+**Last updated:** 2026-07-26 (v1.2.7 — fix dupe: mob ter-stack ambil item drop → item ke-dupe)
 **Target:** Paper 26.2 · Java 25 · Maven · package `net.aikeigroup.umccore`
 
 ---
@@ -58,7 +58,9 @@
 | ✅ | Menu bawaan: main, stats, shortcut, data, warps | Semua ada keterangan; permission `umccore.menu.<id>`. |
 | ✅ | Subcommand: `menu <name> [player]` | Tab completion sesuai izin; buka untuk orang lain butuh `umccore.command.menu.others`. |
 
-**Catatan:** Floodgate form path (fallback Bedrock non-Dialog) belum diperlukan karena target 26.2 Dialog API sudah native lintas platform; disediakan sebagai opsi masa depan bila server < 1.21.6.
+**Catatan:** ~~Floodgate form path belum diperlukan~~ → **sudah diimplementasi di v1.2.6**:
+Bedrock kini pakai form native Cumulus (SimpleForm/ModalForm/CustomForm) via Floodgate, terpisah
+dari path Dialog Java. Lihat bagian v1.2.6 di atas.
 
 ## Milestone M4 — Integrasi & Action Bar ✅ (build hijau)
 
@@ -100,6 +102,42 @@
 | ✅ | Self auto-update module | Cek GitHub Releases, notify admin/console, `auto-download` opsional ke update folder (apply saat restart), `/umccore update [check\|download]`. Dependency-free (regex parse). Bisa di-disable via `modules.update`. |
 
 ---
+
+## Fix dupe: mob stack ambil item drop (v1.2.7)
+- **Bug**: mob yang sudah ter-stack (size > 1) memungut item drop di tanah → item jadi held
+  equipment si entity representatif. Saat **seluruh stack mati** (mode bukan kill-one), drop
+  dikali ×size (`event.getDrops()` ×N) — item pungutan ikut terkali → **duplikasi item**.
+- **Kenapa lolos**: `protect-equipped` hanya mencegah mob yang *sudah* ber-equipment untuk
+  *bergabung* ke stack; tak mencegah stack yang *sudah ada* memungut item setelahnya.
+- **Fix**: listener baru `EntityPickupItemEvent` → batalkan pickup untuk mob ber-size > 1. Stack =
+  1 entity mewakili N mob, jadi memungut 1 item lalu dikali N memang salah by design. Mob tunggal
+  (size ≤ 1) tetap bisa memungut item seperti vanilla. Sumber dupe ditutup di titik pickup.
+
+## UI dipisah per-platform + renderer Bedrock native (v1.2.6)
+- **Masalah**: guide cross-platform lewat Dialog-diterjemahkan-Geyser tampil kacau di Bedrock
+  (sempit, warna gelap tak terbaca). **Solusi**: menu dipisah total per platform + renderer Bedrock
+  native (bukan translasi).
+- **Folder menu dirombak** → `menus/java/` & `menus/bedrock/`. Menu id boleh beda isi antar platform;
+  kalau satu sisi tak punya file id itu → fallback ke sisi lain (tak wajib duplikasi). Upgrade dari
+  layout lama: `menus/*.yml` flat otomatis dipindah ke `menus/java/`. `MenuLoader.loadAll()` kini
+  balikan `Map<Platform, Map<String, MenuDefinition>>`.
+- **Renderer Bedrock baru** `ui/bedrock/BedrockFormRenderer` — pakai **Cumulus form via Floodgate**:
+  `MENU`→SimpleForm (tombol besar + gambar + paging otomatis), `NOTICE`→SimpleForm 1 tombol,
+  `CONFIRM`→ModalForm (ya/tidak), menu ber-`inputs`→CustomForm (label + toggle/slider/dropdown/input,
+  tombol pertama jalan saat submit dengan `{input_*}` terisi). Callback dikembalikan ke main-thread.
+- **Gambar tombol Bedrock** — field `image:` per-tombol: `head:<nama>` (avatar via mc-heads),
+  `url:<png>`, atau `path:<texture pack>`. Head bernama polos otomatis jadi avatar.
+- **Routing per-platform** di `MenuService` — deteksi Bedrock via `IntegrationManager.isBedrock(uuid)`
+  (Floodgate `isFloodgatePlayer`, soft). Bedrock → form native; Java → Dialog/chest seperti biasa.
+  `type:` (AUTO/DIALOG/GUI) kini hanya memengaruhi sisi Java.
+- **Kontras warna** — Bedrock render di panel gelap → teks/tag warna gelap (`&4`,`&2`,dark_*) diganti
+  hex terang (`#69f0ae`,`#40c4ff`,`#ffd740`,dll). `Text.legacy()` baru: MiniMessage→`§` legacy agar
+  gradient/hex tetap tampil berwarna di form Bedrock. Contoh nyata: `bedrock/tagfakultas.yml`.
+- **Menu default dibuat ulang untuk KEDUA platform** — main/guide/stats/shortcut/data/warps/tagfakultas
+  di `java/` (sudah ada) + `bedrock/` (baru, dioptimalkan untuk sentuh + gambar + kontras). Model:
+  `Platform` enum, `MenuButton.image` + `bedrockImage()`, `MenuDefinition.platform`.
+- Docs `docs/menus.md` ditulis ulang (tabel platform, section Bedrock forms, panduan kontras).
+  `config.yml` `ui:` didokumentasi ulang untuk split folder.
 
 ## Guide UNNESMC + command menu + first-join (v1.2.5)
 - **guide.yml UNNESMC** — panduan multi-halaman berisi info nyata: identitas (UNNES Minecraft
@@ -304,7 +342,9 @@
 
 ## Sisa / Catatan
 - **Testing runtime di server Paper 26.2 asli** belum dilakukan (environment ini tak menjalankan server). Semua milestone lolos compile + package.
-- Floodgate form path (fallback Bedrock non-Dialog) belum diimplementasi — tidak diperlukan di 26.2 karena Dialog API sudah native lintas platform. Disediakan sebagai opsi masa depan.
+- Floodgate/Cumulus form path Bedrock **sudah diimplementasi** (v1.2.6) — UI dipisah per-platform
+  (`menus/java` vs `menus/bedrock`), Bedrock render form native. Uji tampilan form di device Bedrock
+  asli via Geyser belum dilakukan (butuh server live + client Bedrock).
 
 ---
 

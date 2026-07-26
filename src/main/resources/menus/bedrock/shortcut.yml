@@ -1,0 +1,30 @@
+# ==========================================================================
+#  Menu: shortcut  —  BEDROCK variant  (menus/bedrock/shortcut.yml)
+#  Aksi cepat untuk pemain Bedrock. Tombol besar enak disentuh, tiap tombol
+#  langsung menjalankan command. Edit sesuai server-mu.
+# ==========================================================================
+
+title: "<gradient:#ffd740:#ff8f00><bold>AKSI CEPAT</bold></gradient>"
+kind: MENU
+type: AUTO
+
+body:
+  - "<white>Ketuk tombol untuk menjalankan aksi."
+
+buttons:
+  spawn:
+    label: "<#69f0ae><bold>🏠 Spawn</bold>"
+    description: [ "Teleport ke spawn" ]
+    image: "url:https://mc-heads.net/avatar/MHF_Villager/64"
+    actions: [ "RUN_COMMAND:/spawn", "CLOSE" ]
+  vote:
+    label: "<#ffd740><bold>🗳 Vote</bold>"
+    description: [ "Dukung server, dapat key" ]
+    actions: [ "OPEN_URL:https://vote.unnesmc.my.id" ]
+  discord:
+    label: "<#7c9cff><bold>💬 Discord</bold>"
+    description: [ "Gabung komunitas" ]
+    actions: [ "OPEN_URL:https://dc.unnesmc.my.id" ]
+  back:
+    label: "<#b0bec5>« Kembali ke Menu"
+    actions: [ "OPEN_MENU:main" ]

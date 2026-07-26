@@ -6,22 +6,34 @@ import net.aikeigroup.umccore.ui.model.MenuBody;
 import net.aikeigroup.umccore.ui.model.MenuButton;
 import net.aikeigroup.umccore.ui.model.MenuDefinition;
 import net.aikeigroup.umccore.ui.model.MenuInput;
+import net.aikeigroup.umccore.ui.model.Platform;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
 /**
- * Loads menu definitions from the {@code menus/} folder.
+ * Loads menu definitions from the platform-split {@code menus/} folder.
  *
- * <p>On first run, the bundled default menus are copied out so admins have
- * working examples to edit. Every {@code *.yml} in the folder becomes a menu
- * whose id is the file name.</p>
+ * <p>Menus live under two sub-folders so Java and Bedrock can have completely
+ * different layouts for the same menu id:</p>
+ * <pre>
+ *   menus/
+ *     java/     ← shown to Java Edition players (Dialog / chest-GUI)
+ *     bedrock/  ← shown to Bedrock players via Geyser (native Cumulus forms)
+ * </pre>
+ *
+ * <p>A menu id only needs to exist in one folder: if a player's platform has no
+ * definition for that id, the loader falls back to the other platform's copy, so
+ * admins never have to duplicate a menu they're happy to share. On first run the
+ * bundled defaults are copied out for both platforms; any legacy flat
+ * {@code menus/*.yml} from an older version are migrated into {@code java/}.</p>
  *
  * <p>The parser is intentionally forgiving: every field has a default, both the
  * map-style and list-style {@code buttons:} syntaxes are accepted, and unknown
@@ -30,7 +42,7 @@ import java.util.logging.Level;
  */
 public final class MenuLoader {
 
-    /** Default menu files shipped in the jar under {@code menus/}. */
+    /** Default menu ids shipped in the jar (under {@code menus/java|bedrock/}). */
     private static final String[] DEFAULT_MENUS = {
             "main", "stats", "shortcut", "data", "warps", "guide", "tagfakultas"
     };
@@ -42,19 +54,75 @@ public final class MenuLoader {
     }
 
     /**
-     * Loads all menus from disk, saving packaged defaults on first run.
+     * Loads every menu for both platforms from disk, saving packaged defaults on
+     * first run and migrating any legacy flat menus into {@code java/}.
      *
-     * @return id → definition, in file order
+     * @return per-platform maps of id → definition, in file order
      */
-    public Map<String, MenuDefinition> loadAll() {
-        File dir = new File(plugin.getDataFolder(), "menus");
-        if (!dir.exists()) {
-            dir.mkdirs();
+    public Map<Platform, Map<String, MenuDefinition>> loadAll() {
+        File root = new File(plugin.getDataFolder(), "menus");
+        boolean firstRun = !root.exists();
+        root.mkdirs();
+
+        File javaDir = new File(root, "java");
+        File bedrockDir = new File(root, "bedrock");
+
+        // First run (or an upgrade from the old flat layout): create the split
+        // folders and copy the bundled defaults into each.
+        if (firstRun || (!javaDir.exists() && !bedrockDir.exists())) {
+            javaDir.mkdirs();
+            bedrockDir.mkdirs();
+            migrateLegacyFlatMenus(root, javaDir);
             for (String name : DEFAULT_MENUS) {
-                plugin.saveResource("menus/" + name + ".yml", false);
+                saveDefault("menus/java/" + name + ".yml");
+                saveDefault("menus/bedrock/" + name + ".yml");
             }
+        } else {
+            javaDir.mkdirs();
+            bedrockDir.mkdirs();
         }
 
+        Map<Platform, Map<String, MenuDefinition>> out = new EnumMap<>(Platform.class);
+        out.put(Platform.JAVA, loadFolder(javaDir, Platform.JAVA));
+        out.put(Platform.BEDROCK, loadFolder(bedrockDir, Platform.BEDROCK));
+        plugin.getLogger().info("Loaded " + out.get(Platform.JAVA).size() + " Java menu(s) and "
+                + out.get(Platform.BEDROCK).size() + " Bedrock menu(s).");
+        return out;
+    }
+
+    /** Copies a bundled resource only if it isn't already on disk. */
+    private void saveDefault(String resource) {
+        File target = new File(plugin.getDataFolder(), resource);
+        if (target.exists()) {
+            return;
+        }
+        try {
+            plugin.saveResource(resource, false);
+        } catch (IllegalArgumentException e) {
+            // Resource missing from the jar (e.g. a menu without a bedrock variant
+            // bundled) — that's fine, cross-platform fallback covers it.
+        }
+    }
+
+    /**
+     * Moves any pre-split {@code menus/*.yml} files (from an older UMCCore) into
+     * {@code menus/java/} so upgrading servers keep their customised menus.
+     */
+    private void migrateLegacyFlatMenus(File root, File javaDir) {
+        File[] legacy = root.listFiles((d, n) -> n.toLowerCase().endsWith(".yml"));
+        if (legacy == null) {
+            return;
+        }
+        for (File file : legacy) {
+            File dest = new File(javaDir, file.getName());
+            if (!dest.exists() && file.renameTo(dest)) {
+                plugin.getLogger().info("Migrated legacy menu '" + file.getName() + "' into menus/java/.");
+            }
+        }
+    }
+
+    /** Loads every {@code *.yml} in a platform folder into id → definition. */
+    private Map<String, MenuDefinition> loadFolder(File dir, Platform platform) {
         Map<String, MenuDefinition> result = new LinkedHashMap<>();
         File[] files = dir.listFiles((d, n) -> n.toLowerCase().endsWith(".yml"));
         if (files == null) {
@@ -63,20 +131,21 @@ public final class MenuLoader {
         for (File file : files) {
             String id = file.getName().substring(0, file.getName().length() - 4);
             try {
-                result.put(id, parse(id, YamlConfiguration.loadConfiguration(file)));
+                result.put(id, parse(id, platform, YamlConfiguration.loadConfiguration(file)));
             } catch (Exception e) {
-                plugin.getLogger().log(Level.WARNING, "Failed to load menu '" + id + "'", e);
+                plugin.getLogger().log(Level.WARNING,
+                        "Failed to load " + platform + " menu '" + id + "'", e);
             }
         }
-        plugin.getLogger().info("Loaded " + result.size() + " menu(s).");
         return result;
     }
 
-    private MenuDefinition parse(String id, YamlConfiguration yml) {
+    private MenuDefinition parse(String id, Platform platform, YamlConfiguration yml) {
         String title = yml.getString("title", "<white>" + id + "</white>");
         MenuDefinition.Kind kind = MenuDefinition.Kind.from(yml.getString("kind", "MENU"));
         MenuDefinition.Renderer renderer = MenuDefinition.Renderer.from(yml.getString("type", "AUTO"));
         int rows = yml.getInt("rows", 3);
+        String image = yml.getString("image", yml.getString("header-image"));
 
         List<MenuBody> body = parseBody(yml.get("body"));
         List<MenuInput> inputs = parseInputs(yml.getConfigurationSection("inputs"), yml.get("inputs"));
@@ -92,8 +161,8 @@ public final class MenuLoader {
             fillerSlots = parseSlotList(fillerSec.get("slots"));
         }
 
-        return new MenuDefinition(id, title, kind, renderer, rows, body, inputs, buttons, pages,
-                fillerIcon, fillerSlots);
+        return new MenuDefinition(id, platform, title, kind, renderer, rows, body, inputs, buttons,
+                pages, fillerIcon, fillerSlots, image);
     }
 
     /**
@@ -154,6 +223,7 @@ public final class MenuLoader {
                 b.getString("icon", "STONE"),
                 b.getString("head", b.getString("head-texture")),
                 b.getInt("custom-model-data", -1),
+                b.getString("image", null),
                 b.getInt("slot", -1),
                 b.getInt("width", -1),
                 b.getString("permission", ""),
@@ -173,6 +243,7 @@ public final class MenuLoader {
                 str(map.get("icon"), "STONE"),
                 str(map.get("head"), str(map.get("head-texture"), null)),
                 intOf(map.get("custom-model-data"), -1),
+                str(map.get("image"), null),
                 intOf(map.get("slot"), -1),
                 intOf(map.get("width"), -1),
                 str(map.get("permission"), ""),
@@ -186,7 +257,6 @@ public final class MenuLoader {
      * a single string, a list of strings (each a text paragraph), or a list of
      * maps ({@code {text: ...}} or {@code {icon: ..., text: ...}}).
      */
-    @SuppressWarnings("unchecked")
     private List<MenuBody> parseBody(Object raw) {
         List<MenuBody> out = new ArrayList<>();
         if (raw == null) {

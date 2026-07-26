@@ -1,0 +1,188 @@
+# ==========================================================================
+#  Menu: guide  —  BEDROCK variant  (menus/bedrock/guide.yml)
+#  Panduan UNNESMC khusus pemain Bedrock. Render sebagai FORM NATIVE
+#  (Cumulus SimpleForm) — teks rapi di atas, tombol besar enak disentuh,
+#  navigasi « Prev / Next » otomatis antar halaman.
+#
+#  Tips Bedrock:
+#   - Body panjang aman: form Bedrock bisa scroll.
+#   - image: head:<nama> memberi wajah pemain pada tombol.
+#   - Warna dibuat terang (kontras di panel gelap form).
+# ==========================================================================
+
+title: "<gradient:#43e97b:#38f9d7><bold>PANDUAN UNNESMC</bold></gradient>"
+kind: MENU
+type: AUTO
+
+# ---- HALAMAN 0 — Selamat datang / daftar isi ------------------------------
+body:
+  - "<white>Halo <yellow><bold>%player_name%</bold></yellow><white>, selamat datang di"
+  - "<#69f0ae><bold>UNNESMC</bold></#69f0ae> <gray>—</gray> <white>UNNES Minecraft Community."
+  - ""
+  - "<white>Wadah mahasiswa UNNES & pencinta Minecraft untuk mabar & refreshing."
+  - "<#ffe082>IP Java:</#ffe082> <white>play.unnesmc.my.id"
+  - "<#ffe082>Bedrock:</#ffe082> <white>play.unnesmc.my.id <gray>:</gray> 19132"
+  - ""
+  - "<#b9f6ca>Pilih topik di bawah, atau ketuk Next »</#b9f6ca>"
+
+buttons:
+  about:
+    label: "<#64ffda><bold>🏝 Gamemode & Fitur</bold>"
+    description: [ "Skyblock, Survival, cross-platform" ]
+    image: "url:https://mc-heads.net/avatar/MHF_Beacon/64"
+    actions: [ "PAGE:1" ]
+  start:
+    label: "<#69f0ae><bold>🚀 Cara Mulai</bold>"
+    description: [ "Langkah pertama masuk survival" ]
+    image: "url:https://mc-heads.net/avatar/MHF_Grass/64"
+    actions: [ "PAGE:2" ]
+  features:
+    label: "<#ffd740><bold>🛠 Fitur & Command</bold>"
+    description: [ "Command penting server" ]
+    image: "url:https://mc-heads.net/avatar/MHF_Present1/64"
+    actions: [ "PAGE:3" ]
+  economy:
+    label: "<#ffb300><bold>💰 Ekonomi & Gacha</bold>"
+    description: [ "Shop, bank, auction, crate" ]
+    image: "url:https://mc-heads.net/avatar/MHF_Chest/64"
+    actions: [ "PAGE:4" ]
+  rank:
+    label: "<#e040fb><bold>🎓 Rank Paket Plus</bold>"
+    description: [ "Benefit member & cara beli" ]
+    image: "url:https://mc-heads.net/avatar/MHF_Cactus/64"
+    actions: [ "PAGE:5" ]
+  rules:
+    label: "<#ff5252><bold>📜 Peraturan</bold>"
+    description: [ "Wajib dibaca semua pemain" ]
+    image: "url:https://mc-heads.net/avatar/MHF_Redstone/64"
+    actions: [ "PAGE:6" ]
+  discord:
+    label: "<#7c9cff><bold>💬 Gabung Discord</bold>"
+    description: [ "dc.unnesmc.my.id" ]
+    actions: [ "OPEN_URL:https://dc.unnesmc.my.id" ]
+  close:
+    label: "<#ff5252>✖ Tutup"
+    actions: [ "CLOSE" ]
+
+pages:
+  # HALAMAN 1 — Gamemode & fitur
+  - title: "<gradient:#64ffda:#18ffff><bold>GAMEMODE & FITUR</bold></gradient>"
+    body:
+      - "<white>UNNESMC punya beberapa dunia untuk gaya main berbeda:"
+      - ""
+      - "<#64ffda><bold>🏝 Skyblock (Slimefun)</bold></#64ffda> <white>— bertahan hidup di angkasa. Mulai pulau kecil, pakai teknologi & sihir Slimefun."
+      - "<#69f0ae><bold>⚔ Survival (Slimefun + Custom Enchant)</bold></#69f0ae> <white>— alam liar penuh tantangan, mesin otomasi & enchant unik."
+      - "<#ffb300><bold>🛒 Shop & Gacha</bold></#ffb300> <white>— jual-beli hasil farming, uji hoki di crate."
+      - "<#e040fb><bold>🌐 Cross-platform</bold></#e040fb> <white>— main bareng dari PC, HP, Console & Tablet."
+    buttons:
+      - id: next
+        label: "<#69f0ae><bold>🚀 Cara Mulai »</bold>"
+        image: "url:https://mc-heads.net/avatar/MHF_Grass/64"
+        actions: [ "PAGE:2" ]
+      - id: home
+        label: "<#b0bec5>« Daftar Isi"
+        actions: [ "PAGE:0" ]
+
+  # HALAMAN 2 — Cara mulai
+  - title: "<gradient:#43e97b:#38f9d7><bold>CARA MULAI</bold></gradient>"
+    body:
+      - "<white>Ikuti langkah ini untuk mulai petualangan survival-mu:"
+      - ""
+      - "<#69f0ae><bold>1.</bold></#69f0ae> <white>/rtp — teleport acak untuk masuk world survival."
+      - "<#69f0ae><bold>2.</bold></#69f0ae> <white>/warp reso — ke World Resource, bicara ke NPC untuk area farming."
+      - "<#69f0ae><bold>3.</bold></#69f0ae> <white>Claim lahan (RedProtect): /rp wand → klik 2 titik."
+      - "<#69f0ae><bold>4.</bold></#69f0ae> <white>Angkat hewan: sneak + ketuk sheep/cow/pig/chicken/villager."
+    buttons:
+      - id: rtp
+        label: "<#69f0ae><bold>▶ Mulai Survival (/rtp)</bold>"
+        description: [ "Teleport & masuk survival" ]
+        actions: [ "RUN_COMMAND:/rtp", "CLOSE" ]
+      - id: reso
+        label: "<#8d6e63>World Resource (/warp reso)"
+        actions: [ "RUN_COMMAND:/warp reso", "CLOSE" ]
+      - id: home
+        label: "<#b0bec5>« Daftar Isi"
+        actions: [ "PAGE:0" ]
+
+  # HALAMAN 3 — Fitur & command
+  - title: "<gradient:#ffd740:#ffb300><bold>FITUR & COMMAND</bold></gradient>"
+    body:
+      - "<white>Command utama yang sering dipakai di UNNESMC:"
+      - ""
+      - "<#ffd740>/rtp</#ffd740> <white>• masuk/pindah acak world survival"
+      - "<#ffd740>/rp wand</#ffd740> <white>• alat claim RedProtect"
+      - "<#ffd740>/jobs</#ffd740> <white>• ambil pekerjaan cari uang"
+      - "<#ffd740>/vote</#ffd740> <white>• vote server → dapat Vote Key"
+      - "<#ffd740>/sf</#ffd740> <white>• buka panduan Slimefun"
+    buttons:
+      - id: vote
+        label: "<#69f0ae><bold>🗳 Vote Sekarang</bold>"
+        description: [ "vote.unnesmc.my.id" ]
+        actions: [ "OPEN_URL:https://vote.unnesmc.my.id" ]
+      - id: jobs
+        label: "<#ffb300>Buka Jobs (/jobs)"
+        actions: [ "RUN_COMMAND:/jobs", "CLOSE" ]
+      - id: home
+        label: "<#b0bec5>« Daftar Isi"
+        actions: [ "PAGE:0" ]
+
+  # HALAMAN 4 — Ekonomi & gacha
+  - title: "<gradient:#ffb300:#ff8f00><bold>EKONOMI & GACHA</bold></gradient>"
+    body:
+      - "<white>Sistem ekonomi & belanja di UNNESMC:"
+      - ""
+      - "<#ffd740>/shop</#ffd740> <white>toko server <gray>|</gray> <#ffd740>/cshop</#ffd740> <white>player shop"
+      - "<#ffd740>/bank</#ffd740> <white>simpan uang <gray>|</gray> <#ffd740>/ah</#ffd740> <white>auction house"
+      - "<#ffd740>/bpass</#ffd740> <white>BattlePass <gray>|</gray> <#ffd740>/rewards</#ffd740> <white>hadiah"
+      - "<#e040fb>Gacha/Crate:</#e040fb> <white>tempat di /warp crate, beli key /key, key gratis /vote."
+    buttons:
+      - id: shop
+        label: "<#69f0ae><bold>🛒 Buka Shop (/shop)</bold>"
+        actions: [ "RUN_COMMAND:/shop", "CLOSE" ]
+      - id: crate
+        label: "<#e040fb>Area Crate (/warp crate)"
+        actions: [ "RUN_COMMAND:/warp crate", "CLOSE" ]
+      - id: home
+        label: "<#b0bec5>« Daftar Isi"
+        actions: [ "PAGE:0" ]
+
+  # HALAMAN 5 — Rank Paket Plus
+  - title: "<gradient:#e040fb:#7c4dff><bold>PAKET PLUS MAHASISWA</bold></gradient>"
+    body:
+      - "<white>Dukung UNNESMC & tingkatkan pengalamanmu! <#69f0ae><bold>Rp 10.000 / bulan.</bold>"
+      - ""
+      - "<#e040fb>🎟</#e040fb> <white>BattlePass Premium — tier premium, hadiah melimpah."
+      - "<#e040fb>🎁</#e040fb> <white>DailyRewards Premium — hadiah harian 2x lipat."
+      - "<#e040fb>🕊</#e040fb> <white>/fly upgrade — durasi 5 menit, cooldown 2 jam."
+      - "<#e040fb>📦</#e040fb> <white>+2 slot /vaults — aman dari clear lag."
+      - "<#e040fb>🛠</#e040fb> <white>/craft & /ec — crafting & ender chest portabel."
+      - "<#e040fb>✍</#e040fb> <white>/iname — ganti nama item (warna RGB)."
+    buttons:
+      - id: buy
+        label: "<#69f0ae><bold>💳 Beli via Discord</bold>"
+        description: [ "dc.unnesmc.my.id" ]
+        actions: [ "OPEN_URL:https://dc.unnesmc.my.id" ]
+      - id: home
+        label: "<#b0bec5>« Daftar Isi"
+        actions: [ "PAGE:0" ]
+
+  # HALAMAN 6 — Peraturan
+  - title: "<gradient:#ff5252:#ff8a80><bold>PERATURAN</bold></gradient>"
+    body:
+      - "<#ff8a80><bold>1.</bold></#ff8a80> <white>Hormati semua pemain. Dilarang toxic, SARA, pelecehan."
+      - "<#ff8a80><bold>2.</bold></#ff8a80> <white>Dilarang cheat, hack, x-ray, atau exploit bug."
+      - "<#ff8a80><bold>3.</bold></#ff8a80> <white>Dilarang griefing & mencuri. Claim lahanmu (/rp wand)."
+      - "<#ff8a80><bold>4.</bold></#ff8a80> <white>Dilarang scam / menipu transaksi."
+      - "<#ff8a80><bold>5.</bold></#ff8a80> <white>Bahasa sopan. Iklan server lain = larangan."
+      - ""
+      - "<#ff5252><bold>Pelanggaran berat = ban permanen. Report via Discord.</bold>"
+    buttons:
+      - id: agree
+        label: "<#69f0ae><bold>✔ Saya Mengerti</bold>"
+        actions:
+          - "MESSAGE:<green>[UNNESMC] Terima kasih sudah membaca peraturan. Selamat bermain!"
+          - "SOUND:ENTITY_PLAYER_LEVELUP"
+          - "PAGE:0"
+      - id: home
+        label: "<#b0bec5>« Daftar Isi"
+        actions: [ "PAGE:0" ]

@@ -248,7 +248,7 @@ public final class DialogMenuRenderer {
         if (index < list.size()) {
             return list.get(index);
         }
-        return new MenuButton("btn" + index, fallbackLabel, List.of(), "STONE", null, -1, -1, -1, "",
+        return MenuButton.simple("btn" + index, fallbackLabel, "STONE",
                 List.of(net.aikeigroup.umccore.ui.model.MenuAction.parse("CLOSE")));
     }
 

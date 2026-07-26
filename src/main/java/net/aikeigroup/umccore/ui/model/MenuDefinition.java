@@ -12,6 +12,7 @@ import java.util.Locale;
  * {@link #pages()} that the reader flips through.</p>
  *
  * @param id       menu id (file name without extension)
+ * @param platform which platform this definition was authored for (JAVA/BEDROCK)
  * @param title    MiniMessage title
  * @param kind     dialog kind (MENU / NOTICE / CONFIRM)
  * @param renderer preferred render strategy
@@ -24,9 +25,12 @@ import java.util.Locale;
  * @param fillerIcon material name for the chest-GUI filler (nullable = none)
  * @param fillerSlots chest-GUI slots to fill with the filler icon (decorative,
  *                 chest fallback only — dialogs have no slot grid)
+ * @param image    Bedrock form header image (URL / {@code head:<name>}), shown
+ *                 at the top of the native form. Nullable = none.
  */
 public record MenuDefinition(
         String id,
+        Platform platform,
         String title,
         Kind kind,
         Renderer renderer,
@@ -36,7 +40,8 @@ public record MenuDefinition(
         List<MenuButton> buttons,
         List<Page> pages,
         String fillerIcon,
-        List<Integer> fillerSlots
+        List<Integer> fillerSlots,
+        String image
 ) {
     /**
      * One page of a multi-step menu. A page can override the title, body and
