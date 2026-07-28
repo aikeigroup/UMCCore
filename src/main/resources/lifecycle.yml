@@ -1,0 +1,82 @@
+# ==========================================================================
+#  UMCCore — Lifecycle Recorder (lifecycle.yml)
+#  Mendeteksi server STOP / RESTART / CRASH dan menulis laporan JSON tepat
+#  sebelum server benar-benar mati. Nonaktifkan dengan modules.lifecycle: false
+#  di config.yml.
+# ==========================================================================
+#
+#  CARA KERJA (penting — baca ini biar paham batasannya secara jujur)
+#  Tidak ada event Bukkit "server stopping/crashing", dan tidak ada kode apa pun
+#  yang bisa jalan saat kill -9 / JVM segfault / mati listrik. Jadi modul ini
+#  TIDAK mencoba "menangkap crash saat terjadi". Ia menggabungkan 4 sinyal:
+#
+#   1. Listener command  -> mencatat SIAPA menjalankan /stop atau /restart
+#      (console, atau nama+UUID player) DAN plugin apa yang men-dispatch-nya
+#      (mis. plugin auto-restart). Command yang diketik manusia = tanpa plugin.
+#   2. onDisable + Bukkit.isStopping() -> titik tulis utama. Dunia/player/stats
+#      masih hidup di sini, jadi laporannya lengkap. /umccore reload juga memanggil
+#      onDisable TAPI isStopping()=false, jadi reload TIDAK dianggap shutdown.
+#   3. JVM shutdown hook -> jaring pengaman TERAKHIR. Jalan setelah SELURUH server
+#      dan semua plugin di-disable (paling akhir di hidup JVM), memakai snapshot
+#      di memori. Jadi laporan tetap tertulis WALAU UMCCore di-disable pertama.
+#   4. Heartbeat -> file yang ditimpa tiap beberapa detik dan hanya dihapus saat
+#      stop bersih. Kalau saat boot berikutnya file itu MASIH ada -> sesi lalu
+#      mati tidak bersih -> CRASH/kill/anomali. Modul langsung menulis laporan
+#      crash berisi rekonstruksi kondisi terakhir (perkiraan waktu, TPS, player).
+#
+#  APA YANG PASTI TERDETEKSI:
+#   - /stop, /restart, /end (+ variannya) dari console/player  -> ya, + pelaku
+#   - Restart oleh plugin/watchdog yang lewat command          -> ya, + nama plugin
+#   - SIGTERM dari panel/systemd/Pterodactyl (stop "halus")    -> ya (via hook)
+#   - Crash, kill -9, OOM-killer, restart paksa panel, listrik -> ya, TERDETEKSI
+#     DI BOOT BERIKUTNYA sebagai UNCLEAN_SHUTDOWN (bukan real-time, memang mustahil)
+#  YANG TIDAK BISA (jujur): mengetahui detail penyebab crash native (segfault),
+#     atau menulis laporan real-time saat listrik mati — heartbeat menutup ini
+#     dengan mendeteksinya di boot berikutnya.
+
+# Folder tujuan laporan, relatif terhadap plugins/UMCCore/. Satu file JSON per
+# kejadian: shutdown-<waktu>.json atau crash-<waktu>.json.
+report-folder: "lifecycle"
+
+# Jumlah file laporan terbaru yang disimpan; sisanya (paling lama) dihapus
+# otomatis agar folder tidak membengkak. 0 = simpan semua (tidak dipangkas).
+keep-reports: 50
+
+# Deteksi crash sesi sebelumnya saat plugin menyala. Sangat disarankan true.
+detect-crash: true
+
+# Pasang JVM shutdown hook sebagai jaring pengaman terakhir. Biarkan true agar
+# laporan tetap tertulis walau UMCCore kebetulan di-disable lebih dulu daripada
+# plugin lain, atau server dimatikan oleh SIGTERM tanpa command.
+use-shutdown-hook: true
+
+# Interval (detik) penulisan heartbeat. Makin kecil = perkiraan waktu crash makin
+# presisi, tapi makin sering menulis file. 5 detik adalah kompromi yang baik.
+heartbeat-interval-seconds: 5
+
+# Jendela (detik) untuk mengaitkan sebuah command stop/restart dengan shutdown.
+# Jika server berhenti dalam rentang ini setelah command terlihat, shutdown
+# diatribusikan ke pelaku command tsb. Jika lewat, diklasifikasikan
+# EXTERNAL_OR_UNKNOWN (mis. SIGTERM tanpa command).
+attribution-window-seconds: 30
+
+# Command apa saja yang dianggap "stop" dan "restart". Boleh pakai bentuk polos
+# (stop) atau dengan namespace (minecraft:stop, spigot:restart). Pencocokan tidak
+# peka huruf besar/kecil dan mengabaikan namespace saat mencocokkan bentuk polos.
+stop-commands:
+  - stop
+  - end
+  - minecraft:stop
+restart-commands:
+  - restart
+  - reload confirm      # /reload penuh vanilla (bukan /umccore reload)
+  - spigot:restart
+  - paper:restart
+
+# Notifikasi Discord (opsional) saat shutdown/crash. Butuh DiscordSRV (soft).
+# Bila DiscordSRV tidak ada, bagian ini diabaikan tanpa error.
+discord:
+  # Aktifkan kirim embed ke Discord saat menulis laporan shutdown/crash.
+  enabled: false
+  # Nama channel DiscordSRV (sesuai config DiscordSRV) atau ID channel mentah.
+  channel: "global"

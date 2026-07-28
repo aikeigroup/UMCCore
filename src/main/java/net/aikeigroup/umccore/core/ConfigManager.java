@@ -38,7 +38,8 @@ public final class ConfigManager {
             "actionbar",
             "discord",
             "votelog",
-            "pickup"
+            "pickup",
+            "lifecycle"
     };
 
     private final UMCCore plugin;

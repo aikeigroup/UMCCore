@@ -9,6 +9,7 @@ import net.aikeigroup.umccore.core.ReloadService;
 import net.aikeigroup.umccore.integrations.IntegrationManager;
 import net.aikeigroup.umccore.modules.clearlag.ClearLagModule;
 import net.aikeigroup.umccore.modules.itemstacker.ItemStackerModule;
+import net.aikeigroup.umccore.modules.lifecycle.LifecycleModule;
 import net.aikeigroup.umccore.modules.limiter.MobLimiterModule;
 import net.aikeigroup.umccore.modules.mobstacker.MobStackerModule;
 import net.aikeigroup.umccore.modules.actionbar.ActionBarModule;
@@ -115,6 +116,9 @@ public final class UMCCore extends JavaPlugin {
         modules().register(new DiscordModule());
         // Vote log — Discord embed on each Votifier vote (soft: Votifier+DiscordSRV).
         modules().register(new VoteLogModule());
+        // Lifecycle recorder — detect stop/restart/crash + write a report before
+        // the server really dies (heartbeat + JVM shutdown hook, reload-safe).
+        modules().register(new LifecycleModule());
         // M6 — self updater.
         modules().register(new UpdateModule());
     }

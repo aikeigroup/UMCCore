@@ -3,7 +3,7 @@
 > Status pengerjaan per-milestone & per-fitur. **Selalu update file ini setiap ada
 > perubahan.** Legend: ✅ selesai · 🚧 sedang dikerjakan · ⬜ belum · ⚠️ butuh perhatian.
 
-**Last updated:** 2026-07-26 (v1.2.9 — rombak total UI Java (Dialog): design system selaras + body ikon + stats/profil live)
+**Last updated:** 2026-07-28 (v1.3.0 — modul lifecycle: deteksi stop/restart/crash + laporan JSON sebelum server mati)
 **Target:** Paper 26.2 · Java 25 · Maven · package `net.aikeigroup.umccore`
 
 ---
@@ -102,6 +102,29 @@ dari path Dialog Java. Lihat bagian v1.2.6 di atas.
 | ✅ | Self auto-update module | Cek GitHub Releases, notify admin/console, `auto-download` opsional ke update folder (apply saat restart), `/umccore update [check\|download]`. Dependency-free (regex parse). Bisa di-disable via `modules.update`. |
 
 ---
+
+## Lifecycle recorder: deteksi stop/restart/crash + laporan (v1.3.0)
+- **Modul baru `lifecycle`** — mencatat server STOP/RESTART dan mendeteksi CRASH,
+  lalu menulis laporan JSON (`plugins/UMCCore/lifecycle/shutdown-*.json` /
+  `crash-*.json`) tepat sebelum server benar-benar mati. Toggle `modules.lifecycle`,
+  config `lifecycle.yml` (semua opsi berkomentar).
+- **4 sinyal, jujur soal batas fisik:**
+  1. Listener `ServerCommandEvent` + `PlayerCommandPreprocessEvent` → catat pelaku
+     (console / nama+UUID player) + command persis + **plugin pemicu** (via walk
+     stack + `JavaPlugin.getProvidingPlugin`) untuk restart yang di-dispatch plugin.
+  2. `onDisable` + `Bukkit.isStopping()` → titik tulis utama (world/player/stats masih
+     hidup). **`/umccore reload` & toggle TIDAK dianggap shutdown** (isStopping()=false).
+  3. **JVM shutdown hook** → jaring pengaman terakhir; jalan setelah semua plugin
+     di-disable, dari snapshot memori. Laporan tetap tertulis **walau UMCCore
+     di-disable pertama**. Idempotent (AtomicBoolean) — tak dobel dengan onDisable.
+  4. **Heartbeat** file tiap 5s (dihapus saat stop bersih). Masih ada saat boot →
+     sesi lalu mati tidak bersih → **CRASH/kill/OOM/panel-restart/listrik**,
+     ditulis sebagai `crash-*.json` + rekonstruksi (perkiraan waktu, TPS, player).
+- **Klasifikasi:** STOP / RESTART / EXTERNAL_OR_UNKNOWN (SIGTERM panel tanpa command)
+  / UNCLEAN_SHUTDOWN (crash). Notif Discord opsional (soft DiscordSRV).
+- **JSON writer sendiri** (`Json.java`, tanpa dependency) — Gson tidak dijamin ada.
+- **Bersih di reload**: heartbeat task & listener dilepas oleh AbstractModule; hook
+  dilepas saat reload (bukan stop). Build hijau, `mvn package` → v1.3.0.
 
 ## Rombak total UI Java (Dialog) — selaras dengan Bedrock (v1.2.9)
 - **Masalah**: menu Java masih tampilan lama (stats/profil per-tombol polos, tak pakai
