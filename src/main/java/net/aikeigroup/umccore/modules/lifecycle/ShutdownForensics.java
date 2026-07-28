@@ -46,14 +46,20 @@ final class ShutdownForensics {
         Thread current = Thread.currentThread();
         String killingThread = current.getName();
 
-        // Locate the key threads.
+        // Locate the key threads. NOTE: only the real Paper/Spigot server
+        // watchdog counts — other libraries ship their own "watchdog" threads
+        // (e.g. DiscordSRV's okio AsyncTimeout$Watchdog for network timeouts),
+        // which must NOT be mistaken for the tick watchdog. We identify the real
+        // one by its stack living in org.spigotmc.WatchdogThread / craftbukkit,
+        // not merely by the word "watchdog" in the thread name.
         Thread watchdog = null;
         Thread serverThread = null;
         List<String> shutdownHookThreads = new ArrayList<>();
+        List<String> signalHandlerThreads = new ArrayList<>();
         for (Map.Entry<Thread, StackTraceElement[]> e : all.entrySet()) {
             String name = e.getKey().getName();
             String lower = name.toLowerCase(Locale.ROOT);
-            if (lower.contains("watchdog")) {
+            if (isServerWatchdog(name, e.getValue())) {
                 watchdog = e.getKey();
             } else if (name.equals("Server thread") || lower.contains("server thread")) {
                 serverThread = e.getKey();
@@ -62,20 +68,30 @@ final class ShutdownForensics {
                     || stackMentions(e.getValue(), "ApplicationShutdownHooks")) {
                 shutdownHookThreads.add(name);
             }
+            // A thread literally named for a POSIX signal is the JVM's signal
+            // dispatcher: its presence during shutdown proves an OS signal
+            // (SIGTERM/SIGINT) initiated the stop — not a command, not a crash.
+            if (lower.contains("sigterm") || lower.contains("sigint")
+                    || lower.equals("signal dispatcher") || lower.contains("signal handler")) {
+                signalHandlerThreads.add(name);
+            }
         }
 
         boolean watchdogFiring = watchdog != null
                 && stackMentionsAny(all.get(watchdog),
-                        "halt", "shutdown", "stop", "crash", "WatchdogThread");
+                        "halt", "shutdown", "stop", "crash");
+        boolean osSignal = !signalHandlerThreads.isEmpty();
 
         Map<String, Object> evidence = new LinkedHashMap<>();
         evidence.put("killing-thread", killingThread);
         evidence.put("ran-in-shutdown-hook", fromHook);
-        evidence.put("watchdog-thread-present", watchdog != null);
-        evidence.put("watchdog-appears-firing", watchdogFiring);
+        evidence.put("os-signal-detected", osSignal);
+        evidence.put("signal-handler-threads", signalHandlerThreads);
+        evidence.put("server-watchdog-present", watchdog != null);
+        evidence.put("server-watchdog-firing", watchdogFiring);
         evidence.put("shutdown-hook-threads", shutdownHookThreads);
         if (watchdog != null) {
-            evidence.put("watchdog-stack", frames(all.get(watchdog), 12));
+            evidence.put("server-watchdog-stack", frames(all.get(watchdog), 12));
         }
         if (serverThread != null) {
             evidence.put("server-thread-state", String.valueOf(serverThread.getState()));
@@ -93,20 +109,35 @@ final class ShutdownForensics {
         if (watchdogFiring) {
             return new Result("WATCHDOG_HANG",
                     "high",
-                    "Paper's watchdog force-killed the server: a single tick exceeded the "
+                    "Paper's server watchdog force-killed the server: a single tick exceeded the "
                             + "timeout (a hang/deadlock/GC stall on the main thread). The captured "
                             + "server-thread-stack shows where it was frozen.",
                     evidence);
         }
 
-        if (fromHook || !shutdownHookThreads.isEmpty()) {
+        // An explicit OS signal handler thread is the strongest possible proof
+        // that the host asked the process to stop (SIGTERM), not the game.
+        if (osSignal) {
             return new Result("EXTERNAL_SIGNAL",
                     "high",
-                    "Shutdown was driven by a JVM shutdown hook with no stop command and no "
-                            + "watchdog — i.e. an OS signal (SIGTERM) from the host: the hosting "
+                    "An OS signal handler thread (" + String.join(", ", signalHandlerThreads)
+                            + ") was active during shutdown with no stop command and no server "
+                            + "watchdog firing. This is a SIGTERM from the HOST/OS — the hosting "
                             + "panel's Stop/Restart button, a scheduled restart, systemctl stop, "
-                            + "docker stop, or a graceful kill. NOT a crash (a hard crash/kill -9 "
-                            + "leaves no report at all and is flagged UNCLEAN_SHUTDOWN next boot).",
+                            + "or docker stop. The Minecraft server itself was healthy (see "
+                            + "server-thread-state/tps). NOT a crash.",
+                    evidence);
+        }
+
+        if (fromHook || !shutdownHookThreads.isEmpty()) {
+            return new Result("EXTERNAL_SIGNAL",
+                    "medium",
+                    "Shutdown was driven by a JVM shutdown hook with no stop command and no "
+                            + "server watchdog — most likely an OS signal (SIGTERM) from the host: "
+                            + "the hosting panel's Stop/Restart button, a scheduled restart, "
+                            + "systemctl stop, docker stop, or a graceful kill. NOT a crash (a hard "
+                            + "crash/kill -9 leaves no report at all and is flagged UNCLEAN_SHUTDOWN "
+                            + "next boot).",
                     evidence);
         }
 
@@ -115,6 +146,22 @@ final class ShutdownForensics {
                 "Shutdown ran on the main server thread without a command — most likely a "
                         + "plugin calling Bukkit.shutdown()/Server.shutdown() programmatically.",
                 evidence);
+    }
+
+    /**
+     * @return true only for the real Paper/Spigot tick watchdog, identified by
+     *         its stack ({@code org.spigotmc.WatchdogThread} /
+     *         {@code craftbukkit...ServerShutdownThread}) — never by other
+     *         libraries that happen to name a thread "watchdog" (e.g. okio's
+     *         {@code AsyncTimeout$Watchdog} bundled inside DiscordSRV).
+     */
+    private static boolean isServerWatchdog(String name, StackTraceElement[] stack) {
+        String lower = name.toLowerCase(Locale.ROOT);
+        boolean namedLikeServerWatchdog =
+                lower.contains("watchdog") && (lower.contains("paper") || lower.contains("spigot"));
+        return namedLikeServerWatchdog
+                || stackMentions(stack, "org.spigotmc.WatchdogThread")
+                || stackMentions(stack, "ServerShutdownThread");
     }
 
     private static boolean stackMentions(StackTraceElement[] stack, String needle) {

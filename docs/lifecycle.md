@@ -177,14 +177,17 @@ firing. Inilah kasus JSON yang kamu kirim sebelumnya.
     "imlq (6b5fb44e-2158-3497-adad-dc45a463f313)"
   ],
   "evidence": {
-    "killing-thread": "Thread-3",
+    "killing-thread": "UMCCore-lifecycle-shutdown",
     "ran-in-shutdown-hook": true,
-    "watchdog-thread-present": true,
-    "watchdog-appears-firing": false,
-    "shutdown-hook-threads": ["Thread-3"],
+    "os-signal-detected": true,
+    "signal-handler-threads": ["SIGTERM handler"],
+    "server-watchdog-present": false,
+    "server-watchdog-firing": false,
+    "shutdown-hook-threads": ["SIGTERM handler"],
     "server-thread-state": "RUNNABLE",
     "server-thread-stack": [
-      "net.minecraft.server.MinecraftServer.stopServer(MinecraftServer.java:...)"
+      "net.minecraft.world.entity.ai.Brain.tick(Brain.java:388)",
+      "net.minecraft.server.level.ServerLevel.tickNonPassenger(...)"
     ]
   }
 }
@@ -226,7 +229,11 @@ menunjukkan di mana macet (contoh di bawah: sebuah plugin memblokir main thread)
     "watchdog-thread-present": true,
     "watchdog-appears-firing": true,
     "shutdown-hook-threads": [],
-    "watchdog-stack": [
+    "os-signal-detected": false,
+    "signal-handler-threads": [],
+    "server-watchdog-present": true,
+    "server-watchdog-firing": true,
+    "server-watchdog-stack": [
       "org.bukkit.craftbukkit.util.ServerShutdownThread...",
       "org.spigotmc.WatchdogThread.run(WatchdogThread.java:...)"
     ],
@@ -316,6 +323,30 @@ Tidak ada file `shutdown-*.json` saat kejadian (memang mustahil). Terdeteksi di
 | `API_SHUTDOWN` | `API_OR_MAIN_THREAD` | Plugin panggil `Bukkit.shutdown()` | ✅ |
 | `EXTERNAL_OR_UNKNOWN` | — | Forensik tidak yakin (jarang) | ✅ |
 | `UNCLEAN_SHUTDOWN` (event `CRASH`) | — | Crash/kill -9/OOM/listrik | ❌ (boot berikutnya) |
+
+## Cara membaca `evidence` (membuktikan OS vs server Minecraft)
+
+Untuk memastikan sebuah shutdown datang dari **host/OS** dan bukan dari server
+Minecraft, baca field ini:
+
+| Field | Arti bila bernilai... |
+|---|---|
+| `os-signal-detected: true` | **Bukti terkuat**: ada thread handler sinyal OS (mis. `SIGTERM handler`). Proses disuruh berhenti oleh host — panel/systemd/docker. Ini BUKAN dari game. |
+| `signal-handler-threads` | Nama thread sinyal yang tertangkap (mis. `["SIGTERM handler"]`). |
+| `server-watchdog-firing: true` | Paper server-watchdog memaksa stop → **dari server Minecraft** (tick nyangkut). Lihat `server-thread-stack` yang beku. |
+| `server-thread-state` | `RUNNABLE` + `tps` tinggi = server **sehat** saat mati (menguatkan penyebab eksternal). `BLOCKED`/`WAITING` + `tps` rendah = server **macet**. |
+| `ran-in-shutdown-hook: true` | Ditulis oleh shutdown-hook JVM (mati via sinyal/API), bukan `/stop` di main-thread. |
+
+> **Penting — bukan semua "watchdog" itu Paper Watchdog.** Library lain membawa
+> thread bernama "watchdog" (mis. `okio.AsyncTimeout$Watchdog` di dalam DiscordSRV,
+> untuk timeout jaringan). Sejak v1.3.2 modul HANYA menghitung watchdog Paper/Spigot
+> asli (dikenali dari stack `org.spigotmc.WatchdogThread`/`ServerShutdownThread`),
+> sehingga `server-watchdog-firing` tidak lagi bisa keliru oleh watchdog DiscordSRV.
+
+**Contoh nyata (SIGTERM dari panel):** `os-signal-detected: true`,
+`signal-handler-threads: ["SIGTERM handler"]`, `server-watchdog-firing: false`,
+`server-thread-state: RUNNABLE`, `tps: 20.00` → **100% dari hosting/OS**, server
+Minecraft sehat. Bukan crash, bukan lag, bukan command.
 
 ## Opsi konfigurasi terkait (`lifecycle.yml`)
 
