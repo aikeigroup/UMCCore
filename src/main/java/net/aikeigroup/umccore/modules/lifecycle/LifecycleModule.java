@@ -212,12 +212,24 @@ public final class LifecycleModule extends AbstractModule {
             snap = lastSnapshot; // best effort
         }
 
-        Map<String, Object> report = new LinkedHashMap<>();
-        report.put("event", "SHUTDOWN");
-
         // Classify intent + actor from the most recent stop/restart command.
         boolean attributed = lastCommand != null
                 && (System.currentTimeMillis() - lastCommandMillis) <= attributionWindowMs;
+
+        // Inspect live threads to name the SPECIFIC cause (watchdog hang vs
+        // external SIGTERM vs API vs command), with evidence.
+        ShutdownForensics.Result forensics = null;
+        if (config().getBoolean("forensics", true)) {
+            try {
+                forensics = ShutdownForensics.inspect(fromHook, attributed);
+            } catch (Throwable t) {
+                // Never let forensics stop the report from being written.
+            }
+        }
+
+        Map<String, Object> report = new LinkedHashMap<>();
+        report.put("event", "SHUTDOWN");
+
         if (attributed) {
             report.put("classification", lastReasonKind); // STOP or RESTART
             Map<String, Object> actor = new LinkedHashMap<>();
@@ -232,13 +244,44 @@ public final class LifecycleModule extends AbstractModule {
                     : "command typed by " + lastActorType);
             report.put("triggered-by", actor);
         } else {
-            report.put("classification", "EXTERNAL_OR_UNKNOWN");
+            // Use forensics to be as specific as the evidence allows.
+            String cause = forensics != null ? forensics.cause() : "EXTERNAL_OR_UNKNOWN";
+            report.put("classification", switch (cause) {
+                case "WATCHDOG_HANG" -> "WATCHDOG_HANG";
+                case "EXTERNAL_SIGNAL" -> "EXTERNAL_SIGNAL";
+                case "API_OR_MAIN_THREAD" -> "API_SHUTDOWN";
+                default -> "EXTERNAL_OR_UNKNOWN";
+            });
             Map<String, Object> actor = new LinkedHashMap<>();
-            actor.put("type", "process");
-            actor.put("name", "external (SIGTERM from panel/systemd/watchdog, or API call)");
+            switch (cause) {
+                case "WATCHDOG_HANG" -> {
+                    actor.put("type", "watchdog");
+                    actor.put("name", "Paper Watchdog (tick exceeded timeout -> force stop)");
+                }
+                case "EXTERNAL_SIGNAL" -> {
+                    actor.put("type", "os-signal");
+                    actor.put("name", "external SIGTERM (hosting panel Stop/Restart, scheduled "
+                            + "restart, systemctl/docker stop, or graceful kill)");
+                }
+                case "API_OR_MAIN_THREAD" -> {
+                    actor.put("type", "plugin-api");
+                    actor.put("name", "a plugin calling Bukkit.shutdown() (no command)");
+                }
+                default -> {
+                    actor.put("type", "process");
+                    actor.put("name", "external (SIGTERM from panel/systemd/watchdog, or API call)");
+                }
+            }
             actor.put("command", null);
             actor.put("via", "no stop/restart command seen within attribution window");
             report.put("triggered-by", actor);
+        }
+
+        // Attach the specific cause + evidence regardless of path.
+        if (forensics != null) {
+            report.put("cause", forensics.cause());
+            report.put("cause-confidence", forensics.confidence());
+            report.put("cause-detail", forensics.detail());
         }
 
         report.put("source", fromHook ? "jvm-shutdown-hook (final safety net)" : "onDisable (server stopping)");
@@ -254,6 +297,12 @@ public final class LifecycleModule extends AbstractModule {
             report.put("entities", snap.entities);
             report.put("online-count", snap.onlineCount);
             report.put("online-players", snap.onlinePlayers);
+        }
+
+        // Raw forensic evidence last (thread names/stacks) so a human can verify
+        // the inferred cause. Toggle off with forensics-evidence: false.
+        if (forensics != null && config().getBoolean("forensics-evidence", true)) {
+            report.put("evidence", forensics.evidence());
         }
 
         String file = writeReport("shutdown", report);

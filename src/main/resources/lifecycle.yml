@@ -45,6 +45,17 @@ keep-reports: 50
 # Deteksi crash sesi sebelumnya saat plugin menyala. Sangat disarankan true.
 detect-crash: true
 
+# Analisa forensik penyebab shutdown: memeriksa thread JVM saat mati untuk
+# membedakan secara SPESIFIK — WATCHDOG_HANG (tick nyangkut → Paper paksa stop),
+# EXTERNAL_SIGNAL (SIGTERM panel/systemd/docker/kill halus), API_SHUTDOWN (plugin
+# panggil Bukkit.shutdown()), atau COMMAND. Hasilnya masuk field cause/cause-detail.
+forensics: true
+
+# Sertakan bukti mentah (nama thread + potongan stack "Server thread"/"Watchdog")
+# ke dalam laporan sebagai field `evidence`, agar penyebab bisa diverifikasi
+# manusia. Set false bila ingin laporan lebih ringkas.
+forensics-evidence: true
+
 # Pasang JVM shutdown hook sebagai jaring pengaman terakhir. Biarkan true agar
 # laporan tetap tertulis walau UMCCore kebetulan di-disable lebih dulu daripada
 # plugin lain, atau server dimatikan oleh SIGTERM tanpa command.

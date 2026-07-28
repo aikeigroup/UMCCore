@@ -3,7 +3,7 @@
 > Status pengerjaan per-milestone & per-fitur. **Selalu update file ini setiap ada
 > perubahan.** Legend: ✅ selesai · 🚧 sedang dikerjakan · ⬜ belum · ⚠️ butuh perhatian.
 
-**Last updated:** 2026-07-28 (v1.3.0 — modul lifecycle: deteksi stop/restart/crash + laporan JSON sebelum server mati)
+**Last updated:** 2026-07-28 (v1.3.1 — lifecycle: forensik penyebab shutdown spesifik (watchdog/SIGTERM/API) + bukti thread)
 **Target:** Paper 26.2 · Java 25 · Maven · package `net.aikeigroup.umccore`
 
 ---
@@ -102,6 +102,20 @@ dari path Dialog Java. Lihat bagian v1.2.6 di atas.
 | ✅ | Self auto-update module | Cek GitHub Releases, notify admin/console, `auto-download` opsional ke update folder (apply saat restart), `/umccore update [check\|download]`. Dependency-free (regex parse). Bisa di-disable via `modules.update`. |
 
 ---
+
+## Lifecycle: forensik penyebab shutdown spesifik (v1.3.1)
+- **`ShutdownForensics`** — memeriksa thread JVM saat mati (tanpa API Bukkit, aman
+  dari shutdown hook) untuk menamai penyebab **spesifik** + confidence + bukti:
+  - `WATCHDOG_HANG` — thread Paper Watchdog aktif di jalur halt → tick nyangkut/
+    deadlock/GC stall; stack "Server thread" beku ikut dilampirkan (bukti di mana macet).
+  - `EXTERNAL_SIGNAL` — shutdown didorong shutdown-hook JVM tanpa command & tanpa
+    watchdog → SIGTERM host (tombol panel Stop/Restart, restart terjadwal,
+    systemctl/docker stop, kill halus). Bukan crash.
+  - `API_SHUTDOWN` — jalan di main-thread tanpa command → plugin panggil `Bukkit.shutdown()`.
+  - `COMMAND` — ada `/stop`//`/restart` teratribusi (lihat `triggered-by`).
+- **Laporan** kini punya `cause`, `cause-confidence`, `cause-detail`, dan `evidence`
+  (nama thread pembunuh, apakah lewat hook, watchdog ada/aktif, potongan stack).
+  Toggle `forensics` + `forensics-evidence` di lifecycle.yml. Build hijau → v1.3.1.
 
 ## Lifecycle recorder: deteksi stop/restart/crash + laporan (v1.3.0)
 - **Modul baru `lifecycle`** — mencatat server STOP/RESTART dan mendeteksi CRASH,
