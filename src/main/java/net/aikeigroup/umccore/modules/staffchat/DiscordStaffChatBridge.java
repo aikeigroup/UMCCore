@@ -204,22 +204,45 @@ final class DiscordStaffChatBridge {
             return false;
         }
         String clean = configured.startsWith("#") ? configured.substring(1) : configured;
+
+        // 1. Direct snowflake ID match
         if (channel.getId().equals(configured) || channel.getId().equals(clean)) {
             return true;
         }
-        if (channel.getName().equalsIgnoreCase(configured) || channel.getName().equalsIgnoreCase(clean)) {
-            return true;
-        }
+
+        DiscordSRV srv;
         try {
-            TextChannel resolved = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName(configured);
+            srv = DiscordSRV.getPlugin();
+        } catch (Throwable t) {
+            return false;
+        }
+        if (srv == null) {
+            return false;
+        }
+
+        // 2. DiscordSRV game-channel mapping (e.g. Channels: {"staff-chat": "123456..."})
+        try {
+            TextChannel resolved = srv.getDestinationTextChannelForGameChannelName(configured);
             if (resolved == null && !clean.equals(configured)) {
-                resolved = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName(clean);
+                resolved = srv.getDestinationTextChannelForGameChannelName(clean);
             }
             if (resolved != null && resolved.getId().equals(channel.getId())) {
                 return true;
             }
         } catch (Throwable ignored) {
         }
+
+        // 3. Match by name ONLY within DiscordSRV's primary main guild
+        try {
+            var mainGuild = srv.getMainGuild();
+            if (mainGuild != null && channel.getGuild().getId().equals(mainGuild.getId())) {
+                if (channel.getName().equalsIgnoreCase(clean) || channel.getName().equalsIgnoreCase(configured)) {
+                    return true;
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+
         return false;
     }
 
@@ -228,22 +251,44 @@ final class DiscordStaffChatBridge {
             return null;
         }
         String clean = channel.startsWith("#") ? channel.substring(1) : channel;
-        TextChannel byName = srv.getDestinationTextChannelForGameChannelName(channel);
-        if (byName == null && !clean.equals(channel)) {
-            byName = srv.getDestinationTextChannelForGameChannelName(clean);
+
+        // 1. Try DiscordSRV game-channel mapping first
+        try {
+            TextChannel byName = srv.getDestinationTextChannelForGameChannelName(channel);
+            if (byName == null && !clean.equals(channel)) {
+                byName = srv.getDestinationTextChannelForGameChannelName(clean);
+            }
+            if (byName != null) {
+                return byName;
+            }
+        } catch (Throwable ignored) {
         }
-        if (byName != null) {
-            return byName;
-        }
+
+        // 2. Try raw snowflake ID via JDA
         try {
             TextChannel byId = srv.getJda().getTextChannelById(channel);
             if (byId == null && !clean.equals(channel)) {
                 byId = srv.getJda().getTextChannelById(clean);
             }
-            return byId;
-        } catch (Throwable t) {
-            return null;
+            if (byId != null) {
+                return byId;
+            }
+        } catch (Throwable ignored) {
         }
+
+        // 3. Match by name only inside primary main guild
+        try {
+            var mainGuild = srv.getMainGuild();
+            if (mainGuild != null) {
+                var list = mainGuild.getTextChannelsByName(clean, true);
+                if (!list.isEmpty()) {
+                    return list.get(0);
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+
+        return null;
     }
 
     private static int hex(String value) {
