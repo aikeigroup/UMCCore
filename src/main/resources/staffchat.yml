@@ -1,0 +1,89 @@
+# ==========================================================================
+#  UMCCore — StaffChat Module Configuration (staffchat.yml)
+#  Cross-platform staff chat with bidirectional DiscordSRV integration,
+#  toggle & direct modes, custom formatting, and audio notifications.
+#  Reload with /umccore reload.
+# ==========================================================================
+
+# Formats displayed in Minecraft chat. All text supports MiniMessage:
+# https://docs.advntr.dev/minimessage/ (gradients, hex colors, hover, click).
+# PlaceholderAPI (%papi%) tokens and built-in tokens like {player}, {message},
+# {server}, {prefix} are automatically resolved.
+format:
+  # Format used when a Minecraft player sends a staff message.
+  # Available tokens: {player}, {message}, {server}, %papi%
+  minecraft: "<dark_gray>[<gradient:#ff416c:#ff4b2b><bold>STAFF</bold></gradient>]</dark_gray> <yellow>{player}</yellow><gray>:</gray> <white>{message}</white>"
+
+  # Format used when a message is sent from the server console (/sc <message>).
+  # Available tokens: {message}, {server}
+  console: "<dark_gray>[<gradient:#ff416c:#ff4b2b><bold>STAFF</bold></gradient>]</dark_gray> <red>[Console]</red><gray>:</gray> <white>{message}</white>"
+
+  # Format used in Minecraft when a message arrives from the Discord staff channel.
+  # Available tokens: {user}, {role}, {message}, {channel}
+  discord: "<dark_gray>[<gradient:#ff416c:#ff4b2b><bold>STAFF</bold></gradient>]</dark_gray> <gradient:#7289da:#5865f2>[Discord]</gradient> <aqua>{user}</aqua><gray>:</gray> <white>{message}</white>"
+
+# Sound notification played to online staff when receiving a staff message.
+sound:
+  # Enable or disable receiving sound notification.
+  enabled: true
+  # Bukkit/Paper sound key (e.g. block.note_block.pling, entity.experience_orb.pickup).
+  name: "block.note_block.pling"
+  # Sound volume (0.0 to 1.0+).
+  volume: 1.0
+  # Sound pitch (0.5 to 2.0). 1.5 = high pleasant pling.
+  pitch: 1.5
+
+# Two-way Discord integration (requires DiscordSRV soft dependency).
+discord:
+  # Master toggle for Discord integration in StaffChat.
+  enabled: true
+
+  # The destination Discord channel. Can be either:
+  # 1. A DiscordSRV game channel name configured in DiscordSRV's config.yml (e.g. "staff-chat" or "global")
+  # 2. A raw Discord text channel snowflake ID (e.g. "123456789012345678")
+  channel: "staff-chat"
+
+  # Automatically forward Minecraft staff chat messages to Discord.
+  mc-to-discord: true
+
+  # Automatically forward messages sent in the Discord staff channel to Minecraft staff chat.
+  discord-to-mc: true
+
+  # If true, sends messages as a rich Discord embed. If false, sends plain formatted text.
+  send-as-embed: false
+
+  # Plain text format sent to Discord when send-as-embed is false.
+  # Available tokens: {player}, {message}, {server}
+  text-format: "🛡️ **[Staff] {player}**: {message}"
+
+  # Embed layout used when send-as-embed is true.
+  embed:
+    # Hex color code for the embed border.
+    color: "#ff416c"
+    # Title or Author field at top of the embed. Tokens: {player}, {server}
+    author-name: "{player}"
+    # Player head thumbnail (renders Java and Bedrock Floodgate names).
+    author-icon-url: "https://mc-heads.net/avatar/{player}"
+    # Main description body of the embed. Tokens: {player}, {message}
+    description: "{message}"
+    # Footer text at bottom of embed.
+    footer: "UMCCore StaffChat"
+    # Include current timestamp in the embed.
+    show-timestamp: true
+
+# Feedback messages for players executing /sc or /staffchat.
+messages:
+  # Feedback when toggling staff chat mode ON.
+  toggle-on: "<green>Staff chat mode <bold>ENABLED</bold>. Your messages will now be sent to staff chat.</green>"
+
+  # Feedback when toggling staff chat mode OFF.
+  toggle-off: "<yellow>Staff chat mode <bold>DISABLED</bold>. Your messages will now be sent to public chat.</yellow>"
+
+  # Sent when sender lacks umccore.staffchat.use permission.
+  no-permission: "<red>You don't have permission to use staff chat.</red>"
+
+  # Feedback when console tries to toggle without arguments.
+  console-only-direct: "<red>Console cannot toggle staff chat. Use:</red> <white>/sc <message></white>"
+
+  # Usage instruction when needed.
+  usage: "<gray>Usage:</gray> <white>/sc [message]</white> <gray>(type without message to toggle mode)</gray>"

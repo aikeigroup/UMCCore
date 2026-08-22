@@ -39,7 +39,8 @@ public final class ConfigManager {
             "discord",
             "votelog",
             "pickup",
-            "lifecycle"
+            "lifecycle",
+            "staffchat"
     };
 
     private final UMCCore plugin;

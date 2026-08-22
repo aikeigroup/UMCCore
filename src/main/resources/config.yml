@@ -39,6 +39,8 @@ modules:
   # Record server stop/restart and detect crashes; writes a JSON report just
   # before the server dies. Tuned in lifecycle.yml.
   lifecycle: true
+  # Cross-platform staff chat with DiscordSRV two-way sync and /sc shortcut.
+  staffchat: true
 
 # General plugin behaviour.
 general:

@@ -3,8 +3,26 @@
 > Status pengerjaan per-milestone & per-fitur. **Selalu update file ini setiap ada
 > perubahan.** Legend: ✅ selesai · 🚧 sedang dikerjakan · ⬜ belum · ⚠️ butuh perhatian.
 
-**Last updated:** 2026-07-28 (v1.3.1 — lifecycle: forensik penyebab shutdown spesifik (watchdog/SIGTERM/API) + bukti thread)
+**Last updated:** 2026-08-22 (v1.3.3 — StaffChat: integrasi dua arah Discord, toggle & direct mode, shortcut /sc)
 **Target:** Paper 26.2 · Java 25 · Maven · package `net.aikeigroup.umccore`
+
+---
+
+## StaffChat: Integrasi Dua Arah Discord + Toggle/Direct Mode (v1.3.3) ✅
+- **Modul baru `staffchat` (`StaffChatModule`)** — sistem chat khusus staf lintas platform (Java & Bedrock) dengan integrasi dua arah DiscordSRV. Toggle `modules.staffchat` di `config.yml`, konfigurasi mendalam di `staffchat.yml`.
+- **Mode Fleksibel:**
+  - **Toggle Mode**: Jalankan `/sc` atau `/staffchat` tanpa argumen untuk mengaktifkan/menonaktifkan mode staff chat. Saat aktif, semua pesan chat reguler pemain otomatis dialihkan ke staff chat (via `AsyncChatEvent` interceptor).
+  - **Direct Mode**: Jalankan `/sc <pesan>` atau `/staffchat <pesan>` untuk mengirim pesan langsung tanpa mengubah status toggle.
+  - **Console Support**: Console dapat mengirim pesan langsung ke staff chat in-game dan Discord (`/sc <pesan>`).
+- **Integrasi Dua Arah Discord (DiscordSRV)**:
+  - **Minecraft → Discord**: Pesan staff chat dari in-game (pemain/console) otomatis diteruskan ke channel Discord yang dikonfigurasi (bisa channel name DiscordSRV maupun raw snowflake channel ID) dalam format text maupun rich embed.
+  - **Discord → Minecraft**: Pesan yang dikirim staf di channel Discord tersebut otomatis didengarkan (via `DiscordGuildMessageReceivedEvent`) dan di-broadcast ke seluruh staf online di Minecraft. Dilengkapi pencegahan echo loop dari bot/webhook.
+- **Audio Feedback & Permissions**:
+  - Notifikasi suara saat pesan staf masuk (`sound.name`, `sound.volume`, `sound.pitch`).
+  - Permission nodes: `umccore.staffchat.*`, `umccore.staffchat.use`, `umccore.staffchat.see`.
+- **Command & Subcommand**:
+  - Dedicated root command `/staffchat` dan `/sc` (terdaftar di `plugin.yml`).
+  - Subcommand `/umccore staffchat [toggle|<pesan>]` (alias `/umc sc`).
 
 ---
 

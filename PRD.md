@@ -84,6 +84,7 @@ net.aikeigroup.umccore
 │   ├── mobxp/                      # XP & drop control
 │   ├── actionbar/                  # Action bar animatif
 │   ├── discord/                    # DiscordSRV status embed
+│   ├── staffchat/                  # StaffChat + DiscordSRV bidirectional sync
 │   └── ui/                         # Menu / Dialog / GUI system
 ├── integrations/
 │   ├── placeholderapi/             # Expansion + resolver
@@ -290,8 +291,14 @@ buttons:
   - UMCCore juga meng-*resolve* PAPI di semua teks (embed, action bar, menu, messages).
 - **Vault**: economy (balance di menu/placeholder) + permission fallback bila LuckPerms tidak ada.
 - **LuckPerms**: baca rank/prefix/meta untuk menu & placeholder; permission check.
-- **DiscordSRV**: kirim/edit embed (lihat 4.8).
+- **DiscordSRV**: kirim/edit embed & integrasi StaffChat 2 arah (lihat 4.8 & 4.11).
 - **Geyser/Floodgate**: deteksi pemain Bedrock untuk routing menu.
+
+### 4.11 StaffChat
+- Obrolan khusus staf in-game + dua arah DiscordSRV.
+- Mode: **Toggle** (`/sc` tanpa argumen) dan **Direct** (`/sc <pesan>`).
+- Notifikasi suara saat pesan staf diterima.
+- Format custom MiniMessage + PAPI resolution.
 
 ---
 
@@ -299,10 +306,11 @@ buttons:
 
 ### 5.1 Struktur Command
 
-Root: `/umccore` (alias: `/umc`).
+Root: `/umccore` (alias: `/umc`), `/staffchat` (alias: `/sc`).
 
 | Command | Deskripsi | Permission |
 |---|---|---|
+| `/staffchat [pesan]` (alias `/sc`) | Toggle mode staff chat / kirim pesan langsung ke staf & Discord | `umccore.staffchat.use` |
 | `/umccore help` | Bantuan | `umccore.command.help` |
 | `/umccore reload` | **Full reload** plugin (semua modul + config) | `umccore.command.reload` |
 | `/umccore version` | Info versi & integrasi terdeteksi | `umccore.command.version` |
@@ -312,6 +320,7 @@ Root: `/umccore` (alias: `/umc`).
 | `/umccore menu <nama> [player]` | Buka menu | `umccore.command.menu` + `umccore.menu.<nama>` |
 | `/umccore actionbar toggle` | Toggle action bar diri sendiri | `umccore.command.actionbar` |
 | `/umccore discord update` | Force update embed | `umccore.command.discord` |
+| `/umccore staffchat [toggle\|<pesan>]` | Kelola / kirim staff chat | `umccore.staffchat.use` |
 | `/umccore module <enable/disable/list> [nama]` | Kelola modul runtime | `umccore.command.module` |
 | `/umccore debug` | Info diagnostik | `umccore.command.debug` |
 

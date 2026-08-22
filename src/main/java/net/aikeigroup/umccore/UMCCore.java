@@ -17,6 +17,8 @@ import net.aikeigroup.umccore.modules.discord.DiscordModule;
 import net.aikeigroup.umccore.modules.mobxp.MobXpModule;
 import net.aikeigroup.umccore.modules.performance.PerformanceModule;
 import net.aikeigroup.umccore.modules.pickup.MobPickupModule;
+import net.aikeigroup.umccore.modules.staffchat.StaffChatCommand;
+import net.aikeigroup.umccore.modules.staffchat.StaffChatModule;
 import net.aikeigroup.umccore.modules.ui.UIModule;
 import net.aikeigroup.umccore.modules.update.UpdateModule;
 import net.aikeigroup.umccore.modules.votelog.VoteLogModule;
@@ -116,6 +118,8 @@ public final class UMCCore extends JavaPlugin {
         modules().register(new DiscordModule());
         // Vote log — Discord embed on each Votifier vote (soft: Votifier+DiscordSRV).
         modules().register(new VoteLogModule());
+        // StaffChat — bidirectional Discord sync, toggle/direct modes, /sc shortcut.
+        modules().register(new StaffChatModule());
         // Lifecycle recorder — detect stop/restart/crash + write a report before
         // the server really dies (heartbeat + JVM shutdown hook, reload-safe).
         modules().register(new LifecycleModule());
@@ -131,6 +135,15 @@ public final class UMCCore extends JavaPlugin {
             command.setTabCompleter(root);
         } else {
             getLogger().severe("Command 'umccore' is not defined in plugin.yml!");
+        }
+
+        PluginCommand scCommand = getCommand("staffchat");
+        if (scCommand != null) {
+            StaffChatCommand scExecutor = new StaffChatCommand(this);
+            scCommand.setExecutor(scExecutor);
+            scCommand.setTabCompleter(scExecutor);
+        } else {
+            getLogger().severe("Command 'staffchat' is not defined in plugin.yml!");
         }
     }
 

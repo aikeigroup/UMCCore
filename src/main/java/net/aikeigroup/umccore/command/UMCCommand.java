@@ -9,6 +9,7 @@ import net.aikeigroup.umccore.command.subcommands.MenuCommand;
 import net.aikeigroup.umccore.command.subcommands.ModuleCommand;
 import net.aikeigroup.umccore.command.subcommands.PerfCommand;
 import net.aikeigroup.umccore.command.subcommands.ReloadCommand;
+import net.aikeigroup.umccore.command.subcommands.StaffChatSubCommand;
 import net.aikeigroup.umccore.command.subcommands.StackCommand;
 import net.aikeigroup.umccore.command.subcommands.UpdateCommand;
 import net.aikeigroup.umccore.command.subcommands.VersionCommand;
@@ -59,6 +60,8 @@ public final class UMCCommand implements CommandExecutor, TabCompleter {
         register(new ActionBarCommand());
         // M5 — Discord.
         register(new DiscordCommand());
+        // StaffChat.
+        register(new StaffChatSubCommand());
         // M6 — self updater.
         register(new UpdateCommand());
     }
