@@ -1,8 +1,11 @@
 package net.aikeigroup.umccore.modules.staffchat;
 
 import github.scarsz.discordsrv.DiscordSRV;
+import github.scarsz.discordsrv.api.ListenerPriority;
 import github.scarsz.discordsrv.api.Subscribe;
+import github.scarsz.discordsrv.api.events.DiscordGuildMessagePreProcessEvent;
 import github.scarsz.discordsrv.api.events.DiscordGuildMessageReceivedEvent;
+import github.scarsz.discordsrv.api.events.GameChatMessagePreProcessEvent;
 import github.scarsz.discordsrv.dependencies.jda.api.EmbedBuilder;
 import github.scarsz.discordsrv.dependencies.jda.api.entities.Member;
 import github.scarsz.discordsrv.dependencies.jda.api.entities.Message;
@@ -45,7 +48,37 @@ final class DiscordStaffChatBridge {
     }
 
     /**
-     * Receives Discord messages and relays them to Minecraft if sent in the configured staff channel.
+     * Prevents DiscordSRV from broadcasting toggled Minecraft staff chat messages
+     * into Discord's general/global chat channel.
+     */
+    @Subscribe(priority = ListenerPriority.HIGHEST)
+    public void onGameChatMessagePreProcess(GameChatMessagePreProcessEvent event) {
+        if (event == null) {
+            return;
+        }
+        if (event.getPlayer() != null && module.isToggled(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    /**
+     * Prevents DiscordSRV from broadcasting messages sent in the Discord staff channel
+     * to Minecraft general/global chat.
+     */
+    @Subscribe(priority = ListenerPriority.HIGHEST)
+    public void onDiscordGuildMessagePreProcess(DiscordGuildMessagePreProcessEvent event) {
+        if (event == null || event.getChannel() == null) {
+            return;
+        }
+        FileConfiguration config = plugin.configs().get("staffchat");
+        String targetChannel = config.getString("discord.channel", "staff-chat");
+        if (isStaffChannel(event.getChannel(), targetChannel)) {
+            event.setCancelled(true);
+        }
+    }
+
+    /**
+     * Receives Discord messages and relays them exclusively to Minecraft staff if sent in the configured staff channel.
      */
     @Subscribe
     public void onDiscordMessage(DiscordGuildMessageReceivedEvent event) {
@@ -96,7 +129,7 @@ final class DiscordStaffChatBridge {
     }
 
     /**
-     * Sends a Minecraft staff chat message to Discord.
+     * Sends a Minecraft staff chat message exclusively to Discord staff channel.
      */
     void sendToDiscord(CommandSender sender, String message) {
         DiscordSRV srv;

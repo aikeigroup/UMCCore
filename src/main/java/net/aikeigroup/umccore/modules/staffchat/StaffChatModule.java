@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Set;
@@ -26,9 +27,10 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * <p>Features:</p>
  * <ul>
- *   <li>Toggle mode: regular chat messages are redirected to staff chat.</li>
+ *   <li>Toggle mode: regular chat messages are redirected exclusively to staff chat.</li>
  *   <li>Direct mode: {@code /sc <message>} broadcasts instantly without toggling.</li>
  *   <li>Discord synchronization: Minecraft to Discord and Discord to Minecraft.</li>
+ *   <li>Leak-proof isolation: prevents staff chat from leaking to public Minecraft chat or Discord global channel.</li>
  *   <li>Permission-gated: {@code umccore.staffchat.use} and {@code umccore.staffchat.see}.</li>
  *   <li>Customizable formats, sounds, and embed/plain text Discord options.</li>
  * </ul>
@@ -132,7 +134,7 @@ public final class StaffChatModule extends AbstractModule {
         broadcastToStaff(component);
         playStaffSound();
 
-        // Forward to Discord async if enabled
+        // Forward to Discord staff channel async if enabled
         if (discordBridge != null && config().getBoolean("discord.mc-to-discord", true)) {
             scheduler.runAsync(() -> discordBridge.sendToDiscord(sender, rawMessage));
         }
@@ -168,7 +170,7 @@ public final class StaffChatModule extends AbstractModule {
     }
 
     /**
-     * Sends a Component to all online players with {@code umccore.staffchat.see} and the server console.
+     * Sends a Component exclusively to online staff players and the server console.
      */
     private void broadcastToStaff(Component component) {
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -201,17 +203,59 @@ public final class StaffChatModule extends AbstractModule {
     }
 
     /**
-     * Inner Bukkit listener for player chat and quit events.
+     * Inner Bukkit listener for player chat and quit events with multi-layer leak prevention.
      */
     private final class StaffChatListener implements Listener {
 
-        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-        public void onAsyncChat(AsyncChatEvent event) {
+        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+        public void onAsyncChatLowest(AsyncChatEvent event) {
             Player player = event.getPlayer();
             if (isToggled(player)) {
                 event.setCancelled(true);
+                try {
+                    event.viewers().clear();
+                } catch (Throwable ignored) {
+                }
                 String raw = PlainTextComponentSerializer.plainText().serialize(event.message());
                 sendFromMinecraft(player, raw);
+            }
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
+        public void onAsyncChatMonitor(AsyncChatEvent event) {
+            Player player = event.getPlayer();
+            if (isToggled(player)) {
+                event.setCancelled(true);
+                try {
+                    event.viewers().clear();
+                } catch (Throwable ignored) {
+                }
+            }
+        }
+
+        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+        public void onLegacyChatLowest(AsyncPlayerChatEvent event) {
+            Player player = event.getPlayer();
+            if (isToggled(player)) {
+                event.setCancelled(true);
+                try {
+                    event.getRecipients().clear();
+                } catch (Throwable ignored) {
+                }
+                event.setMessage("");
+            }
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
+        public void onLegacyChatMonitor(AsyncPlayerChatEvent event) {
+            Player player = event.getPlayer();
+            if (isToggled(player)) {
+                event.setCancelled(true);
+                try {
+                    event.getRecipients().clear();
+                } catch (Throwable ignored) {
+                }
+                event.setMessage("");
             }
         }
 
