@@ -203,11 +203,18 @@ final class DiscordStaffChatBridge {
         if (channel == null || configured == null || configured.isBlank()) {
             return false;
         }
-        if (channel.getId().equals(configured) || channel.getName().equalsIgnoreCase(configured)) {
+        String clean = configured.startsWith("#") ? configured.substring(1) : configured;
+        if (channel.getId().equals(configured) || channel.getId().equals(clean)) {
+            return true;
+        }
+        if (channel.getName().equalsIgnoreCase(configured) || channel.getName().equalsIgnoreCase(clean)) {
             return true;
         }
         try {
             TextChannel resolved = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName(configured);
+            if (resolved == null && !clean.equals(configured)) {
+                resolved = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName(clean);
+            }
             if (resolved != null && resolved.getId().equals(channel.getId())) {
                 return true;
             }
@@ -217,12 +224,23 @@ final class DiscordStaffChatBridge {
     }
 
     private TextChannel resolveChannel(DiscordSRV srv, String channel) {
+        if (channel == null || channel.isBlank()) {
+            return null;
+        }
+        String clean = channel.startsWith("#") ? channel.substring(1) : channel;
         TextChannel byName = srv.getDestinationTextChannelForGameChannelName(channel);
+        if (byName == null && !clean.equals(channel)) {
+            byName = srv.getDestinationTextChannelForGameChannelName(clean);
+        }
         if (byName != null) {
             return byName;
         }
         try {
-            return srv.getJda().getTextChannelById(channel);
+            TextChannel byId = srv.getJda().getTextChannelById(channel);
+            if (byId == null && !clean.equals(channel)) {
+                byId = srv.getJda().getTextChannelById(clean);
+            }
+            return byId;
         } catch (Throwable t) {
             return null;
         }

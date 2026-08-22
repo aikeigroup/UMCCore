@@ -3,12 +3,12 @@
 > Status pengerjaan per-milestone & per-fitur. **Selalu update file ini setiap ada
 > perubahan.** Legend: ✅ selesai · 🚧 sedang dikerjakan · ⬜ belum · ⚠️ butuh perhatian.
 
-**Last updated:** 2026-08-22 (v1.3.4 — StaffChat: fix isolasi chat total, anti-bocor ke umum/general & Discord general)
+**Last updated:** 2026-08-22 (v1.3.5 — StaffChat: audit keamanan channel resolution & isolasi chat)
 **Target:** Paper 26.2 · Java 25 · Maven · package `net.aikeigroup.umccore`
 
 ---
 
-## StaffChat: Isolasi Total & Anti-Bocor Chat (v1.3.4) ✅
+## StaffChat: Isolasi Total & Anti-Bocor Chat (v1.3.5) ✅
 - **Fix Kebocoran Chat ke Umum/General:**
   - **Intersepsi Multi-Layer Minecraft**: Mengintersepsi kedua event chat (`io.papermc.paper.event.player.AsyncChatEvent` dan `org.bukkit.event.player.AsyncPlayerChatEvent`) di prioritas `LOWEST` & `MONITOR` dengan `setCancelled(true)`, `viewers().clear()`, `getRecipients().clear()`, dan `setMessage("")` sehingga tidak ada plugin chat formatters lain yang meneruskannya ke obrolan publik.
   - **Blokir Relai DiscordSRV ke General**: Mendengarkan `GameChatMessagePreProcessEvent` di prioritas `HIGHEST` dan membatalkannya saat pemain berada di mode toggle staff chat, sehingga DiscordSRV **tidak pernah** meneruskan chat staf ke channel `global`/`general` Discord.
