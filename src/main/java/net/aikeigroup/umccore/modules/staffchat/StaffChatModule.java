@@ -6,11 +6,8 @@ import net.aikeigroup.umccore.util.Text;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -204,6 +201,20 @@ public final class StaffChatModule extends AbstractModule {
 
     /**
      * Inner Bukkit listener for player chat and quit events with multi-layer leak prevention.
+     *
+     * <p>On Paper, chat is processed in two stages (see
+     * {@code io.papermc.paper.adventure.ChatProcessor}): the legacy
+     * {@link AsyncPlayerChatEvent} is fired first (when any listener exists for
+     * it), and its resulting message/recipients/cancelled state is then forwarded
+     * into the modern {@link AsyncChatEvent}. Both events therefore fire for a
+     * single player chat.</p>
+     *
+     * <p>Broadcasting is deliberately done ONLY from the modern handler. The
+     * legacy handler only cancels and clears recipients — it must NEVER blank the
+     * message, because the legacy message is what Paper forwards into the modern
+     * event. Blanking it would make {@code AsyncChatEvent.message()} empty and the
+     * staff broadcast would silently no-op, while the original chat is already
+     * cancelled — the message would vanish entirely.</p>
      */
     private final class StaffChatListener implements Listener {
 
@@ -212,11 +223,15 @@ public final class StaffChatModule extends AbstractModule {
             Player player = event.getPlayer();
             if (isToggled(player)) {
                 event.setCancelled(true);
-                try {
-                    event.viewers().clear();
-                } catch (Throwable ignored) {
+                clearViewers(event);
+
+                // Some other plugin may have cleared the message before us; fall
+                // back to the original component so the staff payload survives.
+                Component message = event.message();
+                String raw = PlainTextComponentSerializer.plainText().serialize(message);
+                if (raw == null || raw.isBlank()) {
+                    raw = PlainTextComponentSerializer.plainText().serialize(event.originalMessage());
                 }
-                String raw = PlainTextComponentSerializer.plainText().serialize(event.message());
                 sendFromMinecraft(player, raw);
             }
         }
@@ -226,10 +241,7 @@ public final class StaffChatModule extends AbstractModule {
             Player player = event.getPlayer();
             if (isToggled(player)) {
                 event.setCancelled(true);
-                try {
-                    event.viewers().clear();
-                } catch (Throwable ignored) {
-                }
+                clearViewers(event);
             }
         }
 
@@ -238,11 +250,10 @@ public final class StaffChatModule extends AbstractModule {
             Player player = event.getPlayer();
             if (isToggled(player)) {
                 event.setCancelled(true);
-                try {
-                    event.getRecipients().clear();
-                } catch (Throwable ignored) {
-                }
-                event.setMessage("");
+                clearRecipients(event);
+                // NOTE: do not call event.setMessage("") here. Paper forwards the
+                // legacy message into the modern AsyncChatEvent; blanking it would
+                // destroy the payload the modern handler broadcasts to staff.
             }
         }
 
@@ -251,17 +262,27 @@ public final class StaffChatModule extends AbstractModule {
             Player player = event.getPlayer();
             if (isToggled(player)) {
                 event.setCancelled(true);
-                try {
-                    event.getRecipients().clear();
-                } catch (Throwable ignored) {
-                }
-                event.setMessage("");
+                clearRecipients(event);
             }
         }
 
         @EventHandler
         public void onPlayerQuit(PlayerQuitEvent event) {
             toggledStaff.remove(event.getPlayer().getUniqueId());
+        }
+
+        private void clearViewers(AsyncChatEvent event) {
+            try {
+                event.viewers().clear();
+            } catch (Throwable ignored) {
+            }
+        }
+
+        private void clearRecipients(AsyncPlayerChatEvent event) {
+            try {
+                event.getRecipients().clear();
+            } catch (Throwable ignored) {
+            }
         }
     }
 }

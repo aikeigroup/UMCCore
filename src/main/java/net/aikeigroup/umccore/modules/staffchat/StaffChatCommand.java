@@ -45,7 +45,10 @@ public final class StaffChatCommand implements CommandExecutor, TabCompleter {
                 .map(m -> (StaffChatModule) m)
                 .orElse(null);
 
-        if (module == null) {
+        // Only honour the toggle/direct commands while the module is actually
+        // enabled; otherwise the toggle would report ON but no listener would be
+        // running to intercept chat, silently leaving staff chat dead.
+        if (module == null || !plugin.modules().isActive("staffchat")) {
             sender.sendMessage(Text.mm("<red>The StaffChat module is currently disabled.</red>"));
             return true;
         }

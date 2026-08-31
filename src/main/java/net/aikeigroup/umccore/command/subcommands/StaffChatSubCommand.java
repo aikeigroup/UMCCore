@@ -57,6 +57,10 @@ public final class StaffChatSubCommand implements SubCommand {
         }
 
         var config = plugin.configs().get("staffchat");
+        if (config == null) {
+            sender.sendMessage(Text.mm("<red>The StaffChat module is currently disabled.</red>"));
+            return;
+        }
 
         if (args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase("toggle"))) {
             if (!(sender instanceof Player player)) {
