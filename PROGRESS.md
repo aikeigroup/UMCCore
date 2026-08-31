@@ -3,14 +3,24 @@
 > Status pengerjaan per-milestone & per-fitur. **Selalu update file ini setiap ada
 > perubahan.** Legend: ✅ selesai · 🚧 sedang dikerjakan · ⬜ belum · ⚠️ butuh perhatian.
 
-**Last updated:** 2026-08-22 (v1.3.5 — StaffChat: audit keamanan channel resolution & isolasi chat)
+**Last updated:** 2026-08-31 (v1.3.7 — StaffChat: fix toggle mode chat interception & broadcast)
 **Target:** Paper 26.2 · Java 25 · Maven · package `net.aikeigroup.umccore`
+
+---
+
+## StaffChat: Fix Toggle Mode Interception & Broadcast (v1.3.7) ✅
+- **Fix Toggle Mode Tidak Berfungsi**: Di Paper 26.2 satu chat memicu dua event berurutan — `AsyncPlayerChatEvent` (legacy) di-fire dulu, lalu hasilnya (message/recipients/cancelled) diteruskan ke `AsyncChatEvent` (modern). Handler legacy sebelumnya memanggil `event.setMessage("")`, dan Paper meneruskan message kosong itu ke event modern sehingga `sendFromMinecraft` menerima string kosong dan me-skip broadcast — pesan ter-cancel dari publik tapi tidak pernah muncul di staff chat (hilang total).
+  - **Hapus `setMessage("")`** dari kedua handler legacy — cukup `setCancelled(true)` + `getRecipients().clear()` agar payload asli tetap diteruskan ke `AsyncChatEvent`.
+  - **Broadcast hanya dari handler modern** (`AsyncChatEvent`) — sekali per chat, tanpa duplikasi.
+  - **Fallback `originalMessage()`** jika plugin lain mengosongkan message sebelum handler modern.
+- **Fix Command Saat Module Disabled**: `/sc` dan `/staffchat` sekarang cek `modules().isActive("staffchat")` — sebelumnya toggle tetap melaporkan ON padahal tidak ada listener yang berjalan (chat tetap bocor ke publik).
+- **Permission Gating Tetap**: broadcast hanya ke pemegang `umccore.staffchat.see` / `umccore.staffchat.use` / OP.
 
 ---
 
 ## StaffChat: Isolasi Total & Anti-Bocor Chat (v1.3.5) ✅
 - **Fix Kebocoran Chat ke Umum/General:**
-  - **Intersepsi Multi-Layer Minecraft**: Mengintersepsi kedua event chat (`io.papermc.paper.event.player.AsyncChatEvent` dan `org.bukkit.event.player.AsyncPlayerChatEvent`) di prioritas `LOWEST` & `MONITOR` dengan `setCancelled(true)`, `viewers().clear()`, `getRecipients().clear()`, dan `setMessage("")` sehingga tidak ada plugin chat formatters lain yang meneruskannya ke obrolan publik.
+  - **Intersepsi Multi-Layer Minecraft**: Mengintersepsi kedua event chat (`io.papermc.paper.event.player.AsyncChatEvent` dan `org.bukkit.event.player.AsyncPlayerChatEvent`) di prioritas `LOWEST` & `MONITOR` dengan `setCancelled(true)`, `viewers().clear()`, dan `getRecipients().clear()` sehingga tidak ada plugin chat formatters lain yang meneruskannya ke obrolan publik. (Catatan: `setMessage("")` yang sempat dipakai di sini ternyata memutus payload ke event modern dan diperbaiki di v1.3.7.)
   - **Blokir Relai DiscordSRV ke General**: Mendengarkan `GameChatMessagePreProcessEvent` di prioritas `HIGHEST` dan membatalkannya saat pemain berada di mode toggle staff chat, sehingga DiscordSRV **tidak pernah** meneruskan chat staf ke channel `global`/`general` Discord.
   - **Blokir Relai Discord Staff ke In-Game General**: Mendengarkan `DiscordGuildMessagePreProcessEvent` di prioritas `HIGHEST` untuk membatalkan relai bawaan DiscordSRV dari channel staff ke chat umum server Minecraft (pesan hanya di-broadcast khusus ke pemegang permission staf).
 
