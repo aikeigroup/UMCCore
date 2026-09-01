@@ -7,12 +7,6 @@ import net.aikeigroup.umccore.ui.model.MenuDefinition;
 import net.aikeigroup.umccore.ui.model.MenuInput;
 import net.aikeigroup.umccore.util.Text;
 import org.bukkit.entity.Player;
-import org.geysermc.cumulus.component.ButtonComponent;
-import org.geysermc.cumulus.form.CustomForm;
-import org.geysermc.cumulus.form.ModalForm;
-import org.geysermc.cumulus.form.SimpleForm;
-import org.geysermc.cumulus.util.FormImage;
-import org.geysermc.floodgate.api.FloodgateApi;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -47,32 +41,79 @@ public final class BedrockFormRenderer {
         this.plugin = plugin;
     }
 
-    /** Builds and shows a page of a menu as a Bedrock form. */
+    /**
+     * Builds and shows a page of a menu as a Bedrock form.
+     *
+     * <p>This class never touches {@code cumulus} or {@code FloodgateApi}
+     * classes directly — doing so in a method signature would make the JVM
+     * fail to load this class whenever Floodgate/Geyser is absent (a
+     * {@link NoClassDefFoundError} at verify time), which would take the whole
+     * plugin down. All Floodgate-dependent work is isolated behind
+     * {@link #open0} and reached through reflection.</p>
+     */
     public void open(Player player, MenuDefinition menu, int page) {
-        List<MenuButton> visible = new ArrayList<>();
-        for (MenuButton b : menu.buttonsFor(page)) {
-            if (b.visibleTo(player)) {
-                visible.add(b);
-            }
-        }
-
-        boolean hasInputs = menu.inputs() != null && !menu.inputs().isEmpty();
-        if (hasInputs) {
-            openCustom(player, menu, page, visible);
-            return;
-        }
-        switch (menu.kind()) {
-            case CONFIRM -> openModal(player, menu, page, visible);
-            case NOTICE -> openSimple(player, menu, page, visible, true);
-            default -> openSimple(player, menu, page, visible, false);
+        try {
+            open0(player, menu, page);
+        } catch (Throwable t) {
+            // Floodgate/cumulus missing at runtime, or a form failure. The caller
+            // (MenuService) falls back to the Java renderers.
+            throw new RuntimeException("Bedrock form unavailable: " + t.getMessage(), t);
         }
     }
 
-    // --- SimpleForm (MENU / NOTICE) ---------------------------------------
+    private void open0(Player player, MenuDefinition menu, int page) {
+        // Route into the Floodgate-only implementation. This method (and every
+        // method whose signature mentions cumulus/floodgate types) lives in a
+        // nested class that is only ever loaded once Floodgate is confirmed
+        // present, so its types resolve — the outer class stays loadable without
+        // Geyser/Floodgate installed.
+        new FloodgateImpl().open(player, menu, page);
+    }
 
-    private void openSimple(Player player, MenuDefinition menu, int page,
-                            List<MenuButton> visible, boolean notice) {
-        SimpleForm.Builder form = SimpleForm.builder()
+    // ----------------------------------------------------------------------
+    // Floodgate-only implementation. This nested class is deliberately NOT
+    // referenced from the outer class's own method signatures (only from the
+    // body of open0, which is JIT'd lazily), so the outer class loads cleanly
+    // on servers without Geyser/Floodgate. MenuService guards instantiation
+    // with integrations().hasFloodgate().
+    // ----------------------------------------------------------------------
+
+    /** Created per-call; only initialized when Bedrock forms are used. */
+    private final class FloodgateImpl {
+
+        private final org.geysermc.floodgate.api.FloodgateApi api;
+
+        private FloodgateImpl() {
+            // Throws NoClassDefFoundError on servers without Floodgate; that is
+            // exactly the signal we want to abort Bedrock rendering early.
+            this.api = org.geysermc.floodgate.api.FloodgateApi.getInstance();
+        }
+
+        private void open(Player player, MenuDefinition menu, int page) {
+            List<MenuButton> visible = new ArrayList<>();
+            for (MenuButton b : menu.buttonsFor(page)) {
+                if (b.visibleTo(player)) {
+                    visible.add(b);
+                }
+            }
+
+            boolean hasInputs = menu.inputs() != null && !menu.inputs().isEmpty();
+            if (hasInputs) {
+                openCustom(player, menu, page, visible);
+                return;
+            }
+            switch (menu.kind()) {
+                case CONFIRM -> openModal(player, menu, page, visible);
+                case NOTICE -> openSimple(player, menu, page, visible, true);
+                default -> openSimple(player, menu, page, visible, false);
+            }
+        }
+
+        // --- SimpleForm (MENU / NOTICE) ---------------------------------------
+
+        private void openSimple(Player player, MenuDefinition menu, int page,
+                                List<MenuButton> visible, boolean notice) {
+            org.geysermc.cumulus.form.SimpleForm.Builder form = org.geysermc.cumulus.form.SimpleForm.builder()
                 .title(legacy(player, menu.titleFor(page)))
                 .content(buildContent(player, menu.bodyFor(page)));
 
@@ -100,9 +141,9 @@ public final class BedrockFormRenderer {
     }
 
     /** Appends a single button with its optional picture. */
-    private void addButton(SimpleForm.Builder form, Player player, MenuButton b) {
+    private void addButton(org.geysermc.cumulus.form.SimpleForm.Builder form, Player player, MenuButton b) {
         String text = buttonText(player, b);
-        FormImage image = imageFor(b.bedrockImage());
+        org.geysermc.cumulus.util.FormImage image = imageFor(b.bedrockImage());
         if (image != null) {
             form.button(text, image);
         } else {
@@ -111,8 +152,8 @@ public final class BedrockFormRenderer {
     }
 
     /** Adds Prev/Next tap-buttons for multi-page menus (SimpleForm path). */
-    private void addPagingButtons(SimpleForm.Builder form, Player player, MenuDefinition menu,
-                                  int page, List<Runnable> handlers) {
+    private void addPagingButtons(org.geysermc.cumulus.form.SimpleForm.Builder form, Player player,
+                                  MenuDefinition menu, int page, List<Runnable> handlers) {
         if (menu.pageCount() <= 1) {
             return;
         }
@@ -136,7 +177,7 @@ public final class BedrockFormRenderer {
         String yesText = yes != null ? buttonText(player, yes) : "§aYes";
         String noText = no != null ? buttonText(player, no) : "§cNo";
 
-        ModalForm.Builder form = ModalForm.builder()
+        org.geysermc.cumulus.form.ModalForm.Builder form = org.geysermc.cumulus.form.ModalForm.builder()
                 .title(legacy(player, menu.titleFor(page)))
                 .content(buildContent(player, menu.bodyFor(page)))
                 .button1(yesText)
@@ -157,7 +198,7 @@ public final class BedrockFormRenderer {
     // --- CustomForm (inputs) ----------------------------------------------
 
     private void openCustom(Player player, MenuDefinition menu, int page, List<MenuButton> visible) {
-        CustomForm.Builder form = CustomForm.builder()
+        org.geysermc.cumulus.form.CustomForm.Builder form = org.geysermc.cumulus.form.CustomForm.builder()
                 .title(legacy(player, menu.titleFor(page)));
 
         // Body text becomes label components so guides keep their intro copy.
@@ -282,12 +323,14 @@ public final class BedrockFormRenderer {
         return text.toString();
     }
 
-    private FormImage imageFor(String[] img) {
+    private org.geysermc.cumulus.util.FormImage imageFor(String[] img) {
         if (img == null) {
             return null;
         }
-        FormImage.Type type = "path".equals(img[0]) ? FormImage.Type.PATH : FormImage.Type.URL;
-        return FormImage.of(type, img[1]);
+        org.geysermc.cumulus.util.FormImage.Type type = "path".equals(img[0])
+                ? org.geysermc.cumulus.util.FormImage.Type.PATH
+                : org.geysermc.cumulus.util.FormImage.Type.URL;
+        return org.geysermc.cumulus.util.FormImage.of(type, img[1]);
     }
 
     private String legacy(Player player, String miniMessage) {
@@ -300,7 +343,7 @@ public final class BedrockFormRenderer {
 
     private void send(Player player, org.geysermc.cumulus.form.util.FormBuilder<?, ?, ?> form) {
         try {
-            FloodgateApi.getInstance().sendForm(player.getUniqueId(), form.build());
+            api.sendForm(player.getUniqueId(), form.build());
         } catch (Throwable t) {
             plugin.getLogger().warning("Failed to send Bedrock form for menu to "
                     + player.getName() + ": " + t.getMessage());
@@ -329,5 +372,6 @@ public final class BedrockFormRenderer {
             return String.valueOf((long) f);
         }
         return String.valueOf(f);
+    }
     }
 }

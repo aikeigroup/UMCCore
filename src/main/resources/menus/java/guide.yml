@@ -26,7 +26,7 @@ body:
 buttons:
   about:
     label: "<#4dd0e1><bold>Gamemode & Fitur</bold></#4dd0e1>"
-    description: [ "<#90a4ae>Skyblock, Survival, cross-platform</#90a4ae>" ]
+    description: [ "<#90a4ae>Survival, cross-platform</#90a4ae>" ]
     icon: BEACON
     actions: [ "PAGE:1" ]
   start:
@@ -70,10 +70,8 @@ pages:
   - title: "<gradient:#4dd0e1:#18ffff><bold>GAMEMODE & FITUR UNGGULAN</bold></gradient>"
     body:
       - "<#90a4ae>UNNESMC punya beberapa dunia untuk gaya main berbeda:"
-      - icon: SNOW_BLOCK
-        text: "<#4dd0e1><bold>Skyblock (Slimefun)</bold></#4dd0e1> <#546e7a>—</#546e7a> <#90a4ae>bertahan hidup di angkasa. Mulai dari pulau kecil, pakai teknologi & sihir Slimefun bangun pulau melayang canggih."
       - icon: DIAMOND_SWORD
-        text: "<#33d17a><bold>Survival (Slimefun + Custom Enchant)</bold></#33d17a> <#546e7a>—</#546e7a> <#90a4ae>alam liar penuh tantangan. Mesin otomasi tanpa mod, plus enchant unik melampaui vanilla."
+        text: "<#33d17a><bold>Survival + Custom Enchant</bold></#33d17a> <#546e7a>—</#546e7a> <#90a4ae>alam liar penuh tantangan. Mesin otomasi tanpa mod, plus enchant unik melampaui vanilla."
       - icon: EMERALD
         text: "<#ffb300><bold>Shop & Gacha</bold></#ffb300> <#546e7a>—</#546e7a> <#90a4ae>jual-beli hasil farming di Shop, uji hoki di Gacha/Crate untuk item langka."
       - icon: BEACON
@@ -96,10 +94,8 @@ pages:
         text: "<#33d17a><bold>1.</bold></#33d17a> <white>/rtp</white> <#90a4ae>— teleport acak untuk masuk & mulai world survival."
       - icon: VILLAGER_SPAWN_EGG
         text: "<#33d17a><bold>2.</bold></#33d17a> <white>/warp reso</white> <#90a4ae>— ke World Resource. Bicara ke NPC untuk area farming."
-      - icon: IRON_NUGGET
-        text: "<#33d17a><bold>3.</bold></#33d17a> <#90a4ae>Claim lahanmu (RedProtect): <white>/rp wand</white> lalu klik 2 titik. Bisa juga pakai pagar."
       - icon: LEAD
-        text: "<#33d17a><bold>4.</bold></#33d17a> <#90a4ae>Angkat hewan! Shift + klik kanan pada sheep, cow, pig, chicken, atau villager."
+        text: "<#33d17a><bold>3.</bold></#33d17a> <#90a4ae>Angkat hewan! Shift + klik kanan pada sheep, cow, pig, chicken, atau villager."
     buttons:
       - id: rtp
         label: "<gradient:#33d17a:#4dd0e1><bold>Mulai Survival (/rtp)</bold></gradient>"
@@ -121,14 +117,10 @@ pages:
       - "<#90a4ae>Command utama yang sering dipakai di UNNESMC:"
       - icon: DIAMOND_PICKAXE
         text: "<#ffb300>/rtp</#ffb300> <#546e7a>•</#546e7a> <#90a4ae>masuk/pindah acak world survival"
-      - icon: OAK_FENCE
-        text: "<#ffb300>/rp wand</#ffb300> <#546e7a>•</#546e7a> <#90a4ae>alat claim RedProtect (iron nugget)"
       - icon: WHEAT
         text: "<#ffb300>/jobs</#ffb300> <#546e7a>•</#546e7a> <#90a4ae>ambil pekerjaan untuk cari uang"
       - icon: PAPER
         text: "<#ffb300>/vote</#ffb300> <#546e7a>•</#546e7a> <#90a4ae>vote server → dapat Vote Key untuk gacha"
-      - icon: SLIME_BALL
-        text: "<#ffb300>/sf</#ffb300> <#546e7a>•</#546e7a> <#90a4ae>buka panduan Slimefun"
     buttons:
       - id: vote
         label: "<gradient:#33d17a:#4dd0e1><bold>Vote Sekarang</bold></gradient>"
@@ -208,7 +200,7 @@ pages:
     body:
       - "<#ef5350><bold>1.</bold></#ef5350> <#90a4ae>Hormati semua pemain. Dilarang toxic, SARA, atau pelecehan."
       - "<#ef5350><bold>2.</bold></#ef5350> <#90a4ae>Dilarang cheat, hack, x-ray, atau exploit bug."
-      - "<#ef5350><bold>3.</bold></#ef5350> <#90a4ae>Dilarang griefing & mencuri di lahan orang lain. Claim lahanmu (/rp wand)."
+      - "<#ef5350><bold>3.</bold></#ef5350> <#90a4ae>Dilarang griefing & mencuri di lahan orang lain."
       - "<#ef5350><bold>4.</bold></#ef5350> <#90a4ae>Dilarang scam / menipu transaksi antar pemain."
       - "<#ef5350><bold>5.</bold></#ef5350> <#90a4ae>Gunakan bahasa sopan di chat. Iklan server lain = larangan."
       - icon: BARRIER

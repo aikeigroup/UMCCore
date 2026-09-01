@@ -40,7 +40,8 @@ public final class ConfigManager {
             "votelog",
             "pickup",
             "lifecycle",
-            "staffchat"
+            "staffchat",
+            "motd"
     };
 
     private final UMCCore plugin;

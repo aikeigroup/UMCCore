@@ -15,6 +15,7 @@ import net.aikeigroup.umccore.modules.mobstacker.MobStackerModule;
 import net.aikeigroup.umccore.modules.actionbar.ActionBarModule;
 import net.aikeigroup.umccore.modules.discord.DiscordModule;
 import net.aikeigroup.umccore.modules.mobxp.MobXpModule;
+import net.aikeigroup.umccore.modules.motd.MOTDModule;
 import net.aikeigroup.umccore.modules.performance.PerformanceModule;
 import net.aikeigroup.umccore.modules.pickup.MobPickupModule;
 import net.aikeigroup.umccore.modules.staffchat.StaffChatCommand;
@@ -114,6 +115,8 @@ public final class UMCCore extends JavaPlugin {
         modules().register(new UIModule());
         // M4 — animated action bar.
         modules().register(new ActionBarModule());
+        // Live, rotating server-list MOTD.
+        modules().register(new MOTDModule());
         // M5 — Discord status embed.
         modules().register(new DiscordModule());
         // Vote log — Discord embed on each Votifier vote (soft: Votifier+DiscordSRV).

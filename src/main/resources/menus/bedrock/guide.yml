@@ -25,7 +25,7 @@ body:
 buttons:
   about:
     label: "<#64ffda><bold>Gamemode & Fitur</bold>"
-    description: [ "<#b0bec5>Skyblock, Survival, cross-platform" ]
+    description: [ "<#b0bec5>Survival, cross-platform" ]
     image: "path:textures/items/diamond"
     actions: [ "PAGE:1" ]
   start:
@@ -69,9 +69,6 @@ pages:
       - "<#37474f>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
       - "<white>Beberapa dunia untuk gaya main berbeda:"
       - ""
-      - "<#64ffda><bold>◆ Skyblock (Slimefun)</bold></#64ffda>"
-      - "<#b0bec5>Bertahan di angkasa dari pulau kecil, pakai teknologi & sihir Slimefun."
-      - ""
       - "<#69f0ae><bold>◆ Survival + Custom Enchant</bold></#69f0ae>"
       - "<#b0bec5>Alam liar penuh tantangan, mesin otomasi & enchant unik."
       - ""
@@ -95,8 +92,7 @@ pages:
       - ""
       - "<#69f0ae><bold>1.</bold></#69f0ae> <white>/rtp</white> <#b0bec5>— teleport acak masuk world survival."
       - "<#69f0ae><bold>2.</bold></#69f0ae> <white>/warp reso</white> <#b0bec5>— World Resource, bicara ke NPC untuk farming."
-      - "<#69f0ae><bold>3.</bold></#69f0ae> <#b0bec5>Claim lahan (RedProtect): <white>/rp wand</white> lalu klik 2 titik."
-      - "<#69f0ae><bold>4.</bold></#69f0ae> <#b0bec5>Angkat hewan: sneak + ketuk sheep/cow/pig/chicken."
+      - "<#69f0ae><bold>3.</bold></#69f0ae> <#b0bec5>Angkat hewan: sneak + ketuk sheep/cow/pig/chicken."
       - "<#37474f>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
     buttons:
       - id: rtp
@@ -119,10 +115,8 @@ pages:
       - "<white>Command yang sering dipakai:"
       - ""
       - "<#40c4ff>/rtp</#40c4ff>  <#b0bec5>masuk / pindah acak world survival"
-      - "<#40c4ff>/rp wand</#40c4ff>  <#b0bec5>alat claim lahan RedProtect"
       - "<#40c4ff>/jobs</#40c4ff>  <#b0bec5>ambil pekerjaan cari uang"
       - "<#40c4ff>/vote</#40c4ff>  <#b0bec5>vote server → dapat Vote Key"
-      - "<#40c4ff>/sf</#40c4ff>  <#b0bec5>buka panduan Slimefun"
       - "<#37474f>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
     buttons:
       - id: vote
@@ -195,7 +189,7 @@ pages:
       - "<#37474f>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
       - "<#ff8a80><bold>1.</bold></#ff8a80> <#b0bec5>Hormati semua pemain. Dilarang toxic, SARA, pelecehan."
       - "<#ff8a80><bold>2.</bold></#ff8a80> <#b0bec5>Dilarang cheat, hack, x-ray, atau exploit bug."
-      - "<#ff8a80><bold>3.</bold></#ff8a80> <#b0bec5>Dilarang griefing & mencuri. Claim lahanmu (/rp wand)."
+      - "<#ff8a80><bold>3.</bold></#ff8a80> <#b0bec5>Dilarang griefing & mencuri."
       - "<#ff8a80><bold>4.</bold></#ff8a80> <#b0bec5>Dilarang scam / menipu transaksi."
       - "<#ff8a80><bold>5.</bold></#ff8a80> <#b0bec5>Bahasa sopan. Iklan server lain = dilarang."
       - ""

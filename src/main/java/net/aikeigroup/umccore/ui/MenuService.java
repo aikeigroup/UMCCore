@@ -45,7 +45,7 @@ public final class MenuService {
     private final UMCCore plugin;
     private final DialogMenuRenderer dialogRenderer;
     private final ChestMenuRenderer chestRenderer;
-    private final BedrockFormRenderer bedrockRenderer;
+    private BedrockFormRenderer bedrockRenderer;
 
     /** Loaded menus, split by the platform they were authored for. */
     private final Map<Platform, Map<String, MenuDefinition>> menus = new EnumMap<>(Platform.class);
@@ -58,7 +58,11 @@ public final class MenuService {
         this.plugin = plugin;
         this.dialogRenderer = new DialogMenuRenderer(plugin);
         this.chestRenderer = new ChestMenuRenderer(plugin);
-        this.bedrockRenderer = new BedrockFormRenderer(plugin);
+        // The Bedrock renderer is created lazily: its implementation class
+        // references Floodgate/cumulus types, which are only present when Geyser
+        // + Floodgate are installed. Instantiating it eagerly would crash the
+        // whole plugin with NoClassDefFoundError on servers without them.
+        this.bedrockRenderer = null;
         this.dialogSupported = detectDialogSupport();
         menus.put(Platform.JAVA, new LinkedHashMap<>());
         menus.put(Platform.BEDROCK, new LinkedHashMap<>());
@@ -67,6 +71,30 @@ public final class MenuService {
     /** @return the chest renderer (the UI module registers its click listener). */
     public ChestMenuRenderer chestRenderer() {
         return chestRenderer;
+    }
+
+    /**
+     * Lazily creates the Bedrock renderer, but only when Floodgate is actually
+     * present. Creating it unconditionally would load {@link BedrockFormRenderer}
+     * (which references Floodgate/cumulus types) and crash the plugin on servers
+     * without them.
+     */
+    private BedrockFormRenderer bedrockRenderer() {
+        if (bedrockRenderer != null) {
+            return bedrockRenderer;
+        }
+        if (!plugin.integrations().hasFloodgate()) {
+            return null;
+        }
+        try {
+            bedrockRenderer = new BedrockFormRenderer(plugin);
+        } catch (Throwable t) {
+            // Floodgate classes not loadable at runtime after all; stay on Java.
+            plugin.getLogger().warning("Bedrock renderer unavailable (Floodgate missing?): "
+                    + t.getMessage());
+            bedrockRenderer = null;
+        }
+        return bedrockRenderer;
     }
 
     /** Replaces the loaded menu set (called by the loader on enable/reload). */
@@ -196,14 +224,17 @@ public final class MenuService {
     private void render(Player player, MenuDefinition menu, int page, Platform platform) {
         // Bedrock players always get the native form path.
         if (platform == Platform.BEDROCK) {
-            try {
-                bedrockRenderer.open(player, menu, page);
-                return;
-            } catch (Throwable t) {
-                // A Bedrock form failure (Floodgate missing at runtime, etc.)
-                // drops through to the Java path as a safety net.
-                plugin.getLogger().warning("Bedrock form failed for menu '" + menu.id()
-                        + "', falling back to Java rendering: " + t.getMessage());
+            BedrockFormRenderer renderer = bedrockRenderer();
+            if (renderer != null) {
+                try {
+                    renderer.open(player, menu, page);
+                    return;
+                } catch (Throwable t) {
+                    // A Bedrock form failure (Floodgate missing at runtime, etc.)
+                    // drops through to the Java path as a safety net.
+                    plugin.getLogger().warning("Bedrock form failed for menu '" + menu.id()
+                            + "', falling back to Java rendering: " + t.getMessage());
+                }
             }
         }
 

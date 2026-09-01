@@ -70,33 +70,10 @@ public final class VoteLogModule extends AbstractModule {
 
         dedupeWindowMs = Math.max(0, config().getInt("dedupe-window-seconds", 60)) * 1000L;
 
-        // Guarded by hasVotifier() above so VotifierEvent is loadable here.
-        listen(new VoteListener());
-    }
-
-    /** Listener kept as a nested type so the class only loads when registered. */
-    private final class VoteListener implements Listener {
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onVote(VotifierEvent event) {
-            Vote vote = event.getVote();
-            if (vote == null) {
-                return;
-            }
-            String player = safe(vote.getUsername());
-            String service = safe(vote.getServiceName());
-
-            if (isDuplicate(player, service)) {
-                if (config().getBoolean("log-duplicates", true)) {
-                    plugin.getLogger().info("Ignored duplicate vote: " + player
-                            + " / " + service);
-                }
-                return;
-            }
-
-            String address = safe(vote.getAddress());
-            // Network I/O must never touch the calling thread.
-            scheduler.runAsync(() -> sendVoteEmbed(player, service, address));
-        }
+        // Guarded by hasVotifier() above so VotifierEvent is loadable here. The
+        // listener is a separate top-level-ish class so its method signatures
+        // (which reference VotifierEvent/Vote) only load when Votifier exists.
+        listen(new VoteListener(this));
     }
 
     /**
@@ -250,6 +227,43 @@ public final class VoteLogModule extends AbstractModule {
             return Integer.parseInt(h, 16) & 0xFFFFFF;
         } catch (NumberFormatException e) {
             return 0x43B581;
+        }
+    }
+
+    /**
+     * Votifier listener, split out of the module so the VotifierEvent/Vote types
+     * in its method signature are only ever loaded once Votifier is confirmed
+     * present. Without this, the module class itself would fail to load (and
+     * take the whole plugin down) on servers without NuVotifier/Votifier.
+     */
+    private static final class VoteListener implements Listener {
+
+        private final VoteLogModule module;
+
+        private VoteListener(VoteLogModule module) {
+            this.module = module;
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onVote(com.vexsoftware.votifier.model.VotifierEvent event) {
+            com.vexsoftware.votifier.model.Vote vote = event.getVote();
+            if (vote == null) {
+                return;
+            }
+            String player = safe(vote.getUsername());
+            String service = safe(vote.getServiceName());
+
+            if (module.isDuplicate(player, service)) {
+                if (module.config().getBoolean("log-duplicates", true)) {
+                    module.plugin.getLogger().info("Ignored duplicate vote: " + player
+                            + " / " + service);
+                }
+                return;
+            }
+
+            String address = safe(vote.getAddress());
+            // Network I/O must never touch the calling thread.
+            module.scheduler.runAsync(() -> module.sendVoteEmbed(player, service, address));
         }
     }
 }

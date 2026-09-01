@@ -1,0 +1,32 @@
+# ==========================================================================
+#  UMCCore — Server MOTD (motd.yml)
+#  MOTD server yang live, berputar (rotasi), dan customable penuh.
+#  Text memakai MiniMessage: full RGB/hex, gradient, <bold>, <italic>, dll.
+#  PlaceholderAPI (jika terpasang) ikut di-resolve per ping, jadi angka
+#  seperti %server_online% / %umccore_tps% selalu fresh.
+#
+#  CATATAN: Minecraft membatasi MOTD server list maksimal 59 karakter
+#  terlihat. Teks yang lebih panjang akan dipotong otomatis oleh client —
+#  UMCCore memberi warning di console jika ada frame yang kepanjangan.
+#
+#  Matikan module di config.yml: modules.motd: false
+# ==========================================================================
+
+# Master enable (redundan dengan modules.motd, untuk kemudahan).
+enabled: true
+
+rotation:
+  # Berapa detik sekali MOTD berganti ke frame berikutnya.
+  interval-seconds: 8
+
+# Daftar frame MOTD. Setiap frame ditampilkan bergantian sesuai interval di
+# atas. Contoh tag MiniMessage yang sering dipakai:
+#   <bold>...</bold>                  - teks tebal
+#   <#ff0000>teks</#ff0000>           - warna hex penuh
+#   <gradient:#00c6ff:#0072ff>...</gradient> - gradient
+#   <rainbow>...</rainbow>            - pelangi
+#   <strikethrough> / <underlined> / <italic>
+frames:
+  - "<gradient:#00c6ff:#0072ff><bold>UNNESMC</bold></gradient> <white>|</white> <gray>Survival</gray> <dark_gray>•</dark_gray> <gray>Semi-RPG</gray> <dark_gray>•</dark_gray> <gray>Economy</gray> <dark_gray>•</dark_gray> <gray>Lands</gray>"
+  - "<#ffd700><bold>UNNESMC</bold></#ffd700> <gray>—</gray> <aqua>Online: %server_online%/%server_max_players%</aqua> <dark_gray>|</dark_gray> <gray>TPS %umccore_tps%</gray>"
+  - "<gradient:#ff416c:#ff4b2b><bold>UNNESMC</bold></gradient> <gray>—</gray> <white>Main bareng mahasiswa UNNES</white> <dark_gray>•</dark_gray> <green>dc.unnesmc.my.id</green>"
