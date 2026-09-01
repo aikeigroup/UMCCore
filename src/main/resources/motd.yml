@@ -1,13 +1,18 @@
 # ==========================================================================
 #  UMCCore — Server MOTD (motd.yml)
 #  MOTD server yang live, berputar (rotasi), dan customable penuh.
-#  Text memakai MiniMessage: full RGB/hex, gradient, <bold>, <italic>, dll.
-#  PlaceholderAPI (jika terpasang) ikut di-resolve per ping, jadi angka
-#  seperti %server_online% / %umccore_tps% selalu fresh.
 #
-#  CATATAN: Minecraft membatasi MOTD server list maksimal 59 karakter
-#  terlihat. Teks yang lebih panjang akan dipotong otomatis oleh client —
-#  UMCCore memberi warning di console jika ada frame yang kepanjangan.
+#  Text memakai MiniMessage, jadi semua format warna didukung:
+#    <bold>...</bold>                          - teks tebal
+#    <#ff0000>teks</#ff0000>                   - warna hex penuh
+#    <red>, <gold>, <aqua>, <gray>, ...        - warna named
+#    <gradient:#00c6ff:#0072ff>...</gradient>  - gradient 2+ warna
+#    <rainbow>...</rainbow>                    - pelangi
+#    <italic>, <underlined>, <strikethrough>   - format lain
+#
+#  2 BARIS: pisahkan baris dengan \n. Client membatasi SETIAP baris maksimal
+#  59 karakter terlihat (tag tidak dihitung) — UMCCore memberi warning di
+#  console jika ada baris yang kepanjangan.
 #
 #  Matikan module di config.yml: modules.motd: false
 # ==========================================================================
@@ -20,13 +25,13 @@ rotation:
   interval-seconds: 8
 
 # Daftar frame MOTD. Setiap frame ditampilkan bergantian sesuai interval di
-# atas. Contoh tag MiniMessage yang sering dipakai:
-#   <bold>...</bold>                  - teks tebal
-#   <#ff0000>teks</#ff0000>           - warna hex penuh
-#   <gradient:#00c6ff:#0072ff>...</gradient> - gradient
-#   <rainbow>...</rainbow>            - pelangi
-#   <strikethrough> / <underlined> / <italic>
+# atas. Boleh 1 baris atau 2 baris (pakai \n). PlaceholderAPI (jika terpasang)
+# tetap di-resolve per ping, jadi boleh dipakai di baris mana pun.
 frames:
-  - "<gradient:#00c6ff:#0072ff><bold>UNNESMC</bold></gradient> <white>|</white> <gray>Survival</gray> <dark_gray>•</dark_gray> <gray>Semi-RPG</gray> <dark_gray>•</dark_gray> <gray>Economy</gray> <dark_gray>•</dark_gray> <gray>Lands</gray>"
-  - "<#ffd700><bold>UNNESMC</bold></#ffd700> <gray>—</gray> <aqua>Online: %server_online%/%server_max_players%</aqua> <dark_gray>|</dark_gray> <gray>TPS %umccore_tps%</gray>"
-  - "<gradient:#ff416c:#ff4b2b><bold>UNNESMC</bold></gradient> <gray>—</gray> <white>Main bareng mahasiswa UNNES</white> <dark_gray>•</dark_gray> <green>dc.unnesmc.my.id</green>"
+  - "<gradient:#00c6ff:#0072ff><bold>UNNESMC</bold></gradient> <dark_gray>—</dark_gray> <#ffd700><bold>Survival</bold></#ffd700> <dark_gray>•</dark_gray> <#33d17a><bold>Semi-RPG</bold></#33d17a> <dark_gray>•</dark_gray> <#ffd54f><bold>Economy</bold></#ffd54f> <dark_gray>•</dark_gray> <#7c9cff><bold>Lands</bold></#7c9cff>\n<#90a4ae><bold>Main bareng mahasiswa UNNES</bold></#90a4ae> <dark_gray>|</dark_gray> <#4dd0e1><bold>dc.unnesmc.my.id</bold></#4dd0e1>"
+  - "<gradient:#ff416c:#ff4b2b><bold>UNNESMC</bold></gradient> <white><bold>—</bold></white> <rainbow><bold>WELCOME!</bold></rainbow>\n<gray><bold>Survival</bold></gray> <dark_gray><bold>•</bold></dark_gray> <gray><bold>Semi-RPG</bold></gray> <dark_gray><bold>•</bold></dark_gray> <gray><bold>Economy</bold></gray> <dark_gray><bold>•</bold></dark_gray> <gray><bold>Lands</bold></gray>"
+  - "<#4dd0e1><bold>UNNESMC</bold></#4dd0e1> <dark_gray><bold>»</bold></dark_gray> <#ffd700><bold>Dunia survival tanpa batas!</bold></#ffd700>\n<#b388ff><bold>Bangun, main, dan bersosialisasi bareng komunitas.</bold></#b388ff>"
+  - "<#69f0ae><bold>UNNESMC</bold></#69f0ae> <dark_gray><bold>»</bold></dark_gray> <#ffd740><bold>Seru-seruan di Semi-RPG!</bold></#ffd740>\n<#40c4ff><bold>Quest, event, dan petualangan menantang menantimu.</bold></#40c4ff>"
+  - "<#ffd54f><bold>UNNESMC</bold></#ffd54f> <dark_gray><bold>»</bold></dark_gray> <#ff8f00><bold>Ekonomi seru & gacha!</bold></#ff8f00>\n<#b0bec5><bold>Jual-beli, bank, auction, dan crate menanti.</bold></#b0bec5>"
+  - "<#7c9cff><bold>UNNESMC</bold></#7c9cff> <dark_gray><bold>»</bold></dark_gray> <#b388ff><bold>Claim lahanmu dengan Lands!</bold></#b388ff>\n<#90a4ae><bold>Bangun markas dan lindungi wilayahmu.</bold></#90a4ae>"
+  - "<gradient:#43e97b:#38f9d7><bold>UNNESMC</bold></gradient> <white><bold>|</bold></white> <#ffcc80><bold>Gabung sekarang!</bold></#ffcc80>\n<#80d8ff><bold>dc.unnesmc.my.id</bold></#80d8ff> <dark_gray><bold>•</bold></dark_gray> <#a5d6a7><bold>vote.unnesmc.my.id</bold></#a5d6a7>"

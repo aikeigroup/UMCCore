@@ -66,25 +66,27 @@ public final class MOTDModule extends AbstractModule {
 
     private void loadFrames() {
         frames.clear();
-        String defaultLine = "<gradient:#00c6ff:#0072ff><bold>UNNESMC</bold></gradient>"
-                + " <white>|</white> <gray>Survival</gray> <dark_gray>•</dark_gray>"
-                + " <gray>Semi-RPG</gray> <dark_gray>•</dark_gray>"
-                + " <gray>Economy</gray> <dark_gray>•</dark_gray> <gray>Lands</gray>";
         List<String> lines = config().getStringList("frames");
         if (lines.isEmpty()) {
-            lines = List.of(defaultLine);
+            lines = List.of(defaultFrame());
         }
         for (String raw : lines) {
-            String text = raw == null ? "" : raw;
+            if (raw == null) {
+                continue;
+            }
+            // Allow multi-line frames with a literal "\n" inside a YAML string.
+            String text = raw.replace("\\n", "\n");
             if (text.isBlank()) {
                 continue;
             }
-            // Strip MiniMessage tags when measuring length; the client's 59-char
-            // cap counts visible characters only.
-            int visible = TextLength.visible(text);
-            if (visible > MAX_MOTD_LENGTH) {
-                plugin.getLogger().warning("MOTD frame is " + visible + " visible characters "
-                        + "(max " + MAX_MOTD_LENGTH + "); the client will truncate it: " + text);
+            // The client caps EACH line of the server list at 59 visible
+            // characters, so check per line (tags stripped).
+            for (String line : text.split("\n", -1)) {
+                int visible = TextLength.visible(line);
+                if (visible > MAX_MOTD_LENGTH) {
+                    plugin.getLogger().warning("MOTD line is " + visible + " visible characters "
+                            + "(max " + MAX_MOTD_LENGTH + "); the client will truncate it: " + line);
+                }
             }
             frames.add(new MotdFrame(text));
         }
@@ -95,6 +97,17 @@ public final class MOTDModule extends AbstractModule {
         if (frames.size() > 1) {
             currentIndex = (currentIndex + 1) % frames.size();
         }
+    }
+
+    /** Fallback frame used only when {@code frames} is empty in the config. */
+    private static String defaultFrame() {
+        return "<gradient:#00c6ff:#0072ff><bold>UNNESMC</bold></gradient> <dark_gray>—</dark_gray> "
+                + "<#ffd700><bold>Survival</bold></#ffd700> <dark_gray>•</dark_gray> "
+                + "<#33d17a><bold>Semi-RPG</bold></#33d17a> <dark_gray>•</dark_gray> "
+                + "<#ffd54f><bold>Economy</bold></#ffd54f> <dark_gray>•</dark_gray> "
+                + "<#7c9cff><bold>Lands</bold></#7c9cff>\n"
+                + "<#90a4ae><bold>Main bareng mahasiswa UNNES</bold></#90a4ae> "
+                + "<dark_gray>|</dark_gray> <#4dd0e1><bold>dc.unnesmc.my.id</bold></#4dd0e1>";
     }
 
     private final class PingListener implements Listener {
